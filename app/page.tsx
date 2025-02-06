@@ -22,28 +22,6 @@ export default function Home() {
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <header className="flex justify-between items-center w-full max-w-6xl mx-auto">
-        <Link href="/">
-        <Image
-              src="/logo.svg"
-              alt="Company Logo"
-              width={100}
-              height={100}
-              priority
-            />
-        </Link>
-        <nav className="flex gap-8">
-          <Link href="/services" className="hover:underline">
-          Services
-          </Link>
-          <Link href="/about" className="hover:underline">
-          About Us
-          </Link>
-          <Link href="/contact" className="hover:underline">
-          Contact
-          </Link>
-        </nav>
-      </header>
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start text-center sm:text-left">
         <h1 className="text-4xl sm:text-6xl font-bold">Welcome to Our Company</h1>
         <p className="text-lg sm:text-xl max-w-2xl">
