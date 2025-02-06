@@ -30,9 +30,9 @@ export default function Home() {
           priority
         />
         <nav className="flex gap-8">
-          <a href="#services" className="hover:underline">Services</a>
-          <a href="#about" className="hover:underline">About Us</a>
-          <a href="#contact" className="hover:underline">Contact</a>
+          <a href="/services" className="hover:underline">Services</a>
+          <a href="/about" className="hover:underline">About Us</a>
+          <a href="/contact" className="hover:underline">Contact</a>
         </nav>
       </header>
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start text-center sm:text-left">
@@ -42,7 +42,7 @@ export default function Home() {
         </p>
         <a
           className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-          href="#services"
+          href="/services"
         >
           Explore Our Services
         </a>
