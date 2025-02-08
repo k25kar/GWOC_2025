@@ -1,4 +1,3 @@
-// filepath: /c:/Users/Karthik/Documents/C PROGRAMMING PRACTICE/GWOC-project/GWOC_2025/components/Navbar.tsx
 "use client"
 
 import Link from "next/link"
@@ -15,6 +14,7 @@ export function Navbar() {
     { name: "FAQ", href: "#" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
+    { name: "Dashboard", href: "/dashboard/admindashboard" } // Ensure this line is correct
   ]
 
   return (
