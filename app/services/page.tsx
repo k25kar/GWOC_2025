@@ -1,76 +1,97 @@
-'use client';
+"use client"
 
-import { useState, useEffect } from 'react';
-import { Carousel } from 'react-responsive-carousel';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { motion } from 'framer-motion';
-
-interface Service {
-  id: number;
-  title: string;
-  image: string;
-}
+import { motion } from "framer-motion"
+import { ChevronDown } from "lucide-react"
+import ImageCarousel from "./image-carousel/image-carousel"
+import { Button } from "@/components/ui/button"
 
 export default function ServicesPage() {
-  const [fadeIn, setFadeIn] = useState(false);
-  
-  useEffect(() => {
-    setTimeout(() => setFadeIn(true), 300);
-  }, []);
-
-  const newServices: Service[] = [
-    { id: 1, title: 'New Service 1', image: '/service1.jpg' },
-    { id: 2, title: 'New Service 2', image: '/service2.jpg' }
-  ];
-
-  const bestSellers: Service[] = [
-    { id: 1, title: 'Best Seller 1', image: '/bestseller1.jpg' },
-    { id: 2, title: 'Best Seller 2', image: '/bestseller2.jpg' }
-  ];
-
   return (
-    <div className="flex flex-col items-center text-center p-8 space-y-12">
-      {/* Our Services Section */}
-      <motion.div 
-        initial={{ opacity: 0, filter: 'blur(10px)' }}
-        animate={{ opacity: fadeIn ? 1 : 0, filter: fadeIn ? 'blur(0px)' : 'blur(10px)' }}
-        transition={{ duration: 1 }}
-        className="text-3xl font-bold"
-      >
-        Our Services
-      </motion.div>
-      
-      {/* Service Highlights */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
-        <ServiceCarousel title="New and Trustworthy" services={newServices} />
-        <ServiceCarousel title="Best Sellers" services={bestSellers} />
-      </div>
-      
-      {/* Fading Text Section */}
-      <motion.p 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="text-lg max-w-3xl"
-      >
-        Discover services tailored for you. Our offerings constantly evolve to bring you the latest and most trusted solutions.
-      </motion.p>
-    </div>
-  );
-}
+    <main className="min-h-screen bg-black text-white">
+      {/* Hero Section */}
+      <section className="h-screen flex flex-col items-center justify-center px-4 text-center">
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-6xl md:text-7xl lg:text-8xl font-bold text-zinc-100 mb-6"
+        >
+          Our Services
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="text-xl md:text-2xl text-zinc-400 max-w-2xl mb-12"
+        >
+          Go from design to site with Framer, the web builder for creative pros.
+        </motion.p>
+        <motion.div initial={{ opacity: 0.6 }} whileHover={{ opacity: 1, scale: 1.1 }} transition={{ duration: 0.2 }}>
+          <Button
+            variant="outline"
+            size="icon"
+            className="rounded-full w-12 h-12"
+            onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
+          >
+            <ChevronDown className="h-6 w-6" />
+          </Button>
+        </motion.div>
+      </section>
 
-function ServiceCarousel({ title, services }) {
-  return (
-    <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-semibold mb-4">{title}</h2>
-      <Carousel showThumbs={false} infiniteLoop autoPlay>
-        {services.map(service => (
-          <div key={service.id} className="relative">
-            <img src={service.image} alt={service.title} className="rounded-lg" />
-            <p className="absolute bottom-4 left-4 bg-white p-2 rounded text-sm font-medium">{service.title}</p>
+      {/* Services Section */}
+      <section className="min-h-screen py-24 px-4 md:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 mb-24">
+            <div className="order-2 md:order-1">
+              <ImageCarousel />
+            </div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="order-1 md:order-2 flex flex-col justify-center"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-4">New and Trustworthy</h2>
+              <p className="text-zinc-400 mb-8">Install the plugin and convert your designs to a responsive site.</p>
+              <Button className="w-fit">Book Now</Button>
+            </motion.div>
           </div>
-        ))}
-      </Carousel>
-    </div>
-  );
+
+          <div className="grid md:grid-cols-2 gap-12">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="flex flex-col justify-center"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-4">Best Sellers</h2>
+              <p className="text-zinc-400 mb-8">Browse dozens of templates. Click, duplicate, customize.</p>
+              <Button className="w-fit">Book Now</Button>
+            </motion.div>
+            <div>
+              <ImageCarousel />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Text Section */}
+      <section className="py-24 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="max-w-4xl mx-auto text-center space-y-4 text-xl md:text-2xl text-zinc-300"
+        >
+          <p>Lorem ipsum dolor sit amet, consectetur.</p>
+          <p>Ut enim ad minim veniam, quis nostrud laboris.</p>
+          <p>Duis aute irure dolor in reprehenderit in voluptate.</p>
+        </motion.div>
+      </section>
+    </main>
+  )
 }
+
