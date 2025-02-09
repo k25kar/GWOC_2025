@@ -1,26 +1,38 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { ChevronDown } from "lucide-react"
-import ImageCarousel from "./image-carousel/image-carousel"
-import { Button } from "@/components/ui/button"
+import { motion, useInView } from "framer-motion";
+import { ChevronDown } from "lucide-react";
+import ImageCarousel from "./image-carousel/image-carousel";
+import { Button } from "@/components/ui/button";
+import { useRef } from "react";
 
 export default function ServicesPage() {
+  const heroRef = useRef(null);
+  const servicesRef = useRef(null);
+  const bestSellersRef = useRef(null);
+  const textSectionRef = useRef(null);
+
+  const heroInView = useInView(heroRef, { once: false });
+  const servicesInView = useInView(servicesRef, { once: false });
+  const bestSellersInView = useInView(bestSellersRef, { once: false });
+  const textSectionInView = useInView(textSectionRef, { once: false });
+
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-service_black text-white">
       {/* Hero Section */}
-      <section className="h-screen flex flex-col items-center justify-center px-4 text-center">
+      <section ref={heroRef} className="h-screen flex flex-col items-center justify-center px-4 text-center">
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.8 }}
-          className="text-6xl md:text-7xl lg:text-8xl font-bold text-zinc-100 mb-6"
+          className="text-6xl md:text-7xl lg:text-8xl font-bold"
+          style={{ color: '#E8E4D3' }}
         >
           Our Services
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={heroInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
           className="text-xl md:text-2xl text-zinc-400 max-w-2xl mb-12"
         >
@@ -39,7 +51,7 @@ export default function ServicesPage() {
       </section>
 
       {/* Services Section */}
-      <section className="min-h-screen py-24 px-4 md:px-8">
+      <section ref={servicesRef} className="min-h-screen py-24 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 mb-24">
             <div className="order-2 md:order-1">
@@ -47,12 +59,11 @@ export default function ServicesPage() {
             </div>
             <motion.div
               initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              animate={servicesInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
               transition={{ duration: 0.6 }}
               className="order-1 md:order-2 flex flex-col justify-center"
             >
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">New and Trustworthy</h2>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#E8E4D3' }}>New and Trustworthy</h2>
               <p className="text-zinc-400 mb-8">Install the plugin and convert your designs to a responsive site.</p>
               <Button className="w-fit">Book Now</Button>
             </motion.div>
@@ -60,13 +71,13 @@ export default function ServicesPage() {
 
           <div className="grid md:grid-cols-2 gap-12">
             <motion.div
+              ref={bestSellersRef}
               initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              animate={bestSellersInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
               transition={{ duration: 0.6 }}
               className="flex flex-col justify-center"
             >
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">Best Sellers</h2>
+              <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#E8E4D3' }}>Best Sellers</h2>
               <p className="text-zinc-400 mb-8">Browse dozens of templates. Click, duplicate, customize.</p>
               <Button className="w-fit">Book Now</Button>
             </motion.div>
@@ -78,13 +89,13 @@ export default function ServicesPage() {
       </section>
 
       {/* Text Section */}
-      <section className="py-24 px-4">
+      <section ref={textSectionRef} className="py-24 px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={textSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.8 }}
-          className="max-w-4xl mx-auto text-center space-y-4 text-xl md:text-2xl text-zinc-300"
+          className="max-w-4xl mx-auto text-center space-y-4 text-3xl md:text-4xl"
+          style={{ color: '#E8E4D3' }}
         >
           <p>Lorem ipsum dolor sit amet, consectetur.</p>
           <p>Ut enim ad minim veniam, quis nostrud laboris.</p>
@@ -92,6 +103,6 @@ export default function ServicesPage() {
         </motion.div>
       </section>
     </main>
-  )
+  );
 }
 
