@@ -4,36 +4,49 @@ import React, { useState, useEffect } from 'react';
 import Image from "next/image";
 import Link from 'next/link';
 import Loading from './feed/loading';
+import { Button } from "@/components/ui/button"
 
-export default function Home() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 3000); // Simulate loading time
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading) {
-    return <Loading />;
-  }
-
+export default function Page() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start text-center sm:text-left">
-        <h1 className="text-4xl sm:text-6xl font-bold">Welcome to Our Company</h1>
-        <p className="text-lg sm:text-xl max-w-2xl">
-          We provide top-notch home services to make your life easier. From cleaning to repairs, we&apos;ve got you covered.
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-zinc-900" />
+
+      {/* Content */}
+      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+
+        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 tracking-tight">
+          <span className="inline-block relative">
+          Seamless Home & Office {" "}
+            <span className="relative">
+              <span className="absolute -inset-1 blur-xl bg-gradient-to-r from-white/30 to-white/10 opacity-50" />
+              <span className="relative">Services </span>
+            </span>{" "}
+            at Your Fingertips
+          </span>
+        </h1>
+
+        <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+        Book expert cleaning, installation, and repair services in just a few clicks. Quality service, hassle-free experience, and secure payments—anytime, anywhere.
         </p>
-        <Link href="/services" className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5">
-        Explore Our Services
-        </Link>
-      </main>
-      <footer className="flex justify-center items-center w-full max-w-6xl mx-auto">
-        <p className="text-sm">&copy; 2023 Our Company. All rights reserved.</p>
-      </footer>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button
+            variant="outline"
+            className="min-w-[160px] bg-transparent text-white border-white/20 hover:bg-white/10 hover:border-white/30 transition-all"
+          >
+            Get Started
+          </Button>
+          <Button variant="ghost" className="text-zinc-400 hover:text-white hover:bg-transparent">
+          Explore Services
+          </Button>
+        </div>
+      </div>
+
+      {/* Ambient light effect */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] opacity-30">
+        <div className="absolute inset-0 bg-gradient-radial from-zinc-500/20 to-transparent blur-2xl" />
+      </div>
     </div>
-  );
+  )
 }
