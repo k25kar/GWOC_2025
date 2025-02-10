@@ -3,7 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import ImageCarousel from "./components/image-carousel";
-import FeaturesCarousel from "./components/features-carousel"
+import FeaturesCarousel from "./components/features-carousel";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 
@@ -13,7 +13,7 @@ export default function ServicesPage() {
   const bestSellersRef = useRef(null);
   const textSectionRef = useRef(null);
   const featuresRef = useRef(null);
-  const featuresInView = useInView(featuresRef, { once: false })
+  const featuresInView = useInView(featuresRef, { once: false });
 
   const heroInView = useInView(heroRef, { once: false });
   const servicesInView = useInView(servicesRef, { once: false });
@@ -41,11 +41,17 @@ export default function ServicesPage() {
         >
           Go from design to site with Framer, the web builder for creative pros.
         </motion.p>
-        <motion.div initial={{ opacity: 0.6 }} whileHover={{ opacity: 1, scale: 1.1 }} transition={{ duration: 0.2 }}>
+        <motion.div
+          initial={{ opacity: 0.6 }}
+          whileHover={{ opacity: 1, scale: 1.1 }}
+          transition={{ duration: 0.2 }}
+          className="relative flex items-center justify-center w-14 h-14"
+        >
+          <ChevronDown className="h-6 w-6 absolute" />
           <Button
             variant="outline"
             size="icon"
-            className="rounded-full w-12 h-12"
+            className="rounded-full w-14 h-14 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300"
             onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
           >
             <ChevronDown className="h-6 w-6" />
