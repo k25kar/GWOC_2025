@@ -14,7 +14,7 @@ export function Navbar() {
     { name: "FAQ", href: "#" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
-    { name: "Dashboard", href: "/dashboard/admindashboard" } // Ensure this line is correct
+    { name: "Dashboard", href: "/dashboard/admindashboard" }
   ]
 
   return (
@@ -23,7 +23,6 @@ export function Navbar() {
         <Link href="/" className="text-lg font-semibold text-white">
           HelperBuddy
         </Link>
-
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-8 lg:flex">
           <div className="flex items-center gap-6">
@@ -46,7 +45,6 @@ export function Navbar() {
             </Button>
           </div>
         </div>
-
         {/* Mobile Navigation */}
         <div className="flex items-center gap-2 lg:hidden">
           <Button variant="ghost" className="text-sm text-gray-200 hover:text-white">
