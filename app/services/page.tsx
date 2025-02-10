@@ -2,7 +2,8 @@
 
 import { motion, useInView } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import ImageCarousel from "./image-carousel/image-carousel";
+import ImageCarousel from "./components/image-carousel";
+import FeaturesCarousel from "./components/features-carousel"
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 
@@ -11,6 +12,8 @@ export default function ServicesPage() {
   const servicesRef = useRef(null);
   const bestSellersRef = useRef(null);
   const textSectionRef = useRef(null);
+  const featuresRef = useRef(null);
+  const featuresInView = useInView(featuresRef, { once: false })
 
   const heroInView = useInView(heroRef, { once: false });
   const servicesInView = useInView(servicesRef, { once: false });
@@ -85,6 +88,24 @@ export default function ServicesPage() {
               <ImageCarousel />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section ref={featuresRef} className="py-24 px-4 md:px-8">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={featuresInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: "#E8E4D3" }}>
+              Featured Services
+            </h2>
+            <p className="text-zinc-400">Discover our comprehensive range of services</p>
+          </motion.div>
+          <FeaturesCarousel />
         </div>
       </section>
 
