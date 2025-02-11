@@ -1,80 +1,22 @@
-'use client';
+import { DashboardLayout } from "@/components/layout/dashboard_layout" 
+import { DashboardMetrics } from "@/components/dashboard/metrics"
+import { RevenueChart } from "@/components/dashboard/revenue_chart"
+import { PartnerPerformance } from "@/components/dashboard/partner_performance"
+import { ReferralStats } from "@/components/dashboard/referral_stats"
 
-import React, { useState } from 'react';
-import { Navbar } from '@/components/Navbar'; // Import the Navbar component
-
-const AdminDashboard: React.FC = () => {
-  const [services, setServices] = useState<any[]>([]);
-  const [partners, setPartners] = useState<any[]>([]);
-  const [blogs, setBlogs] = useState<any[]>([]);
-  const [referrals, setReferrals] = useState<any[]>([]);
-  const [walletStats, setWalletStats] = useState<any[]>([]);
-
-  const addService = (service: any) => {
-    setServices([...services, service]);
-  };
-
-  const managePartner = (partner: any) => {
-    setPartners([...partners, partner]);
-  };
-
-  const addBlog = (blog: any) => {
-    setBlogs([...blogs, blog]);
-  };
-
+export default function DashboardPage() {
   return (
-    <div>
-      <Navbar /> {/* Include the Navbar component */}
-      <div className="p-8">
-        <h1 className="text-4xl font-bold mb-8">Admin Dashboard</h1>
-
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Add Services</h2>
-          {/* Form to add services */}
-          <button
-            onClick={() => addService({ name: 'New Service' })}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Add Service
-          </button>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Manage Service Partners</h2>
-          {/* Form to manage partners */}
-          <button
-            onClick={() => managePartner({ name: 'New Partner' })}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Add Partner
-          </button>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Traffic Analysis and Sales Report</h2>
-          {/* Traffic and sales analytics components */}
-          <p>Traffic Analysis and Sales Report will be displayed here.</p>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Add Blog Content</h2>
-          {/* Form to add blog content */}
-          <button
-            onClick={() => addBlog({ title: 'New Blog' })}
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Add Blog
-          </button>
-        </section>
-
-        <section className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Referral and Wallet Statistics</h2>
-          {/* Referral and wallet statistics components */}
-          <p>Referral and Wallet Statistics will be displayed here.</p>
-        </section>
+    <DashboardLayout>
+      <div className="space-y-6 bg-[#141414] min-h-screen p-6">
+        <h1 className="text-3xl font-bold text-[#E8E4D3]">Dashboard Overview</h1>
+        <DashboardMetrics />
+        <div className="grid gap-6 lg:grid-cols-2">
+          <RevenueChart />
+          <PartnerPerformance />
+        </div>
+        <ReferralStats />
       </div>
-    </div>
-  );
-};
+    </DashboardLayout>
+  )
+}
 
-export default AdminDashboard;

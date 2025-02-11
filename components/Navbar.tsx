@@ -25,7 +25,6 @@ export function Navbar() {
         <Link href="/" className="text-base font-semibold text-white">
           HelperBuddy
         </Link>
-
         {/* Desktop Navigation */}
         <div className="hidden lg:flex flex-1 justify-center">
           <div className="flex items-center gap-8">
@@ -43,7 +42,6 @@ export function Navbar() {
         <div className="hidden lg:flex items-center gap-2">
           <Image src={userIcon} alt="User Icon" width={24} height={24} className="text-gray-200 hover:text-white" />
         </div>
-
         {/* Mobile Navigation */}
         <div className="flex items-center gap-2 lg:hidden">
           <Image src={userIcon} alt="User Icon" width={24} height={24} className="text-gray-200 hover:text-white" />

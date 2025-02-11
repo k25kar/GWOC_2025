@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import React from 'react';
 import { Navbar } from '@/components/Navbar';
+import Footer from '@/components/Footer'; // Import Footer component
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,8 +33,8 @@ export default function RootLayout({
           <main className="flex-grow">
             {children}
           </main>
-          <footer className="flex justify-center items-center w-full max-w-6xl mx-auto p-4">
-            <p className="text-sm">&copy; 2023 Our Company. All rights reserved.</p>
+          <footer className="w-full">
+            <Footer /> {/* Add Footer component */}
           </footer>
         </div>
       </body>
