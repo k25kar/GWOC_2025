@@ -14,7 +14,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-white-100">
       <Sidebar isOpen={isSidebarOpen} setIsOpenAction={setIsSidebarOpen} />
       <motion.div
         className="flex flex-col"
