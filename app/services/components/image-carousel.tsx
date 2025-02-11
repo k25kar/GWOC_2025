@@ -40,7 +40,6 @@ export default function ImageCarousel() {
       <div className="absolute inset-0 flex items-center justify-between p-4">
         <Button
           variant="outline"
-          size="icon"
           className="rounded-full bg-black/50 hover:bg-black/70"
           onClick={handlePrevious}
         >
@@ -48,7 +47,6 @@ export default function ImageCarousel() {
         </Button>
         <Button
           variant="outline"
-          size="icon"
           className="rounded-full bg-black/50 hover:bg-black/70"
           onClick={handleNext}
         >
