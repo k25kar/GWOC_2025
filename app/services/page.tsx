@@ -3,7 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import ImageCarousel from "./components/image-carousel";
-import FeaturesCarousel from "./components/features-carousel";
+import FeaturesCarousel from "./components/category-carousel";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 
