@@ -20,7 +20,7 @@ const metrics = [
   {
     title: "Avg. Rating",
     value: "4.8",
-    change: "+0.2",
+    change: "+0.2%",
     icon: Star,
   },
   {
@@ -33,7 +33,7 @@ const metrics = [
 
 export function DashboardMetrics() {
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {metrics.map((metric, index) => (
         <motion.div
           key={metric.title}
@@ -41,7 +41,7 @@ export function DashboardMetrics() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
         >
-          <Card>
+          <Card className="bg-[#141414] text-white">
             <CardHeader>
               <CardTitle>{metric.title}</CardTitle>
               <metric.icon className="h-4 w-4 text-muted-foreground" />

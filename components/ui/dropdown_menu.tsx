@@ -2,6 +2,7 @@ import * as React from "react";
 
 interface DropdownMenuProps {
   children: React.ReactNode;
+  className?: string;
 }
 
 export function DropdownMenu({ children }: DropdownMenuProps) {
@@ -28,6 +29,7 @@ export function DropdownMenuTrigger({ children, onClick }: DropdownMenuTriggerPr
 interface DropdownMenuContentProps {
   children: React.ReactNode;
   align?: "start" | "end";
+  className?: string; 
 }
 
 export function DropdownMenuContent({ children, align = "start" }: DropdownMenuContentProps) {
@@ -41,6 +43,7 @@ export function DropdownMenuContent({ children, align = "start" }: DropdownMenuC
 interface DropdownMenuItemProps {
   children: React.ReactNode;
   onClick: () => void;
+  className?: string;
 }
 
 export function DropdownMenuItem({ children, onClick }: DropdownMenuItemProps) {

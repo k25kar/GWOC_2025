@@ -7,8 +7,8 @@ import { ReferralStats } from "@/components/dashboard/referral_stats"
 export default function DashboardPage() {
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+      <div className="space-y-6 bg-[#141414] min-h-screen p-6">
+        <h1 className="text-3xl font-bold text-[#E8E4D3]">Dashboard Overview</h1>
         <DashboardMetrics />
         <div className="grid gap-6 lg:grid-cols-2">
           <RevenueChart />
