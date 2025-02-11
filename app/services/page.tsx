@@ -50,7 +50,6 @@ export default function ServicesPage() {
           <ChevronDown className="h-6 w-6 absolute" />
           <Button
             variant="outline"
-            size="icon"
             className="rounded-full w-14 h-14 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300"
             onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
           >
