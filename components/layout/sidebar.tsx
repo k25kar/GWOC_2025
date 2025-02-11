@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { BarChart, Users, Briefcase, FileText, Settings, Menu } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Button } from "../ui/button"
 
 interface SidebarProps {
   isOpen: boolean
@@ -38,9 +39,9 @@ export function Sidebar({ isOpen, setIsOpenAction }: SidebarProps) {
         >
           {isOpen && <span className="text-xl font-bold">Helper Buddy</span>}
         </motion.div>
-        <button onClick={() => setIsOpenAction(!isOpen)} className="rounded-lg p-2 hover:bg-gray-100">
+        <Button onClick={() => setIsOpenAction(!isOpen)} className="rounded-lg p-2 hover:bg-gray-100">
           <Menu size={24} />
-        </button>
+        </Button>
       </div>
       <nav className="mt-4 space-y-2 px-4">
         {menuItems.map((item) => (

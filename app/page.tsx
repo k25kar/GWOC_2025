@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import { Button } from "@/components/ui/button"
+import React, { useEffect, useRef, useState } from 'react';
+import { Button } from "@/components/ui/button";
 import InfiniteCarousel from '@/components/InfiniteCarousel';
-import Image from "next/image"
-import userIcon from "@/public/user-icon.png" // Import the user icon image
-import landingPhoto1 from "@/public/landing-photo1.jpg" // Import the existing image
+import Image from "next/image";
+import userIcon from "@/public/user-icon.png"; // Import the user icon image
+import landingPhoto1 from "@/public/landing-photo1.jpg"; // Import the existing image
+import Footer from "../components/Footer"; // Corrected import path
 
 function FeaturesGrid() {
   const features = [
@@ -100,19 +101,19 @@ function ServicesSection() {
   ]
 
   return (
-    <div className="bg-black px-4 py-16 md:py-24">
+    <div className="bg-black px-4 py-16 md:py-24" id="services-section">
       <div className="mx-auto max-w-7xl text-center">
         <h2 className="text-3xl font-bold text-white mb-8">Some Services</h2>
-        <div className="flex flex-wrap justify-center gap-8">
+        <div className="flex justify-center gap-4" id="services-container">
           {services.map((service, index) => (
-            <div key={index} className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 p-4">
+            <div key={index} className="w-1/4 p-2 service-item" id={`service-${index + 1}`}>
               <div className="relative">
-                <Image src={service.image} alt={service.title} className="w-full h-64 object-cover rounded-lg" />
+                <Image src={service.image} alt={service.title} className="w-full h-48 object-cover rounded-lg" />
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                  <p className="text-white text-lg">{service.description}</p>
+                  <p className="text-white text-sm">{service.description}</p>
                 </div>
               </div>
-              <h3 className="text-xl font-semibold text-white mt-4">{service.title}</h3>
+              <h3 className="text-lg font-semibold text-white mt-2">{service.title}</h3>
             </div>
           ))}
         </div>
@@ -126,28 +127,56 @@ export default function Page() {
   const bottomLeftRef = useRef<HTMLImageElement>(null);
   const topRightRef = useRef<HTMLImageElement>(null);
   const bottomRightRef = useRef<HTMLImageElement>(null);
+  const servicesRef = useRef<HTMLDivElement>(null);
+  const [servicePositions, setServicePositions] = useState<Array<DOMRect | null>>([null, null, null, null]);
+
+  useEffect(() => {
+    const updateServicePositions = () => {
+      const positions = Array.from({ length: 4 }, (_, i) => {
+        const element = document.getElementById(`service-${i + 1}`);
+        return element?.getBoundingClientRect() || null;
+      });
+      setServicePositions(positions);
+    };
+
+    updateServicePositions();
+    window.addEventListener('resize', updateServicePositions);
+    return () => window.removeEventListener('resize', updateServicePositions);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const windowHeight = window.innerHeight;
+      const servicesTop = servicesRef.current?.offsetTop || 0;
+      const progress = Math.min(Math.max(scrollY / (servicesTop - windowHeight), 0), 1);
 
-      const topLeft = topLeftRef.current;
-      const bottomLeft = bottomLeftRef.current;
-      const topRight = topRightRef.current;
-      const bottomRight = bottomRightRef.current;
+      const cornerRefs = [topLeftRef, bottomLeftRef, topRightRef, bottomRightRef];
+      const originalPositions = [
+        { x: -200, y: -150 },
+        { x: -200, y: 150 },
+        { x: 200, y: -150 },
+        { x: 200, y: 150 }
+      ];
 
-      if (topLeft && bottomLeft && topRight && bottomRight) {
-        topLeft.style.transform = `translate(${scrollY * 0.1}px, ${scrollY * 0.1}px)`;
-        bottomLeft.style.transform = `translate(${scrollY * 0.1}px, -${scrollY * 0.1}px)`;
-        topRight.style.transform = `translate(-${scrollY * 0.1}px, ${scrollY * 0.1}px)`;
-        bottomRight.style.transform = `translate(-${scrollY * 0.1}px, -${scrollY * 0.1}px)`;
-      }
+      cornerRefs.forEach((ref, index) => {
+        if (ref.current && servicePositions[index]) {
+          const startX = originalPositions[index].x;
+          const startY = originalPositions[index].y;
+          const targetX = servicePositions[index]!.left - (ref.current.offsetLeft + startX);
+          const targetY = servicePositions[index]!.top - (ref.current.offsetTop + startY);
+
+          const x = startX + (targetX * progress);
+          const y = startY + (targetY * progress);
+
+          ref.current.style.transform = `translate(${x}px, ${y}px)`;
+        }
+      });
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [servicePositions]);
 
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden pt-48">
@@ -160,10 +189,30 @@ export default function Page() {
       {/* Content */}
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         <div className="relative">
-          <Image ref={topLeftRef} src={landingPhoto1} alt="Top Left Image" className="absolute top-[-50px] left-[-50px] w-32 h-32" />
-          <Image ref={bottomLeftRef} src={landingPhoto1} alt="Bottom Left Image" className="absolute bottom-[-50px] left-[-50px] w-32 h-32" />
-          <Image ref={topRightRef} src={landingPhoto1} alt="Top Right Image" className="absolute top-[-50px] right-[-50px] w-32 h-32" />
-          <Image ref={bottomRightRef} src={landingPhoto1} alt="Bottom Right Image" className="absolute bottom-[-50px] right-[-50px] w-32 h-32" />
+          <Image 
+            ref={topLeftRef} 
+            src={landingPhoto1} 
+            alt="Top Left Image" 
+            className="absolute top-[-150px] left-[-200px] w-48 h-48 object-cover rounded-lg border-2 border-white/20 transition-all duration-300 ease-in-out" 
+          />
+          <Image 
+            ref={bottomLeftRef} 
+            src={landingPhoto1} 
+            alt="Bottom Left Image" 
+            className="absolute bottom-[-150px] left-[-200px] w-48 h-48 object-cover rounded-lg border-2 border-white/20 transition-all duration-300 ease-in-out" 
+          />
+          <Image 
+            ref={topRightRef} 
+            src={landingPhoto1} 
+            alt="Top Right Image" 
+            className="absolute top-[-150px] right-[-200px] w-48 h-48 object-cover rounded-lg border-2 border-white/20 transition-all duration-300 ease-in-out" 
+          />
+          <Image 
+            ref={bottomRightRef} 
+            src={landingPhoto1} 
+            alt="Bottom Right Image" 
+            className="absolute bottom-[-150px] right-[-200px] w-48 h-48 object-cover rounded-lg border-2 border-white/20 transition-all duration-300 ease-in-out" 
+          />
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 tracking-tight">
             <span className="inline-block relative">
               Seamless Home & Office{" "}
@@ -198,20 +247,23 @@ export default function Page() {
         <div className="absolute inset-0 bg-gradient-radial from-zinc-500/20 to-transparent blur-2xl" />
       </div>
 
+      {/* Services Section */}
+      <div ref={servicesRef} className="relative z-10 w-full mt-12">
+        <ServicesSection />
+      </div>
+
       {/* Features Grid */}
       <div className="relative z-10 w-full mt-12">
         <FeaturesGrid />
-      </div>
-
-      {/* Services Section */}
-      <div className="relative z-10 w-full mt-12">
-        <ServicesSection />
       </div>
 
       {/* Infinite Carousel */}
       <div className="relative z-10 w-full mt-12">
         <InfiniteCarousel />
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }
