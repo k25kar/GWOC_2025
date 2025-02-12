@@ -7,6 +7,7 @@ import Image from "next/image";
 import userIcon from "@/public/user-icon.png"; // Import the user icon image
 import landingPhoto1 from "@/public/landing-photo1.jpg"; // Import the existing image
 import Footer from "../components/Footer"; // Corrected import path
+import { useRouter } from 'next/navigation';
 
 function FeaturesGrid() {
   const features = [
@@ -123,6 +124,7 @@ function ServicesSection() {
 }
 
 export default function Page() {
+  const router = useRouter()
   const topLeftRef = useRef<HTMLImageElement>(null);
   const bottomLeftRef = useRef<HTMLImageElement>(null);
   const topRightRef = useRef<HTMLImageElement>(null);
@@ -236,7 +238,7 @@ export default function Page() {
           >
             Get Started
           </Button>
-          <Button variant="ghost" className="text-zinc-400 hover:text-white hover:bg-transparent">
+          <Button variant="ghost" className="text-zinc-400 hover:text-white hover:bg-transparent" onClick={()=>router.push('/services')}>
             Explore Services
           </Button>
         </div>

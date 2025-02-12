@@ -15,7 +15,7 @@ export function Navbar() {
     { name: "Service", href: "/services" },
     { name: "About", href: "/about" },
     { name: "Dashboard", href: "/dashboard/admindashboard" },
-    { name: "SPDashboard", href: "/dashboard/spdashboard/overview" } // Ensure this line is correct
+    { name: "SPDashboard", href: "pages/dashboard/spdashboard/overview.tsx" } // Ensure this line is correct
   ];
 
   return (
