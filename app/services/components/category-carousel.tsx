@@ -1,89 +1,76 @@
-"use client";
-
 import { motion, useAnimation, useInView } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 
-interface FeatureCard {
+interface FeatureItem {
   title: string;
   description: string;
-  imageUrl: string;
   link: string;
 }
 
-const features: FeatureCard[] = [
+const features: FeatureItem[] = [
   {
     title: "AC Service",
     description: "Professional AC servicing and maintenance.",
-    imageUrl: "https://via.placeholder.com/600x800.png?text=AC+Service",
     link: "/services/ac-service",
   },
   {
-    title: "Bathroom & Kitchen Cleaning",
+    title: "Bathroom & Kitchen",
     description: "Expert cleaning services for your bathroom and kitchen.",
-    imageUrl: "https://via.placeholder.com/600x800.png?text=Bathroom+%26+Kitchen+Cleaning",
     link: "/services/bathroom-kitchen-cleaning",
   },
   {
     title: "Carpenter",
     description: "Skilled carpentry services for all your needs.",
-    imageUrl: "https://via.placeholder.com/600x800.png?text=Carpenter",
     link: "/services/carpenter",
   },
   {
-    title: "Chimney Repair",
+    title: "Chimney",
     description: "Reliable chimney repair and maintenance services.",
-    imageUrl: "https://via.placeholder.com/600x800.png?text=Chimney+Repair",
     link: "/services/chimney-repair",
   },
   {
     title: "Electrician",
     description: "Certified electricians for all electrical work.",
-    imageUrl: "https://via.placeholder.com/600x800.png?text=Electrician",
     link: "/services/electrician",
   },
   {
-    title: "Microwave Repair",
+    title: "Microwave",
     description: "Quick and efficient microwave repair services.",
-    imageUrl: "https://via.placeholder.com/600x800.png?text=Microwave+Repair",
     link: "/services/microwave-repair",
   },
   {
     title: "Plumbers",
     description: "Experienced plumbers for all plumbing issues.",
-    imageUrl: "https://via.placeholder.com/600x800.png?text=Plumbers",
     link: "/services/plumbers",
   },
   {
-    title: "Refrigerator Repair",
+    title: "Refrigerator",
     description: "Expert refrigerator repair and maintenance.",
-    imageUrl: "https://via.placeholder.com/600x800.png?text=Refrigerator+Repair",
     link: "/services/refrigerator-repair",
   },
   {
-    title: "Sofa & Carpet Cleaning",
+    title: "Sofa & Carpet",
     description: "Professional sofa and carpet cleaning services.",
-    imageUrl: "https://via.placeholder.com/600x800.png?text=Sofa+%26+Carpet+Cleaning",
     link: "/services/sofa-carpet-cleaning",
   },
   {
-    title: "Washing Machine Repair",
+    title: "Washing Machine",
     description: "Reliable washing machine repair services.",
-    imageUrl: "https://via.placeholder.com/600x800.png?text=Washing+Machine+Repair",
     link: "/services/washing-machine-repair",
   },
   {
-    title: "Water Purifier Repair",
+    title: "Water Purifier",
     description: "Expert water purifier repair and maintenance.",
-    imageUrl: "https://via.placeholder.com/600x800.png?text=Water+Purifier+Repair",
     link: "/services/water-purifier-repair",
   },
 ];
 
 export default function FeaturesCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [maxIndex, setMaxIndex] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   const controls = useAnimation();
   const isDragging = useRef(false);
@@ -92,14 +79,33 @@ export default function FeaturesCarousel() {
   const ref = useRef(null);
   const inView = useInView(ref);
 
+  useEffect(() => {
+    const updateMaxIndex = () => {
+      if (!carouselRef.current) return;
+      
+      const containerWidth = carouselRef.current.offsetWidth;
+      const itemWidth = 144; // width of each item (24px * 6) including gap
+      const itemsPerView = Math.floor(containerWidth / itemWidth);
+      const newMaxIndex = Math.max(0, features.length - itemsPerView);
+      setMaxIndex(newMaxIndex);
+    };
+
+    updateMaxIndex();
+    window.addEventListener('resize', updateMaxIndex);
+    return () => window.removeEventListener('resize', updateMaxIndex);
+  }, []);
+
   const scrollToIndex = (index: number) => {
     if (!carouselRef.current) return;
 
-    const newIndex = Math.max(0, Math.min(index, features.length - 1));
+    const newIndex = Math.max(0, Math.min(index, maxIndex));
     setCurrentIndex(newIndex);
 
+    const itemWidth = 144; // Same as above
+    const scrollPosition = -newIndex * itemWidth;
+    
     controls.start({
-      x: `${-newIndex * 100}%`,
+      x: scrollPosition,
       transition: { duration: 0.5, ease: "easeInOut" },
     });
   };
@@ -117,7 +123,7 @@ export default function FeaturesCarousel() {
     if (!isDragging.current) return;
     e.preventDefault();
     const x = e.pageX - carouselRef.current!.offsetLeft;
-    const walk = (x - startX.current) * 2; // scroll-fast
+    const walk = (x - startX.current) * 2;
     carouselRef.current!.scrollLeft = scrollLeft.current - walk;
   };
 
@@ -134,7 +140,7 @@ export default function FeaturesCarousel() {
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging.current) return;
     const x = e.touches[0].pageX - carouselRef.current!.offsetLeft;
-    const walk = (x - startX.current) * 2; // scroll-fast
+    const walk = (x - startX.current) * 2;
     carouselRef.current!.scrollLeft = scrollLeft.current - walk;
   };
 
@@ -156,36 +162,28 @@ export default function FeaturesCarousel() {
         onTouchEnd={handleTouchEnd}
       >
         <motion.div
-          className="flex gap-6 md:gap-8"
+          className="flex gap-6 px-4 md:px-8"
           animate={controls}
           initial={{ x: 0 }}
         >
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              className="w-full flex-none md:w-1/3"
+              className="flex-none"
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ delay: index * 0.1 }}
             >
-              <div className="bg-white bg-opacity-10 rounded-lg overflow-hidden h-full">
-                <div
-                  className="h-48 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${feature.imageUrl})` }}
-                />
-                <div className="p-6">
-                  <h3
-                    className="text-xl font-semibold mb-2"
-                    style={{ color: "#E8E4D3" }}
-                  >
+              <Link href={feature.link}>
+                <div className="group flex flex-col items-center gap-4 cursor-pointer transition-all duration-300">
+                  <div className="w-24 h-24 bg-zinc-800 rounded-xl flex items-center justify-center group-hover:bg-zinc-700 transition-colors">
+                    <div className="w-12 h-12 bg-zinc-700 group-hover:bg-zinc-600 rounded-lg" />
+                  </div>
+                  <span className="text-sm font-medium text-zinc-400 group-hover:text-zinc-300 text-center whitespace-nowrap">
                     {feature.title}
-                  </h3>
-                  <p className="text-zinc-400 mb-4">{feature.description}</p>
-                  <Link href={feature.link}>
-                    <Button variant="secondary">Read More</Button>
-                  </Link>
+                  </span>
                 </div>
-              </div>
+              </Link>
             </motion.div>
           ))}
         </motion.div>
@@ -204,7 +202,7 @@ export default function FeaturesCarousel() {
           variant="outline"
           className="rounded-full"
           onClick={next}
-          disabled={currentIndex >= features.length - 1}
+          disabled={currentIndex >= maxIndex}
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
