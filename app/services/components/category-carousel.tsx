@@ -82,7 +82,7 @@ export default function FeaturesCarousel() {
   useEffect(() => {
     const updateMaxIndex = () => {
       if (!carouselRef.current) return;
-      
+
       const containerWidth = carouselRef.current.offsetWidth;
       const itemWidth = 144; // width of each item (24px * 6) including gap
       const itemsPerView = Math.floor(containerWidth / itemWidth);
@@ -91,8 +91,8 @@ export default function FeaturesCarousel() {
     };
 
     updateMaxIndex();
-    window.addEventListener('resize', updateMaxIndex);
-    return () => window.removeEventListener('resize', updateMaxIndex);
+    window.addEventListener("resize", updateMaxIndex);
+    return () => window.removeEventListener("resize", updateMaxIndex);
   }, []);
 
   const scrollToIndex = (index: number) => {
@@ -103,7 +103,7 @@ export default function FeaturesCarousel() {
 
     const itemWidth = 144; // Same as above
     const scrollPosition = -newIndex * itemWidth;
-    
+
     controls.start({
       x: scrollPosition,
       transition: { duration: 0.5, ease: "easeInOut" },
@@ -175,11 +175,8 @@ export default function FeaturesCarousel() {
               transition={{ delay: index * 0.1 }}
             >
               <Link href={feature.link}>
-                <div className="group flex flex-col items-center gap-4 cursor-pointer transition-all duration-300">
-                  <div className="w-24 h-24 bg-zinc-800 rounded-xl flex items-center justify-center group-hover:bg-zinc-700 transition-colors">
-                    <div className="w-12 h-12 bg-zinc-700 group-hover:bg-zinc-600 rounded-lg" />
-                  </div>
-                  <span className="text-sm font-medium text-zinc-400 group-hover:text-zinc-300 text-center whitespace-nowrap">
+                <div className="w-auto min-w-[150px] min-h-[50px] px-4 py-2 bg-zinc-800 rounded-xl flex items-center justify-center group-hover:bg-gray-600 transition-colors">
+                  <span className="text-white text-sm font-medium whitespace-nowrap">
                     {feature.title}
                   </span>
                 </div>
