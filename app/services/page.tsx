@@ -106,7 +106,7 @@ export default function ServicesPage() {
             className="text-center mb-12"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: "#E8E4D3" }}>
-              Featured Services
+              What we offer.
             </h2>
             <p className="text-zinc-400">Discover our comprehensive range of services</p>
           </motion.div>
