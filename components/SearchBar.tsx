@@ -62,11 +62,11 @@ export default function SearchBar() {
   };
 
   return (
-    <div className="relative max-w-xl mx-auto">
+    <div className="relative w-[180px] lg:w-[240px]"> {/* Increased mobile width from 140px to 180px */}
       <div className="relative">
         {/* Search Icon */}
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+        <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+          <MagnifyingGlassIcon className="h-3 w-3 text-gray-400" /> {/* Smaller icon */}
         </div>
 
         {/* Search Input */}
@@ -75,14 +75,16 @@ export default function SearchBar() {
           type="text"
           value={query}
           onChange={handleInputChange}
-          className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-transparent placeholder-transparent"
+          title="Search"
+          placeholder="Search for services"
+          className="w-full pl-6 pr-2 py-1.5 text-xs rounded-md border border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500 bg-transparent placeholder-transparent text-gray-200" /* Updated sizing */
         />
 
-        {/* Typewriter Effect Placeholder - Shows only when query is empty */}
+        {/* Typewriter Effect Placeholder */}
         {query === '' && (
-          <div className="absolute inset-y-0 left-10 flex items-center pointer-events-none">
-            <span className="text-gray-400">Search for </span>
-            <span className="text-gray-700 font-medium ml-1">
+          <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+            <span className="text-gray-400 text-xs">Search for </span> {/* Smaller text */}
+            <span className="text-gray-500 font-medium ml-1 text-xs"> {/* Smaller text */}
               <Typewriter
                 options={{
                   strings: rotatingServices,
@@ -98,23 +100,23 @@ export default function SearchBar() {
         )}
       </div>
 
-      {/* Results Dropdown */}
+      {/* Results Dropdown - Updated positioning and sizing */}
       {results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-[#161617] rounded-md shadow-lg border border-gray-700 z-50">
           {results.map((category, index) => (
             <div
               key={category.category}
-              className={`p-4 ${index !== 0 ? 'border-t border-gray-100' : ''}`}
+              className={`p-2 ${index !== 0 ? 'border-t border-gray-700' : ''}`} /* Smaller padding */
             >
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-semibold text-gray-800">{category.category}</h3>
-                <span className="text-sm text-gray-500">{category.count} services</span>
+              <div className="flex justify-between items-center mb-1">
+                <h3 className="font-semibold text-gray-200 text-xs">{category.category}</h3>
+                <span className="text-xs text-gray-400">{category.count} services</span>
               </div>
-              <ul className="space-y-1">
+              <ul className="space-y-0.5">
                 {category.services.map((service: string) => (
                   <li
                     key={service}
-                    className="p-2 hover:bg-blue-50 rounded-md cursor-pointer text-gray-700 hover:text-blue-600"
+                    className="px-2 py-1 hover:bg-gray-800 rounded text-xs cursor-pointer text-gray-300 hover:text-white"
                   >
                     {service}
                   </li>

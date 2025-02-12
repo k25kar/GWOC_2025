@@ -1,7 +1,7 @@
 import { Bell, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown_menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"; // Update import path
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 
@@ -41,7 +41,7 @@ export function Header({ toggleSidebar }: HeaderProps) {
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
               <Avatar>
                 <AvatarImage src="/placeholder-avatar.jpg" alt="Admin" />
-                <AvatarFallback className="bg-[#141414] text-[#E8E4D3]">AD</AvatarFallback>
+                <AvatarFallback>AD</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>

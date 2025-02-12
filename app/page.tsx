@@ -179,12 +179,12 @@ export default function Page() {
   }, [servicePositions]);
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden pt-48">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden"> {/* Remove pt-48 */}
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black via-black to-zinc-900" />
 
       {/* Whitespace */}
-      <div className="h-30 w-full bg-black"></div>
+      <div className="h-40 w-full bg-black"></div>
 
       {/* Content */}
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">

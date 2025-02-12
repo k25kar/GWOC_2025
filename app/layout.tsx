@@ -27,10 +27,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="min-h-screen flex flex-col">
-          <header className="flex justify-between items-center w-full max-w-6xl mx-auto p-4">
-            <Navbar />
-          </header>
-          <main className="flex-grow">
+          <Navbar />
+          <main className="flex-grow pt-[40px]"> {/* Adjusted to exact navbar height */}
             {children}
           </main>
           <footer className="w-full">
