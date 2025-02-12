@@ -36,3 +36,18 @@ body, html {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+/* styles/globals.css */
+.typewriter-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.typewriter-wrapper span {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
