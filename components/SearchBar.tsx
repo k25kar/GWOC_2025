@@ -31,7 +31,7 @@ const rotatingServices = [
 
 export default function SearchBar() {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<{ category: string; services: string[]; count: number }[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Configure Fuse.js options

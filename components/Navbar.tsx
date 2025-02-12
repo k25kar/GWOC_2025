@@ -1,23 +1,20 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { cn } from "@/lib/utils"
-import Image from "next/image"
-import userIcon from "@/public/user-icon.png" // Correctly import the UserIcon image
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import userIcon from "@/public/user-icon.png"; // Correctly import the UserIcon image
+import SearchBar from "./SearchBar"; // Import the SearchBar component
 
 export function Navbar() {
   const navigation = [
     { name: "Home", href: "/" },
     { name: "Service", href: "/services" },
-    // { name: "Feature", href: "#" },
-    // { name: "Product", href: "#" },
-    // { name: "Testimonial", href: "#" },
-    // { name: "FAQ", href: "#" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
     { name: "Dashboard", href: "/dashboard/admindashboard" },
     { name: "SPDashboard", href: "/dashboard/spdashboard/overview" } // Ensure this line is correct
-  ]
+  ];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 w-full bg-[#161617] bg-opacity-95 px-8 py-2">
@@ -39,6 +36,10 @@ export function Navbar() {
             ))}
           </div>
         </div>
+        {/* Search Bar */}
+        <div className="hidden lg:flex flex-1 justify-center">
+          <SearchBar />
+        </div>
         <div className="hidden lg:flex items-center gap-2">
           <Image src={userIcon} alt="User Icon" width={24} height={24} className="text-gray-200 hover:text-white" />
         </div>
@@ -48,5 +49,5 @@ export function Navbar() {
         </div>
       </div>
     </nav>
-  )
+  );
 }

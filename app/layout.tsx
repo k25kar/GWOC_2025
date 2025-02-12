@@ -5,7 +5,6 @@ import "./globals.css";
 import React from 'react';
 import { Navbar } from '@/components/Navbar';
 import Footer from '@/components/Footer'; // Import Footer component
-import SearchBar from '../components/SearchBar';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +29,6 @@ export default function RootLayout({
         <div className="min-h-screen flex flex-col">
           <header className="flex justify-between items-center w-full max-w-6xl mx-auto p-4">
             <Navbar />
-          </header>
-          <header className="flex justify-between items-center w-full max-w-6xl mx-auto p-4">
-            <SearchBar />
           </header>
           <main className="flex-grow">
             {children}
