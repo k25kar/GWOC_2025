@@ -73,7 +73,7 @@ export default function ServicesPage() {
             >
               <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#E8E4D3' }}>New and Trustworthy</h2>
               <p className="text-zinc-400 mb-8">Install the plugin and convert your designs to a responsive site.</p>
-              <Button className="w-fit">Book Now</Button>
+              <Button className="w-fit hover:text-[#141414]">Book Now</Button>
             </motion.div>
           </div>
 
@@ -87,7 +87,7 @@ export default function ServicesPage() {
             >
               <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#E8E4D3' }}>Best Sellers</h2>
               <p className="text-zinc-400 mb-8">Browse dozens of templates. Click, duplicate, customize.</p>
-              <Button className="w-fit">Book Now</Button>
+              <Button className="w-fit hover:text-[#141414]">Book Now</Button>
             </motion.div>
             <div>
               <ImageCarousel />
@@ -103,7 +103,7 @@ export default function ServicesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={featuresInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-12"
+            className="text-center mb-4"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: "#E8E4D3" }}>
               What we offer.
