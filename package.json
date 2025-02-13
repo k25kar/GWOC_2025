@@ -10,24 +10,45 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+<<<<<<< HEAD
     "@radix-ui/react-dropdown-menu": "^2.1.6",
+=======
+    "@types/bcryptjs": "^2.4.6",
+>>>>>>> fc4d6e0 (Login and Signup added)
     "@types/chart.js": "^2.9.41",
+    "@types/jsonwebtoken": "^9.0.8",
+    "axios": "^1.7.9",
+    "bcryptjs": "^2.4.3",
     "chart.js": "^4.4.7",
+<<<<<<< HEAD
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+=======
+    "cors": "^2.8.5",
+>>>>>>> fc4d6e0 (Login and Signup added)
     "framer-motion": "^12.4.1",
     "fuse.js": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.475.0",
+    "mongodb": "^6.13.0",
+    "mongoose": "^8.10.0",
     "next": "^15.1.6",
+    "nodemailer": "^6.10.0",
     "pg": "^8.13.1",
     "react": "^18.0.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^18.0.0",
+    "react-hot-toast": "^2.5.1",
     "react-responsive-carousel": "^3.2.23",
+    "react-toastify": "^11.0.3",
     "recharts": "^2.15.1",
+<<<<<<< HEAD
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
+=======
+    "twilio": "^5.4.4",
+>>>>>>> fc4d6e0 (Login and Signup added)
     "typescript": "^4.0.0",
     "typewriter-effect": "^2.21.0"
   },
@@ -35,11 +56,14 @@
     "@eslint/eslintrc": "^3",
     "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^20",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^17.0.0",
     "@types/react-chartjs-2": "^2.0.2",
     "@types/react-dom": "^17.0.0",
+    "dotenv": "^16.4.7",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
+    "nodemon": "^3.1.9",
     "postcss": "^8",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"

@@ -30,7 +30,7 @@ const partners = [
 
 export function PartnerPerformance() {
   return (
-    <Card>
+    <Card className="max-w-full">
       <CardHeader>
         <CardTitle>Top Performing Partners</CardTitle>
       </CardHeader>
