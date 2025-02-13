@@ -1,25 +1,29 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Sidebar } from "./sidebar"
-import { Header } from "./header"
-import type React from "react" // Added import for React
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Sidebar } from "./sidebar";
+import { Header } from "./header";
+import type React from "react";
 
 interface DashboardLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [isClient, setIsClient] = useState(false)
- 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null;
+  }
 
   return (
-    <div className="min-h-screen bg-white-100">
+    <div className="min-h-screen bg-[#141414] text-white">
       <Sidebar isOpen={isSidebarOpen} setIsOpenAction={setIsSidebarOpen} />
       <motion.div
         className="flex flex-col"
@@ -37,6 +41,5 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         </main>
       </motion.div>
     </div>
-  )
+  );
 }
-
