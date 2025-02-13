@@ -32,28 +32,50 @@ export function PartnerPerformance() {
   return (
     <Card className="max-w-full">
       <CardHeader>
-        <CardTitle>Top Performing Partners</CardTitle>
+        <CardTitle>
+          <span className="text-black">Top Performing Partners</span>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Rating</TableHead>
-              <TableHead>Jobs</TableHead>
-              <TableHead>Earnings</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>
+                <span className="text-black">Name</span>
+              </TableHead>
+              <TableHead>
+                <span className="text-black">Rating</span>
+              </TableHead>
+              <TableHead>
+                <span className="text-black">Jobs</span>
+              </TableHead>
+              <TableHead>
+                <span className="text-black">Earnings</span>
+              </TableHead>
+              <TableHead>
+                <span className="text-black">Status</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {partners.map((partner) => (
               <TableRow key={partner.name}>
-                <TableCell>{partner.name}</TableCell>
-                <TableCell>{partner.rating}</TableCell>
-                <TableCell>{partner.jobs}</TableCell>
-                <TableCell>{partner.earnings}</TableCell>
                 <TableCell>
-                  <Badge variant={partner.status === "active" ? "default" : "secondary"}>{partner.status}</Badge>
+                  <span className="text-black">{partner.name}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-black">{partner.rating}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-black">{partner.jobs}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="text-black">{partner.earnings}</span>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={partner.status === "active" ? "default" : "secondary"}>
+                    <span className="text-black">{partner.status}</span>
+                  </Badge>
                 </TableCell>
               </TableRow>
             ))}

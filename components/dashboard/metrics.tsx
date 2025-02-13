@@ -43,12 +43,16 @@ export function DashboardMetrics() {
         >
           <Card className="bg-[#141414] text-white">
             <CardHeader>
-              <CardTitle>{metric.title}</CardTitle>
-              <metric.icon className="h-4 w-4 text-muted-foreground" />
+              <CardTitle>
+                <span className="text-black">{metric.title}</span>
+              </CardTitle>
+              <metric.icon className="h-4 w-4 text-black" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{metric.value}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold text-black">
+                {metric.value}
+              </div>
+              <p className="text-xs text-black">
                 <span className="text-green-500">{metric.change}</span> from last month
               </p>
             </CardContent>
