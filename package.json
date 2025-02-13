@@ -10,22 +10,21 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
-<<<<<<< HEAD
+
     "@radix-ui/react-dropdown-menu": "^2.1.6",
-=======
+
     "@types/bcryptjs": "^2.4.6",
->>>>>>> fc4d6e0 (Login and Signup added)
+
     "@types/chart.js": "^2.9.41",
     "@types/jsonwebtoken": "^9.0.8",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "chart.js": "^4.4.7",
-<<<<<<< HEAD
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-=======
+
     "cors": "^2.8.5",
->>>>>>> fc4d6e0 (Login and Signup added)
+
     "framer-motion": "^12.4.1",
     "fuse.js": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
@@ -43,12 +42,9 @@
     "react-responsive-carousel": "^3.2.23",
     "react-toastify": "^11.0.3",
     "recharts": "^2.15.1",
-<<<<<<< HEAD
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
-=======
     "twilio": "^5.4.4",
->>>>>>> fc4d6e0 (Login and Signup added)
     "typescript": "^4.0.0",
     "typewriter-effect": "^2.21.0"
   },
