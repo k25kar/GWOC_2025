@@ -1,25 +1,36 @@
 import mongoose from 'mongoose';
 
-type ConnectionObject = {
-  isConnected? : number
-}
+const connection: { isConnected?: number } = {};
 
-const connection: ConnectionObject = {}
-
-async function dbConnect(): Promise<void>{
-  if(connection.isConnected){
-    console.log("Already connected to database");
-    return
+async function connect() {
+  if (connection.isConnected) {
+    console.log('Using existing database connection');
+    return;
   }
+
   try {
-    const db= await mongoose.connect(process.env.MONGODB_URI || '',{})
-    connection.isConnected = db.connections[0].readyState
-    console.log("DB Connected Successfully")
-
+    const db = await mongoose.connect(process.env.MONGODB_URI || '', {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+    });
+    connection.isConnected = db.connections[0].readyState;
+    console.log('DB Connected Successfully');
   } catch (error) {
-    console.log("Database Connection failed", error)
-    process.exit(1)
+    console.error('DB Connection Error:', error);
+    throw error; // Rethrow the error to ensure it's caught by the API route
   }
 }
 
+async function disconnect() {
+  if (connection.isConnected) {
+    try {
+      await mongoose.disconnect();
+      connection.isConnected = 0;
+      console.log('DB Disconnected Successfully');
+    } catch (error) {
+      console.error('DB Disconnection Error:', error);
+    }
+  }
+}
+
+const dbConnect = { connect, disconnect };
 export default dbConnect;

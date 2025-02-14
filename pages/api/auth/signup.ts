@@ -1,54 +1,49 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import dbConnect from '@/lib/dbConnect'; 
-import User from '@/src/models/User';
-import bcrypt from 'bcryptjs';
-import { sendEmail } from '@/lib/email';
+import dbConnect from "@/lib/dbConnect";
+import User from "@/src/models/User";
+let bcrypt = require('bcryptjs');
+ 
+const handler = async(req:any,res:any) => {
+ if(req.method !== 'POST') {
+    return;
+ }
+ const {name, email, password}:any = req.body;
+ if (
+    !name ||
+    !email ||
+    !email.includes('@') ||
+    !password ||
+    password.trim().length < 6
+ ){
+    res.status(422).json({
+        message: 'Validation error'
+    });
+    return;
+ }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  await dbConnect();
+ await dbConnect.connect();
+ const  existingUser = await User.findOne({email: email})
+ if (existingUser) {
+    res.status(422).json({message: 'User already exists'});
+    await dbConnect.disconnect();
+    return;
+ }
+ const newUser = new User({
+    name,
+    email,
+    password: bcrypt.hashSync(password),
+    isAdmin: false
+ })
+ const user = await newUser.save();
+ await dbConnect.disconnect();
+ res.status(201).send({
+   message: "Created user",
+   _id: user._id,
+   name: user.username,
+   email: user.email,
+   isAdmin: user.isAdmin,
 
-  if (req.method === 'POST') {
-    try {
-      const { email, phone, role } = req.body;
-      
-      // Check existing user
-      const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
-      if (existingUser) {
-        return res.status(400).json({ message: 'User already exists' });
-      }
+ });
 
-      // Hash password
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-      const userData = {
-        ...req.body,
-        password: hashedPassword,
-        ...(role === 'provider' && { isApproved: false })
-      };
-
-      const user = await User.create(userData);
-
-      // Send OTP (implement SMS service integration here)
-      const otp = Math.floor(100000 + Math.random() * 900000);
-      await User.findByIdAndUpdate(user._id, {
-        otp,
-        otpExpiry: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
-      });
-
-      // Send email
-      await sendEmail({
-        to: user.email,
-        subject: role === 'user' ? 'OTP Verification' : 'Application Received',
-        text: role === 'user' 
-          ? `Your OTP is ${otp}` 
-          : 'We will contact you shortly after verifying your details'
-      });
-
-      res.status(201).json({ success: true });
-    } catch (error) {
-      res.status(500).json({ message: 'Server error' });
-    }
-  } else {
-    res.status(405).json({ message: 'Method not allowed' });
-  }
 }
+
+export default handler;
