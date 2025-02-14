@@ -20,7 +20,7 @@ export default function InfiniteCarousel() {
         } else {
           scrollContainer.scrollLeft += 1
         }
-      }, 10)
+      }, 7)
     }
 
     startScrolling()
@@ -45,16 +45,18 @@ export default function InfiniteCarousel() {
   ]
 
   // Duplicate images to create infinite effect
-  const duplicatedImages = [...images, ...images]
+  const duplicatedImages = [...images, ...images, ...images, ...images, ...images
+    , ...images, ...images, ...images, ...images
+  ]
 
   return (
     <div className="w-full bg-black min-h-screen flex items-center">
       <div ref={containerRef} className="flex overflow-x-hidden w-full gap-6 px-6">
         {duplicatedImages.map((image, index) => (
-          <div
+            <div
             key={index}
-            className="relative flex-none w-[200px] sm:w-[250px] md:w-[300px] lg:w-[350px] xl:w-[400px] aspect-[3/4] rounded-2xl overflow-hidden"
-          >
+            className="relative flex-none w-[100px] sm:w-[150px] md:w-[200px] lg:w-[250px] xl:w-[300px] aspect-[3/4] rounded-2xl overflow-hidden" // Decreased sizes
+            >
             <div className="absolute inset-0 rounded-2xl border-2 border-white z-10 transition-all duration-150 hover:border-4 hover:shadow-[0_0_15px_rgba(255,255,255,0.8)]" />
             <Image
               src={image}
@@ -63,7 +65,7 @@ export default function InfiniteCarousel() {
               className="object-cover"
               sizes="(max-width: 400px) 100vw, 450px"
             />
-          </div>
+            </div>
         ))}
       </div>
     </div>

@@ -1,3 +1,4 @@
+// dropdown-menu.tsx
 import * as React from "react";
 
 interface DropdownMenuProps {
@@ -19,7 +20,7 @@ interface DropdownMenuTriggerProps {
 
 export function DropdownMenuTrigger({ children, onClick }: DropdownMenuTriggerProps) {
   return (
-    <div onClick={onClick} className="inline-flex justify-center w-full">
+    <div onClick={onClick} className="inline-flex justify-center">
       {children}
     </div>
   );
@@ -28,11 +29,14 @@ export function DropdownMenuTrigger({ children, onClick }: DropdownMenuTriggerPr
 interface DropdownMenuContentProps {
   children: React.ReactNode;
   align?: "start" | "end";
+  className?: string;
 }
 
-export function DropdownMenuContent({ children, align = "start" }: DropdownMenuContentProps) {
+export function DropdownMenuContent({ children, align = "start", className }: DropdownMenuContentProps) {
   return (
-    <div className={`absolute ${align === "end" ? "right-0" : "left-0"} mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none`}>
+    <div 
+      className={`absolute ${align === "end" ? "right-0" : "left-0"} mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none ${className} min-w-max`}
+    >
       {children}
     </div>
   );
@@ -45,12 +49,12 @@ interface DropdownMenuItemProps {
 
 export function DropdownMenuItem({ children, onClick }: DropdownMenuItemProps) {
   return (
-    <button
+    <div
       onClick={onClick}
-      className="text-gray-700 group flex rounded-md items-center w-full px-2 py-2 text-sm hover:bg-gray-100 hover:text-gray-900"
+      className="w-full cursor-pointer"
     >
       {children}
-    </button>
+    </div>
   );
 }
 

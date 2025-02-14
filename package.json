@@ -23,6 +23,7 @@
     "formik": "^2.4.6",
     "framer-motion": "^12.4.1",
     "fuse.js": "^7.1.0",
+    "gsap": "^3.12.7",
     "jsonwebtoken": "^9.0.2",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.475.0",

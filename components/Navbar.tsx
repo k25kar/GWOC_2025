@@ -6,6 +6,9 @@ import { cn } from "@/lib/utils";
 import SearchBar from "./SearchBar";
 import { UserMenu } from "./UserMenu";
 import { Menu, X } from "lucide-react"; // Import icons for hamburger menu
+import Image from "next/image";
+import cartIcon from "@/public/shopping-cart.png"; // Import the cart icon
+import helperbuddyLogo from "@/public/helperbuddy-logo.png"; // Import the HelperBuddy logo
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -22,8 +25,11 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 w-full bg-[#161617] bg-opacity-95 px-4 py-2">
       <div className="mx-auto flex items-center justify-between max-w-7xl">
         {/* Logo - Always visible */}
-        <div className="w-36">
-          <Link href="/" className="text-lg font-semibold text-white">
+        <div className="flex items-center w-36">
+          <Link href="/">
+            <Image src={helperbuddyLogo} alt="HelperBuddy Logo" width={24} height={24} className="mr-2" />
+          </Link>
+          <Link href="/" className="text-lg font-semibold text-white hidden lg:block">
             HelperBuddy
           </Link>
         </div>
@@ -43,21 +49,31 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Desktop Search and User Menu */}
+        {/* Desktop Search, Cart, and User Menu */}
         <div className="hidden lg:flex items-center gap-4 w-72 justify-end">
           <SearchBar />
-          <UserMenu />
+          <div className="flex items-center gap-4">
+            <Link href="/cart">
+              <Image src={cartIcon} alt="Cart" width={24} height={24} className="hover:opacity-80 transition-opacity" />
+            </Link>
+            <UserMenu />
+          </div>
         </div>
 
         {/* Mobile Navigation */}
         <div className="flex lg:hidden items-center gap-4">
           <SearchBar />
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-gray-200 hover:text-white"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="flex items-center gap-4">
+            <Link href="/cart">
+              <Image src={cartIcon} alt="Cart" width={24} height={24} className="hover:opacity-80 transition-opacity" />
+            </Link>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gray-200 hover:text-white"
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu Overlay */}

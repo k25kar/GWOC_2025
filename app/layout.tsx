@@ -28,7 +28,7 @@ export default function RootLayout({
       >
         <div className="min-h-screen flex flex-col">
           <Navbar />
-          <main className="flex-grow pt-[40px]"> {/* Adjusted to exact navbar height */}
+          <main className="flex-grow pt-[45px]"> {/* Adjusted to exact navbar height */}
             {children}
           </main>
           <footer className="w-full">
