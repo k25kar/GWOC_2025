@@ -1,7 +1,7 @@
 import { Bell, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"; // Update import path
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 
@@ -9,7 +9,6 @@ interface HeaderProps {
   toggleSidebar: () => void;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function Header({ toggleSidebar }: HeaderProps) {
   const [isNotificationOpen, setNotificationOpen] = useState(false);
   const [isProfileOpen, setProfileOpen] = useState(false);
@@ -30,7 +29,7 @@ export function Header({ toggleSidebar }: HeaderProps) {
             </Button>
           </DropdownMenuTrigger>
           {isNotificationOpen && (
-            <DropdownMenuContent align="end" className="bg-[#141414] text-[#E8E4D3]">
+            <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setNotificationOpen(false)}>New notification</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setNotificationOpen(false)}>View all</DropdownMenuItem>
             </DropdownMenuContent>
@@ -46,7 +45,7 @@ export function Header({ toggleSidebar }: HeaderProps) {
             </Button>
           </DropdownMenuTrigger>
           {isProfileOpen && (
-            <DropdownMenuContent align="end" className="bg-[#141414] text-[#E8E4D3]">
+            <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setProfileOpen(false)}>Profile</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setProfileOpen(false)}>Settings</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setProfileOpen(false)}>Logout</DropdownMenuItem>
