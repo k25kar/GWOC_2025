@@ -1,33 +1,16 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose from 'mongoose'
 
-export interface IUser extends Document {
-  name: string;
-  email: string;
-  password: string;
-  phone: string;
-  role: 'user' | 'provider' | 'admin';
-  pincode: string;
-  area: string;
-  serviceType?: string;
-  servicePincodes?: string[];
-  isApproved?: boolean;
-  otp?: string;
-  otpExpiry?: Date;
-}
+const userSchema = new mongoose.Schema(
+    {
+        name: {type: String, required:true},
+        email:{type: String, required:true, unique:true},
+        password: {type: String, required:true},
+        isAdmin: {type: Boolean, required:true, default: false},
+    },
+    {
+        timestamps: true,
+    }
+);
 
-const UserSchema: Schema = new Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  phone: { type: String, required: true, unique: true },
-  role: { type: String, enum: ['user', 'provider', 'admin'], default: 'user' },
-  pincode: { type: String },
-  area: { type: String },
-  serviceType: { type: String },
-  servicePincodes: { type: [String] },
-  isApproved: { type: Boolean, default: false },
-  otp: { type: String },
-  otpExpiry: { type: Date }
-}, { timestamps: true });
-
-export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+const User = mongoose.models.User || mongoose.model('User',userSchema);
+export default User;
