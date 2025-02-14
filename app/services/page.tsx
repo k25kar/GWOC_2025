@@ -110,9 +110,13 @@ export default function ServicesPage() {
             </h2>
             <p className="text-zinc-400">Discover our comprehensive range of services</p>
           </motion.div>
-          <FeaturesCarousel />
+          <FeaturesCarousel onCategorySelect={(category) => console.log(category)}/>
         </div>
       </section>
+
+      {/*Services Section*/}
+
+      
 
       {/* Text Section */}
       <section ref={textSectionRef} className="py-24 px-4">
