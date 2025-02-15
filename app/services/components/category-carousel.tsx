@@ -118,9 +118,9 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({ onCategorySelect })
                   <div>
                     <h3 className="text-lg font-semibold">{service.name}</h3>
                     <p className="text-sm text-gray-300 mt-2">{service.description}</p>
-                    <p className="text-md font-bold text-green-400 mt-2">${service.price}</p>
+                    <p className="text-md font-bold text-green-400 mt-2">₹{service.price}</p>
                   </div>
-                  <Button variant="primary" className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg py-2">
+                  <Button variant="primary" className="mt-4 w-full bg-zinc-800 hover:bg-gray-600 text-white rounded-lg py-2">
                     Book Now
                   </Button>
                 </motion.div>
