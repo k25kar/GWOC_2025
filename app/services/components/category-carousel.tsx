@@ -3,6 +3,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef, useState, useEffect } from "react";
 import axios from "axios";
+import Booking from "@/components/Booking";
+
 
 interface FeaturesCarouselProps {
   onCategorySelect: (category: string) => void;
@@ -120,9 +122,11 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({ onCategorySelect })
                     <p className="text-sm text-gray-300 mt-2">{service.description}</p>
                     <p className="text-md font-bold text-green-400 mt-2">₹{service.price}</p>
                   </div>
+                  <Booking>
                   <Button variant="primary" className="mt-4 w-full bg-zinc-800 hover:bg-gray-600 text-white rounded-lg py-2">
                     Book Now
                   </Button>
+                  </Booking>
                 </motion.div>
               ))
             ) : (
