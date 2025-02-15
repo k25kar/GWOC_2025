@@ -7,13 +7,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
-import Link from "next/link";
-import userIcon from "@/public/user-icon.png";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from 'next/navigation';
 
 export function UserMenu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const handleClickOutside = (event: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -33,13 +33,23 @@ export function UserMenu() {
     };
   }, [isMenuOpen]);
 
+  const handleLoginClick = () => {
+    setIsMenuOpen(false);
+    router.push('./pages/login');
+  };
+
+  const handleSignupClick = () => {
+    setIsMenuOpen(false);
+    router.push('/signup');
+  };
+
   return (
     <DropdownMenu>
       <div className="focus:outline-none" ref={menuRef}>
         <DropdownMenuTrigger onClick={() => setIsMenuOpen(!isMenuOpen)}>
           <div className="rounded-full hover:opacity-80 transition-opacity">
             <Image 
-              src={userIcon} 
+              src="/user-icon.png" 
               alt="User Menu" 
               width={24} 
               height={24}
@@ -55,22 +65,16 @@ export function UserMenu() {
           className="w-48 transform-gpu transition-all duration-200 ease-out"
         >
           <div className="bg-[#161617] border border-gray-700 rounded-md overflow-hidden">
-            <DropdownMenuItem onClick={() => setIsMenuOpen(false)}>
-              <Link 
-                href="/login" 
-                className="block w-full px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-gray-800/50"
-              >
+            <DropdownMenuItem onClick={handleLoginClick}>
+              <div className="block w-full px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-gray-800/50">
                 Login
-              </Link>
+              </div>
             </DropdownMenuItem>
           
-            <DropdownMenuItem onClick={() => setIsMenuOpen(false)}>
-              <Link 
-                href="/signup" 
-                className="block w-full px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-gray-800/50"
-              >
+            <DropdownMenuItem onClick={handleSignupClick}>
+              <div className="block w-full px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-gray-800/50">
                 Sign Up
-              </Link>
+              </div>
             </DropdownMenuItem>
           </div>
         </DropdownMenuContent>

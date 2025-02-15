@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import InfiniteCarousel from "@/components/InfiniteCarousel";
+import StackedCardParallax from "@/components/StackedCardsParallax";
 import Image from "next/image";
 import userIcon from "@/public/user-icon.png";
 import landingPhoto1 from "@/public/landing-photo1.jpg";
@@ -633,6 +634,10 @@ export default function Page() {
 
         <div className="relative z-10 w-full mt-8">
           <FeaturesGrid />
+        </div>
+
+        <div className="relative z-10 w-full">
+          <StackedCardParallax />
         </div>
 
         <div className="relative z-10 w-full mt-8">
