@@ -5,14 +5,17 @@ import { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import Booking from "@/components/Booking";
 
-
 interface FeaturesCarouselProps {
   onCategorySelect: (category: string) => void;
 }
 
-const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({ onCategorySelect }) => {
+const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
+  onCategorySelect,
+}) => {
   const [categories, setCategories] = useState<string[]>([]);
-  const [services, setServices] = useState<{ name: string; description: string; price: number }[]>([]);
+  const [services, setServices] = useState<
+    { name: string; description: string; price: number }[]
+  >([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -56,7 +59,10 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({ onCategorySelect })
     setCurrentIndex(newIndex);
     const itemWidth = 144;
     const scrollPosition = -newIndex * itemWidth;
-    controls.start({ x: scrollPosition, transition: { duration: 0.5, ease: "easeInOut" } });
+    controls.start({
+      x: scrollPosition,
+      transition: { duration: 0.5, ease: "easeInOut" },
+    });
   };
 
   const next = () => scrollToIndex(currentIndex + 1);
@@ -71,7 +77,11 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({ onCategorySelect })
   return (
     <div className="relative w-full py-12" ref={ref}>
       <div className="overflow-x-auto scrollbar-hide" ref={carouselRef}>
-        <motion.div className="flex gap-6 px-4 md:px-8" animate={controls} initial={{ x: 0 }}>
+        <motion.div
+          className="flex gap-6 px-4 md:px-8"
+          animate={controls}
+          initial={{ x: 0 }}
+        >
           {categories.length > 0 ? (
             categories.map((category, index) => (
               <motion.div
@@ -85,7 +95,9 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({ onCategorySelect })
                   onClick={() => handleCategoryClick(category)}
                   className="w-auto min-w-[150px] min-h-[50px] px-4 py-2 bg-zinc-800 rounded-xl flex items-center justify-center group-hover:bg-gray-600 transition-colors"
                 >
-                  <span className="text-white text-sm font-medium whitespace-nowrap">{category}</span>
+                  <span className="text-white text-sm font-medium whitespace-nowrap">
+                    {category}
+                  </span>
                 </button>
               </motion.div>
             ))
@@ -96,17 +108,29 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({ onCategorySelect })
       </div>
 
       <div className="flex justify-center mt-8 gap-4">
-        <Button variant="outline" className="rounded-full" onClick={prev} disabled={currentIndex === 0}>
+        <Button
+          variant="outline"
+          className="rounded-full"
+          onClick={prev}
+          disabled={currentIndex === 0}
+        >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <Button variant="outline" className="rounded-full" onClick={next} disabled={currentIndex >= categories.length - 1}>
+        <Button
+          variant="outline"
+          className="rounded-full"
+          onClick={next}
+          disabled={currentIndex >= categories.length - 1}
+        >
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
 
       {selectedCategory && (
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-white text-center mb-6">{selectedCategory} Services</h2>
+          <h2 className="text-2xl font-bold text-white text-center mb-6">
+            {selectedCategory} Services
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {services.length > 0 ? (
               services.map((service, index) => (
@@ -119,18 +143,27 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({ onCategorySelect })
                 >
                   <div>
                     <h3 className="text-lg font-semibold">{service.name}</h3>
-                    <p className="text-sm text-gray-300 mt-2">{service.description}</p>
-                    <p className="text-md font-bold text-green-400 mt-2">₹{service.price}</p>
+                    <p className="text-sm text-gray-300 mt-2">
+                      {service.description}
+                    </p>
+                    <p className="text-md font-bold text-green-400 mt-2">
+                      ₹{service.price}
+                    </p>
                   </div>
-                  <Booking>
-                  <Button variant="primary" className="mt-4 w-full bg-zinc-800 hover:bg-gray-600 text-white rounded-lg py-2">
-                    Book Now
-                  </Button>
+                  <Booking service={service}>
+                    <Button
+                      variant="primary"
+                      className="mt-4 w-full bg-zinc-800 hover:bg-gray-600 text-white rounded-lg py-2"
+                    >
+                      Book Now
+                    </Button>
                   </Booking>
                 </motion.div>
               ))
             ) : (
-              <div className="text-center text-white">No services available.</div>
+              <div className="text-center text-white">
+                No services available.
+              </div>
             )}
           </div>
         </div>

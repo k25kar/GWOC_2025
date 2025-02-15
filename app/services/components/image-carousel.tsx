@@ -6,8 +6,14 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 
+// Define the type for service objects
+interface Service {
+  imageUrl: string;
+  name: string;
+}
+
 export default function ImageCarousel() {
-  const [services, setServices] = useState([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {

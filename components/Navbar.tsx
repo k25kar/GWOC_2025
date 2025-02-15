@@ -10,9 +10,11 @@ import Image from "next/image";
 import cartIcon from "@/public/shopping-cart.png"; // Import the cart icon
 import helperbuddyLogo from "@/public/helperbuddy-logo.png"; // Import the HelperBuddy logo
 import SideCart from "./cart";
+import { useCart } from "@/src/context/CartContext";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { cart } = useCart();
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -54,9 +56,22 @@ export function Navbar() {
         <div className="hidden lg:flex items-center gap-4 w-72 justify-end">
           <SearchBar />
           <div className="flex items-center gap-4">
-            <SideCart>
-              <Image src={cartIcon} alt="Cart" width={24} height={24} className="hover:opacity-80 transition-opacity" />
-              </SideCart>
+          <SideCart>
+          <div className="relative">
+            <Image
+              src={cartIcon}
+              alt="Cart"
+              width={24}
+              height={24}
+              className="hover:opacity-80 transition-opacity"
+            />
+            {cart.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cart.length}
+              </span>
+            )}
+          </div>
+        </SideCart>
             <UserMenu />
           </div>
         </div>
