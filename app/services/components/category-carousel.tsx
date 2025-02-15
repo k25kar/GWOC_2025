@@ -150,7 +150,11 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
                       ₹{service.price}
                     </p>
                   </div>
+<<<<<<< Updated upstream
                   <Booking service={service}>
+=======
+                  <Booking>
+>>>>>>> Stashed changes
                     <Button
                       variant="primary"
                       className="mt-4 w-full bg-zinc-800 hover:bg-gray-600 text-white rounded-lg py-2"
