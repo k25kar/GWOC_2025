@@ -55,6 +55,10 @@ function Booking({ children }: BookingProps) {
 
   const isBookDisabled = !(selectedTime && date);
 
+  const saveBooking=()=>{
+    
+  }
+
   return (
     <div>
       <Sheet>
@@ -129,6 +133,7 @@ function Booking({ children }: BookingProps) {
                 }
               `}
               disabled={isBookDisabled}
+              onClick={()=>saveBooking()}
             >
               Book
             </Button>

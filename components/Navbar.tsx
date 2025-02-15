@@ -9,6 +9,7 @@ import { Menu, X } from "lucide-react"; // Import icons for hamburger menu
 import Image from "next/image";
 import cartIcon from "@/public/shopping-cart.png"; // Import the cart icon
 import helperbuddyLogo from "@/public/helperbuddy-logo.png"; // Import the HelperBuddy logo
+import SideCart from "./cart";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -53,9 +54,9 @@ export function Navbar() {
         <div className="hidden lg:flex items-center gap-4 w-72 justify-end">
           <SearchBar />
           <div className="flex items-center gap-4">
-            <Link href="/cart">
+            <SideCart>
               <Image src={cartIcon} alt="Cart" width={24} height={24} className="hover:opacity-80 transition-opacity" />
-            </Link>
+              </SideCart>
             <UserMenu />
           </div>
         </div>
