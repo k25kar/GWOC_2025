@@ -148,7 +148,7 @@ const Booking: FC<BookingProps> = ({ children, service }) => {
 
       {/* Success message that disappears after 3 seconds */}
       {showMessage && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg transition-opacity duration-400">
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-zinc-800 text-white px-6 py-3 rounded-md shadow-lg transition-opacity duration-400">
           Service added to Cart, please Checkout to Confirm Booking!
         </div>
       )}
