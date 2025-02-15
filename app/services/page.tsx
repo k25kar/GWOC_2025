@@ -24,7 +24,6 @@ export default function ServicesPage() {
   const heroInView = useInView(heroRef, { once: false });
   const servicesInView = useInView(servicesRef, { once: false });
   const bestSellersInView = useInView(bestSellersRef, { once: false });
-  const textSectionInView = useInView(textSectionRef, { once: false });
 
   return (
     <main className="min-h-screen bg-service_black text-white">
@@ -42,9 +41,9 @@ export default function ServicesPage() {
         >
           <BlurText
             text="Our Services."
-            delay={150}
-            animateBy="words"
-            direction="top"
+            delay={50}
+            animateBy="letters"
+            direction="bottom"
             onAnimationComplete={handleAnimationComplete}
           />
         </motion.h1>
@@ -99,7 +98,7 @@ export default function ServicesPage() {
               <p className="text-zinc-400 mb-8">
                 Find out the New.
               </p>
-              <Button className="w-fit hover:text-[#141414]">Book Now</Button>
+              
             </motion.div>
           </div>
 
@@ -124,7 +123,7 @@ export default function ServicesPage() {
               <p className="text-zinc-400 mb-8">
                 Experience the best.
               </p>
-              <Button className="w-fit hover:text-[#141414]">Book Now</Button>
+              
             </motion.div>
             <div>
               <ImageCarousel />
@@ -151,7 +150,7 @@ export default function ServicesPage() {
               <TrueFocus
                 sentence="What we Offer"
                 manualMode={false}
-                blurAmount={5}
+                blurAmount={2}
                 borderColor="white"
                 animationDuration={2}
                 pauseBetweenAnimations={1}
@@ -169,21 +168,6 @@ export default function ServicesPage() {
 
       {/*Services Section*/}
 
-      {/* Text Section */}
-      <section ref={textSectionRef} className="py-24 px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={
-            textSectionInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }
-          }
-          transition={{ duration: 0.8 }}
-          className="max-w-4xl mx-auto text-center space-y-4 text-3xl md:text-4xl"
-          style={{ color: "#E8E4D3" }}
-        >
-          <p>Elevating spaces with impeccable cleaning and flawless installations, </p>
-          <p>where luxury meets precision.</p>
-        </motion.div>
-      </section>
     </main>
   );
 }
