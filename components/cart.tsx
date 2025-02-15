@@ -23,7 +23,7 @@ interface Props {
 }
 
 const SideCart: FC<Props> = ({ visible, onRequestClose, children }) => {
-  const { cart, removeFromCart } = useCart(); 
+  const { cart, removeFromCart } = useCart();
   // Make sure your CartContext has a removeFromCart function
 
   const [showBookingMessage, setShowBookingMessage] = useState(false);
@@ -45,7 +45,10 @@ const SideCart: FC<Props> = ({ visible, onRequestClose, children }) => {
   };
 
   // Calculate subtotal
-  const subtotal = cart.reduce((sum, item) => sum + item.service.price, 0);
+  const subtotal = cart.reduce(
+    (sum, item) => sum + Number(item.service.price),
+    0
+  );
 
   return (
     <>
@@ -58,7 +61,9 @@ const SideCart: FC<Props> = ({ visible, onRequestClose, children }) => {
           className="bg-white p-6 rounded-lg shadow-md overflow-auto w-96 min-h-screen flex flex-col z-50"
         >
           <SheetHeader>
-            <SheetTitle className="text-gray-900 text-2xl font-bold">Cart</SheetTitle>
+            <SheetTitle className="text-gray-900 text-2xl font-bold">
+              Cart
+            </SheetTitle>
             <SheetDescription className="text-gray-700">
               Your selected items
             </SheetDescription>
@@ -100,12 +105,8 @@ const SideCart: FC<Props> = ({ visible, onRequestClose, children }) => {
               <h1 className="font-semibold text-xl uppercase text-gray-800">
                 Subtotal
               </h1>
-              <p className="font-semibold text-gray-700">
-                ₹{subtotal}
-              </p>
+              <p className="font-semibold text-gray-700">₹{subtotal}</p>
             </div>
-
-            
 
             {/* Close Button */}
             <SheetClose asChild>
