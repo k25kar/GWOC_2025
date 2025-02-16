@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import Booking from "@/components/Booking";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 interface FeaturesCarouselProps {
   onCategorySelect: (category: string) => void;
+  selectedCategory?: string; // Added this line
 }
 
 const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
@@ -22,6 +25,9 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
   const controls = useAnimation();
   const ref = useRef(null);
   const inView = useInView(ref);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -37,12 +43,16 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
   }, []);
 
   useEffect(() => {
-    if (!carouselRef.current) return;
-    const containerWidth = carouselRef.current.offsetWidth;
-    const itemWidth = 144;
-    const itemsPerView = Math.floor(containerWidth / itemWidth);
-    setCurrentIndex(0);
-  }, [categories]);
+    const urlCategory = searchParams.get("category");
+  
+    if (urlCategory && categories.includes(urlCategory)) {
+      setSelectedCategory(urlCategory);
+      fetchServices(urlCategory);
+    }
+  }, [categories, searchParams]); // ✅ Added searchParams to ensure it updates when the URL changes
+    
+  
+  
 
   const fetchServices = async (category: string) => {
     try {
@@ -67,12 +77,24 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
 
   const next = () => scrollToIndex(currentIndex + 1);
   const prev = () => scrollToIndex(currentIndex - 1);
+  
 
-  const handleCategoryClick = (category: string) => {
-    onCategorySelect(category);
-    setSelectedCategory(category);
-    fetchServices(category);
+  const handleCategoryClick = (category: string, fromSearchBar = false) => {
+    if (selectedCategory !== category) {
+      onCategorySelect(category);
+      setSelectedCategory(category);
+      fetchServices(category);
+  
+      // Only update the URL if coming from the search bar
+      if (fromSearchBar) {
+        const newParams = new URLSearchParams(searchParams.toString());
+        newParams.set("category", category);
+        router.push(`${pathname}?${newParams.toString()}`, { scroll: true });
+      }
+    }
   };
+  
+  
 
   return (
     <div className="relative w-full py-12" ref={ref}>
