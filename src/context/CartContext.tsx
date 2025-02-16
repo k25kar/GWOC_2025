@@ -26,7 +26,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  // Load cart from localStorage on mount
+  // Load cart from localStorage when the component mounts.
   useEffect(() => {
     try {
       const storedCart = localStorage.getItem("cart");
@@ -45,10 +45,16 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Save cart to localStorage whenever it changes
+  // Save cart to localStorage only when there are items.
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-    console.log("Saving cart to localStorage:", cart);
+    if (cart.length > 0) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+      console.log("Saving cart to localStorage:", cart);
+    } else {
+      // Optionally, if you want to remove the key when the cart is empty, uncomment the next line:
+      // localStorage.removeItem("cart");
+      console.log("Cart is empty; not updating localStorage.");
+    }
   }, [cart]);
 
   const addToCart = (item: CartItem) => {
