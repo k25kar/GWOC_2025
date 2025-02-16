@@ -15,6 +15,7 @@ import { useCart } from "@/src/context/CartContext";
 import { Button } from "./ui/button";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { CartProvider } from "@/src/context/CartContext";
 
 interface Props {
   visible?: boolean;

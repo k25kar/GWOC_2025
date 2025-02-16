@@ -6,10 +6,17 @@ declare module "next-auth" {
     user: {
       _id: string;
       isAdmin: boolean;
+      phone?: string;
+      address?: string;
+      pincode?: string;
     } & DefaultSession["user"];
   }
+
   interface User extends DefaultUser {
     _id: string;
     isAdmin: boolean;
+    phone?: string;
+    address?: string;
+    pincode?: string;
   }
 }
