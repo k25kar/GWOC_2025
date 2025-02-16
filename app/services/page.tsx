@@ -5,9 +5,10 @@ import { ChevronDown } from "lucide-react";
 import ImageCarousel from "./components/image-carousel";
 import FeaturesCarousel from "./components/category-carousel";
 import { Button } from "@/components/ui/button";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import TrueFocus from "@/components/reactbits/TrueFocus";
 import BlurText from "@/components/reactbits/BlurText";
+import { useSearchParams } from "next/navigation";
 
 const handleAnimationComplete = () => {
   console.log("Animation completed!");
@@ -17,13 +18,23 @@ export default function ServicesPage() {
   const heroRef = useRef(null);
   const servicesRef = useRef(null);
   const bestSellersRef = useRef(null);
-  const textSectionRef = useRef(null);
-  const featuresRef = useRef(null);
+  const featuresRef = useRef<HTMLDivElement | null>(null);
+
   const featuresInView = useInView(featuresRef, { once: false });
 
   const heroInView = useInView(heroRef, { once: false });
   const servicesInView = useInView(servicesRef, { once: false });
   const bestSellersInView = useInView(bestSellersRef, { once: false });
+
+  const searchParams = useSearchParams();
+  const selectedCategory = searchParams?.get("category") ?? "";
+
+  useEffect(() => {
+    if (featuresRef.current && selectedCategory) {
+      featuresRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [selectedCategory]);
+  
 
   return (
     <main className="min-h-screen bg-service_black text-white">
@@ -160,9 +171,7 @@ export default function ServicesPage() {
               Discover our comprehensive range of services
             </p>
           </motion.div>
-          <FeaturesCarousel
-            onCategorySelect={(category) => console.log(category)}
-          />
+          <FeaturesCarousel onCategorySelect={(category) => console.log(category)} selectedCategory={selectedCategory} />
         </div>
       </section>
 
