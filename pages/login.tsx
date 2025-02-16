@@ -136,7 +136,7 @@ const LoginScreen = () => {
           <button
             onClick={handleGoogleSignIn}
             className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md
-                       bg-gradient-to-r from-[#800000] to-[#8B0000] hover:from-[#8B0000] hover:to-[#700000]
+                       bg-[#141414] hover:bg-[#ffffff] hover:text-black
                        text-white font-medium transition-colors"
           >
             <FcGoogle className="h-5 w-5" />
@@ -191,8 +191,7 @@ const LoginScreen = () => {
               {/* Sign In Button (Maroon Gradient) */}
               <button
                 type="submit"
-                className="w-full py-2 bg-gradient-to-r from-[#800000] to-[#8B0000]
-                           hover:from-[#8B0000] hover:to-[#700000] text-white font-semibold
+                className="w-full py-2 bg-[#141414] hover:bg-[#ffffff] hover:text-black text-white font-semibold
                            rounded-md transition-colors"
               >
                 Sign In
