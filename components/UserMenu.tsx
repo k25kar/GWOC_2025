@@ -40,11 +40,6 @@ export function UserMenu() {
     router.push("/login");
   };
 
-  const handleDashboardClick = () => {
-    setIsMenuOpen(false);
-    router.push("/dashboard");
-  };
-
   const handleLogoutClick = () => {
     setIsMenuOpen(false);
     signOut(); // NextAuth signOut, or replace with your own logout logic
@@ -85,9 +80,14 @@ export function UserMenu() {
               className="w-48 transform-gpu transition-all duration-200 ease-out"
             >
               <div className="bg-[#161617] border border-gray-700 rounded-md overflow-hidden">
-                <DropdownMenuItem onClick={handleDashboardClick}>
+                <DropdownMenuItem onClick={()=>router.push("/bookings")}>
                   <div className="block w-full px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-gray-800/50">
-                    User Dashboard
+                    Bookings
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={()=>router.push("/service-history")}>
+                  <div className="block w-full px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-gray-800/50">
+                    Service History
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogoutClick}>
