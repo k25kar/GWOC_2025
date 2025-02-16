@@ -51,6 +51,7 @@ export default function SearchBar() {
     router.push(`/services?page=features&category=${encodeURIComponent(category)}`);
   };
 
+
   return (
     <div className="relative w-[180px] lg:w-[240px]">
       {/* Search Box */}
