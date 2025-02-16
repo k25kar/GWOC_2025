@@ -3,21 +3,19 @@
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { signIn, useSession } from "next-auth/react";
 import * as Yup from "yup";
-import { getError } from "@/lib/error";
+import axios from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
-import axios from "axios";
+import { signIn, useSession } from "next-auth/react";
 
-interface SignupFormValues {
+interface SPFormValues {
   name: string;
   email: string;
   password: string;
   confirmpassword: string;
   phone: string;
-  address: string;
-  pincode: string;
+  servicePincodes: string;
 }
 
 const validationSchema = Yup.object({
@@ -34,25 +32,25 @@ const validationSchema = Yup.object({
   phone: Yup.string()
     .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
     .required("Phone number is required"),
-  address: Yup.string().required("Address is required"),
-  pincode: Yup.string()
-    .matches(/^[0-9]{6}$/, "Pincode must be 6 digits")
-    .required("Pincode is required"),
+  servicePincodes: Yup.string()
+    .required("Service pincodes are required")
+    .test("valid-pincodes", "Invalid pincodes format", (value) => {
+      return value ? value.split(",").every((pincode) => /^[0-9]{6}$/.test(pincode.trim())) : false;
+    }),
 });
 
-const initialValues: SignupFormValues = {
+const initialValues: SPFormValues = {
   name: "",
   email: "",
   password: "",
   confirmpassword: "",
   phone: "",
-  address: "",
-  pincode: "",
+  servicePincodes: "",
 };
 
-const RegisterScreen = () => {
-  const { data: session } = useSession();
+const RegisterAsSP = () => {
   const router = useRouter();
+  const { data: session } = useSession();
   const { redirect }: any = router.query;
 
   useEffect(() => {
@@ -61,42 +59,48 @@ const RegisterScreen = () => {
     }
   }, [router, session, redirect]);
 
-  const handleSubmit = async (values: SignupFormValues) => {
+  const handleSubmit = async (values: SPFormValues) => {
     try {
-      await axios.post("/api/auth/signup", values);
-      const result: any = await signIn("credentials", {
-        redirect: false,
-        email: values.email,
-        password: values.password,
+      await axios.post("/api/auth/signup-sp", {
+        ...values,
+        servicePincodes: values.servicePincodes.split(",").map((p) => p.trim()),
       });
-      if (result.error) {
-        toast.error(result.error, {
+      toast.success("The Helper Buddy team will contact you shortly", {
+        style: { backgroundColor: "#800000", color: "#fff" },
+      });
+      router.push("/");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.message || "Registration failed", {
+          style: { backgroundColor: "#800000", color: "#fff" },
+        });
+      } else if (err instanceof Error) {
+        toast.error(err.message, {
+          style: { backgroundColor: "#800000", color: "#fff" },
+        });
+      } else {
+        toast.error("An unexpected error occurred", {
           style: { backgroundColor: "#800000", color: "#fff" },
         });
       }
-    } catch (err) {
-      toast.error(getError(err), {
-        style: { backgroundColor: "#800000", color: "#fff" },
-      });
     }
   };
   
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#0f0f0f] overflow-x-hidden px-4">
       <div className="w-full max-w-md mx-auto">
         <div className="p-6 sm:p-8 space-y-6 bg-[#1a1a1a] rounded-md shadow-md">
-          {/* Header and Options */}
+          {/* Header with Options */}
           <div className="text-center">
             <h1 className="text-3xl font-semibold text-white">Sign Up</h1>
             <div className="flex justify-center mt-6 pt-4 space-x-8">
-              <span className="text-white font-medium">As User</span>
               <Link
-                href={`/register-as-SP?redirect=${redirect || "/"}`}
+                href={`/signup?redirect=${redirect || "/"}`}
                 className="text-gray-600 hover:text-gray-300 font-medium"
               >
-                As Service Provider
+                As User
               </Link>
+              <span className="text-white font-medium">As Service Provider</span>
             </div>
             <hr className="mt-4 border-gray-600" />
           </div>
@@ -113,7 +117,8 @@ const RegisterScreen = () => {
                   name="name"
                   type="text"
                   placeholder="Enter your username"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
+                             focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="name" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -128,7 +133,8 @@ const RegisterScreen = () => {
                   name="email"
                   type="email"
                   placeholder="Enter your email"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
+                             focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -143,7 +149,8 @@ const RegisterScreen = () => {
                   name="password"
                   type="password"
                   placeholder="Enter your password"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
+                             focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="password" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -158,7 +165,8 @@ const RegisterScreen = () => {
                   name="confirmpassword"
                   type="password"
                   placeholder="Re-enter your password"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
+                             focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="confirmpassword" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -173,39 +181,29 @@ const RegisterScreen = () => {
                   name="phone"
                   type="tel"
                   placeholder="Enter your phone number"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
+                             focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="phone" component="div" className="text-red-500 text-sm mt-1" />
               </div>
 
-              {/* Address */}
+              {/* Service Pincodes */}
               <div>
-                <label htmlFor="address" className="block mb-2 text-sm font-medium text-gray-200">
-                  Address
+                <label htmlFor="servicePincodes" className="block mb-2 text-sm font-medium text-gray-200">
+                  Serviceable Pincodes
                 </label>
                 <Field
-                  as="textarea"
-                  id="address"
-                  name="address"
-                  placeholder="Enter your address"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
-                />
-                <ErrorMessage name="address" component="div" className="text-red-500 text-sm mt-1" />
-              </div>
-
-              {/* Pincode */}
-              <div>
-                <label htmlFor="pincode" className="block mb-2 text-sm font-medium text-gray-200">
-                  Pincode
-                </label>
-                <Field
-                  id="pincode"
-                  name="pincode"
+                  id="servicePincodes"
+                  name="servicePincodes"
                   type="text"
-                  placeholder="Enter your pincode"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  placeholder="e.g., 395007, 395003, 395006"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
+                             focus:outline-none focus:border-[#800000]"
                 />
-                <ErrorMessage name="pincode" component="div" className="text-red-500 text-sm mt-1" />
+                <div className="text-gray-400 text-sm mt-1">
+                  Enter comma-separated pincodes
+                </div>
+                <ErrorMessage name="servicePincodes" component="div" className="text-red-500 text-sm mt-1" />
               </div>
 
               {/* Submit Button */}
@@ -213,7 +211,7 @@ const RegisterScreen = () => {
                 type="submit"
                 className="w-full py-2 bg-gradient-to-r from-[#800000] to-[#8B0000] hover:from-[#8B0000] hover:to-[#700000] text-white font-semibold rounded-md transition-colors"
               >
-                Sign Up
+                Register as Service Provider
               </button>
 
               {/* Login Link */}
@@ -233,4 +231,4 @@ const RegisterScreen = () => {
   );
 };
 
-export default RegisterScreen;
+export default RegisterAsSP;
