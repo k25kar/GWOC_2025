@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link'
 import React, { useEffect } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
@@ -98,6 +99,13 @@ const LoginScreen = () => {
               Login
             </button>
 
+            {/*signIn with Google*/}
+            <button onClick={()=>signIn("google")} className='flex tems-center gap-4 shadow-xl rounded-lg pl-3'>
+              <span className='bg-blue-500 text-white px-4 py-3'>
+                Sign In With Google
+              </span>
+            </button>
+
             {/* Register Link */}
             <div className="text-center">
               <p className="text-gray-400">
@@ -115,3 +123,4 @@ const LoginScreen = () => {
 }
 
 export default LoginScreen
+ 

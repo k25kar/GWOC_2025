@@ -138,7 +138,7 @@ const Booking: FC<BookingProps> = ({ children, service }) => {
       disabled={isBookDisabled}
       onClick={saveBooking}
     >
-      Book
+      Add to Cart
     </Button>
   </SheetClose>
 </SheetFooter>

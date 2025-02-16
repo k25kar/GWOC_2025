@@ -53,7 +53,7 @@ export function Navbar() {
         </div>
 
         {/* Desktop Search, Cart, and User Menu */}
-        <div className="hidden lg:flex items-center gap-4 w-72 justify-end">
+        <div className="hidden lg:flex items-center gap-4 w-73 justify-end">
           <SearchBar />
           <div className="flex items-center gap-4">
           <SideCart>

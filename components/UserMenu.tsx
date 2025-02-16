@@ -8,9 +8,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 
 export function UserMenu() {
+  const { data: session } = useSession(); // For checking if user is logged in
+  const isLoggedIn = !!session?.user;
+  const userImage = session?.user?.image || "/user-icon.png"; // If user used Google, session.user.image is set. Otherwise fallback.
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -27,58 +31,75 @@ export function UserMenu() {
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
     }
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isMenuOpen]);
 
   const handleLoginClick = () => {
-    setIsMenuOpen(false);
-    router.push('./pages/login');
+    router.push("/login");
   };
 
-  const handleSignupClick = () => {
+  const handleDashboardClick = () => {
     setIsMenuOpen(false);
-    router.push('/signup');
+    router.push("/dashboard");
+  };
+
+  const handleLogoutClick = () => {
+    setIsMenuOpen(false);
+    signOut(); // NextAuth signOut, or replace with your own logout logic
   };
 
   return (
-    <DropdownMenu>
-      <div className="focus:outline-none" ref={menuRef}>
-        <DropdownMenuTrigger onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          <div className="rounded-full hover:opacity-80 transition-opacity">
-            <Image 
-              src="/user-icon.png" 
-              alt="User Menu" 
-              width={24} 
-              height={24}
-              className="rounded-full"
-            />
-          </div>
-        </DropdownMenuTrigger>
-      </div>
-      
-      {isMenuOpen && (
-        <DropdownMenuContent 
-          align="end"
-          className="w-48 transform-gpu transition-all duration-200 ease-out"
+    <div className="focus:outline-none" ref={menuRef}>
+      {!isLoggedIn ? (
+        // 1) If user is NOT logged in, show a maroon "Login" button
+        <button
+          onClick={handleLoginClick}
+          className="bg-[#800000] text-white px-4 py-2 rounded hover:bg-[#8B0000]"
         >
-          <div className="bg-[#161617] border border-gray-700 rounded-md overflow-hidden">
-            <DropdownMenuItem onClick={handleLoginClick}>
-              <div className="block w-full px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-gray-800/50">
-                Login
+          Login
+        </button>
+      ) : (
+        // 2) If user IS logged in, show profile icon & dropdown
+        <DropdownMenu>
+         <DropdownMenuTrigger onClick={() => setIsMenuOpen(!isMenuOpen)}>
+  <button 
+    type="button"
+    className="rounded-full hover:opacity-80 transition-opacity"
+  >
+    <Image
+      src="/user-icon.png"
+      alt="User Menu"
+      width={32}
+      height={32}
+      className="rounded-full"
+    />
+  </button>
+</DropdownMenuTrigger>
+
+
+          {isMenuOpen && (
+            <DropdownMenuContent
+              align="end"
+              className="w-48 transform-gpu transition-all duration-200 ease-out"
+            >
+              <div className="bg-[#161617] border border-gray-700 rounded-md overflow-hidden">
+                <DropdownMenuItem onClick={handleDashboardClick}>
+                  <div className="block w-full px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-gray-800/50">
+                    User Dashboard
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogoutClick}>
+                  <div className="block w-full px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-gray-800/50">
+                    Logout
+                  </div>
+                </DropdownMenuItem>
               </div>
-            </DropdownMenuItem>
-          
-            <DropdownMenuItem onClick={handleSignupClick}>
-              <div className="block w-full px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-gray-800/50">
-                Sign Up
-              </div>
-            </DropdownMenuItem>
-          </div>
-        </DropdownMenuContent>
+            </DropdownMenuContent>
+          )}
+        </DropdownMenu>
       )}
-    </DropdownMenu>
+    </div>
   );
 }

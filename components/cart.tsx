@@ -24,38 +24,34 @@ interface Props {
 
 const SideCart: FC<Props> = ({ visible, onRequestClose, children }) => {
   const { cart, removeFromCart } = useCart();
-  // Make sure your CartContext has a removeFromCart function
-
   const [showBookingMessage, setShowBookingMessage] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
 
-  // Handle logout logic
-  const handleLogout = () => {
-    // If user is NOT logged in, go to login page
+  // New checkout logic:
+  // If the user is not logged in, redirect to login with query parameters 
+  // to ensure that after logging in the cart remains open and they are taken to order summary.
+  // If logged in, redirect directly to order summary.
+  const handleCheckout = () => {
     if (!session?.user) {
-      router.push("/login");
+      router.push("/login?redirect=/order-summary&cartOpen=true");
     } else {
-      // If user IS logged in, show success message for 5 seconds
-      setShowBookingMessage(true);
-      setTimeout(() => {
-        setShowBookingMessage(false);
-      }, 5000);
+      router.push("/order-summary");
     }
   };
 
-  // Calculate subtotal
+  // Calculate subtotal ensuring numerical addition
   const subtotal = cart.reduce(
     (sum, item) => sum + Number(item.service.price),
     0
   );
 
+  const isBookDisabled = cart.length === 0;
+
   return (
     <>
       <Sheet open={visible} onOpenChange={() => onRequestClose?.()}>
         <SheetTrigger asChild>{children}</SheetTrigger>
-
-        {/* Updated styling to match Booking.tsx */}
         <SheetContent
           side="right"
           className="bg-white p-6 rounded-lg shadow-md overflow-auto w-96 min-h-screen flex flex-col z-50"
@@ -86,7 +82,6 @@ const SideCart: FC<Props> = ({ visible, onRequestClose, children }) => {
                   <p className="text-sm text-gray-600">
                     Price: ₹{item.service.price}
                   </p>
-                  {/* Remove item from cart */}
                   <button
                     className="text-red-500 text-xs mt-2 hover:underline"
                     onClick={() => removeFromCart(index)}
@@ -98,9 +93,8 @@ const SideCart: FC<Props> = ({ visible, onRequestClose, children }) => {
             )}
           </div>
 
-          {/* Footer with Subtotal, Checkout, Close, and Logout */}
+          {/* Footer with Subtotal, Checkout, and Close */}
           <SheetFooter className="mt-auto">
-            {/* Subtotal */}
             <div className="py-4">
               <h1 className="font-semibold text-xl uppercase text-gray-800">
                 Subtotal
@@ -118,10 +112,15 @@ const SideCart: FC<Props> = ({ visible, onRequestClose, children }) => {
               </Button>
             </SheetClose>
 
-            {/* Logout Button */}
+            {/* Checkout Button with conditional styling */}
             <Button
-              onClick={handleLogout}
-              className="outline-none block mt-4 text-center w-full uppercase bg-gray-300 text-gray-700 hover:bg-gray-400"
+              onClick={handleCheckout}
+              disabled={isBookDisabled}
+              className={`outline-none block mt-4 text-center w-full uppercase ${
+                isBookDisabled
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-[#800000] text-white hover:bg-[#8B0000]"
+              }`}
             >
               Checkout
             </Button>
@@ -129,7 +128,7 @@ const SideCart: FC<Props> = ({ visible, onRequestClose, children }) => {
         </SheetContent>
       </Sheet>
 
-      {/* 5-second success message */}
+      {/* 5-second success message (if needed) */}
       {showBookingMessage && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg transition-opacity duration-300">
           Booking successful, we'll assign you a Service Provider shortly!
