@@ -1,3 +1,4 @@
+// signup.tsx
 "use client";
 
 import Link from "next/link";
@@ -75,12 +76,19 @@ const RegisterScreen = () => {
         });
       }
     } catch (err) {
-      toast.error(getError(err), {
-        style: { backgroundColor: "#800000", color: "#fff" },
-      });
+      const errorMsg = getError(err);
+      if (errorMsg === "User already exists") {
+        toast.error(errorMsg, {
+          autoClose: 3000,
+          style: { backgroundColor: "#800000", color: "#fff" },
+        });
+      } else {
+        toast.error(errorMsg, {
+          style: { backgroundColor: "#800000", color: "#fff" },
+        });
+      }
     }
   };
-  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#0f0f0f] overflow-x-hidden px-4">

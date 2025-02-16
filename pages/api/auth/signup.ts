@@ -41,7 +41,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     address,
     pincode,
     isAdmin: false,
-    isServiceProvider: false, // Regular user
   });
 
   const user = await newUser.save();
