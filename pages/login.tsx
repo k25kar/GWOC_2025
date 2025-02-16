@@ -3,13 +3,13 @@
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, useSession, getSession } from "next-auth/react";
 import * as Yup from "yup";
 import { getError } from "@/lib/error";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
-import { FcGoogle } from "react-icons/fc"; // React Icons: Google Icon
-import Image from "next/image"; // If needed
+import { FcGoogle } from "react-icons/fc";
+import axios from "axios";
 
 interface LoginFormValues {
   email: string;
@@ -31,13 +31,53 @@ const LoginScreen = () => {
   const router = useRouter();
   const { redirect }: any = router.query;
 
-  useEffect(() => {
-    if (session?.user) {
-      router.push(redirect || "/");
+  // Function to check provider status for a given email.
+  // If the email belongs to a service provider, the endpoint should return { status: "approved" } or other status.
+  // If not found (or not a service provider), we assume it's a normal user.
+  const checkProviderStatus = async (email: string): Promise<string | null> => {
+    try {
+      const res = await axios.get(`/api/auth/check-provider-status?email=${encodeURIComponent(email)}`);
+      return res.data.status; // expected: "approved", "pending", or "rejected"
+    } catch (error) {
+      // If error (e.g. 404), assume it's not a service provider.
+      return null;
     }
-  }, [router, session, redirect]);
+  };
 
+  // After a session is detected, check if it's a provider and if its status is approved.
+  useEffect(() => {
+    const userEmail = session?.user?.email;
+    // Make sure userEmail is actually a string
+    if (typeof userEmail === "string") {
+      const checkStatusAndRedirect = async () => {
+        const status = await checkProviderStatus(userEmail);
+        if (status && status !== "approved") {
+          toast.error("You are not allowed to this action right now!", {
+            autoClose: 4000,
+            style: { backgroundColor: "#800000", color: "#fff" },
+          });
+        } else {
+          router.push(redirect || "/");
+        }
+      };
+      checkStatusAndRedirect();
+    }
+  }, [session, redirect, router]);
+  
+  
+
+  // Handle credentials sign in.
   const handleSubmit = async ({ email, password }: LoginFormValues) => {
+    // Before calling signIn, check if the email belongs to a service provider
+    // and ensure its status is approved.
+    const status = await checkProviderStatus(email);
+    if (status && status !== "approved") {
+      toast.error("You are not allowed to this action right now!", {
+        autoClose: 4000,
+        style: { backgroundColor: "#800000", color: "#fff" },
+      });
+      return;
+    }
     try {
       const result: any = await signIn("credentials", {
         redirect: false,
@@ -45,23 +85,56 @@ const LoginScreen = () => {
         password,
       });
       if (result.error) {
-        toast.error(result.error);
+        toast.error(result.error, {
+          style: { backgroundColor: "#800000", color: "#fff" },
+        });
       }
     } catch (err) {
-      toast.error(getError(err));
+      toast.error(getError(err), {
+        style: { backgroundColor: "#800000", color: "#fff" },
+      });
+    }
+  };
+
+  // Handle Google sign in.
+  const handleGoogleSignIn = async () => {
+    try {
+      const result: any = await signIn("google", { redirect: false });
+      if (result.error) {
+        toast.error(result.error, {
+          style: { backgroundColor: "#800000", color: "#fff" },
+        });
+        return;
+      }
+      // Wait for the session to update.
+      const sessionAfter = await getSession();
+      if (sessionAfter?.user?.email) {
+        const status = await checkProviderStatus(sessionAfter.user.email);
+        if (status && status !== "approved") {
+          toast.error("You are not allowed to this action right now!", {
+            autoClose: 4000,
+            style: { backgroundColor: "#800000", color: "#fff" },
+          });
+          return;
+        }
+      }
+      router.push(redirect || "/");
+    } catch (err) {
+      toast.error(getError(err), {
+        style: { backgroundColor: "#800000", color: "#fff" },
+      });
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#0f0f0f] overflow-x-hidden px-4">
-      {/* Outer container ensures no horizontal scroll */}
       <div className="max-w-md w-full mx-auto">
         <div className="p-6 sm:p-8 space-y-6 bg-[#1a1a1a] rounded-md shadow-md">
           <h1 className="text-3xl font-semibold text-white text-center">Sign In</h1>
 
           {/* Google Sign-In Button (Maroon Gradient) */}
           <button
-            onClick={() => signIn("google")}
+            onClick={handleGoogleSignIn}
             className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md
                        bg-gradient-to-r from-[#800000] to-[#8B0000] hover:from-[#8B0000] hover:to-[#700000]
                        text-white font-medium transition-colors"

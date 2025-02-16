@@ -7,7 +7,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 interface SPFormValues {
   name: string;
@@ -15,6 +15,8 @@ interface SPFormValues {
   password: string;
   confirmpassword: string;
   phone: string;
+  about: string;
+  skills: string;
   servicePincodes: string;
 }
 
@@ -22,7 +24,9 @@ const validationSchema = Yup.object({
   name: Yup.string()
     .min(1, "Username must be at least 1 character")
     .required("Username is required"),
-  email: Yup.string().email("Invalid email format").required("Email is required"),
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
@@ -32,10 +36,14 @@ const validationSchema = Yup.object({
   phone: Yup.string()
     .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
     .required("Phone number is required"),
+  about: Yup.string().required("About is required"),
+  skills: Yup.string().required("Skills are required"),
   servicePincodes: Yup.string()
     .required("Service pincodes are required")
     .test("valid-pincodes", "Invalid pincodes format", (value) => {
-      return value ? value.split(",").every((pincode) => /^[0-9]{6}$/.test(pincode.trim())) : false;
+      return value
+        ? value.split(",").every((pincode) => /^[0-9]{6}$/.test(pincode.trim()))
+        : false;
     }),
 });
 
@@ -45,6 +53,8 @@ const initialValues: SPFormValues = {
   password: "",
   confirmpassword: "",
   phone: "",
+  about: "",
+  skills: "",
   servicePincodes: "",
 };
 
@@ -62,30 +72,38 @@ const RegisterAsSP = () => {
   const handleSubmit = async (values: SPFormValues) => {
     try {
       await axios.post("/api/auth/signup-sp", {
-        ...values,
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        phone: values.phone,
+        about: values.about,
+        skills: values.skills.split(",").map((s) => s.trim()),
         servicePincodes: values.servicePincodes.split(",").map((p) => p.trim()),
       });
-      toast.success("The Helper Buddy team will contact you shortly", {
+      toast.success(
+        "Thank you for registering, the Helper Buddy team will reach out to you shortly!",
+        {
+          autoClose: 4000,
+          style: { backgroundColor: "#800000", color: "#fff" },
+        }
+      );
+      setTimeout(() => {
+        router.push("/");
+      }, 4000);
+    } catch (err: unknown) {
+      let errorMsg = "Registration failed";
+      if (axios.isAxiosError(err)) {
+        errorMsg = err.response?.data?.message || errorMsg;
+      } else if (err instanceof Error) {
+        errorMsg = err.message;
+      }
+      toast.error(errorMsg, {
+        autoClose: 3000,
         style: { backgroundColor: "#800000", color: "#fff" },
       });
-      router.push("/");
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message || "Registration failed", {
-          style: { backgroundColor: "#800000", color: "#fff" },
-        });
-      } else if (err instanceof Error) {
-        toast.error(err.message, {
-          style: { backgroundColor: "#800000", color: "#fff" },
-        });
-      } else {
-        toast.error("An unexpected error occurred", {
-          style: { backgroundColor: "#800000", color: "#fff" },
-        });
-      }
     }
   };
-  
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#0f0f0f] overflow-x-hidden px-4">
       <div className="w-full max-w-md mx-auto">
@@ -105,7 +123,11 @@ const RegisterAsSP = () => {
             <hr className="mt-4 border-gray-600" />
           </div>
 
-          <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
             <Form className="space-y-4">
               {/* Username */}
               <div>
@@ -117,8 +139,7 @@ const RegisterAsSP = () => {
                   name="name"
                   type="text"
                   placeholder="Enter your username"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
-                             focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="name" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -133,8 +154,7 @@ const RegisterAsSP = () => {
                   name="email"
                   type="email"
                   placeholder="Enter your email"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
-                             focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -149,8 +169,7 @@ const RegisterAsSP = () => {
                   name="password"
                   type="password"
                   placeholder="Enter your password"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
-                             focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="password" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -165,8 +184,7 @@ const RegisterAsSP = () => {
                   name="confirmpassword"
                   type="password"
                   placeholder="Re-enter your password"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
-                             focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="confirmpassword" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -181,10 +199,42 @@ const RegisterAsSP = () => {
                   name="phone"
                   type="tel"
                   placeholder="Enter your phone number"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
-                             focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="phone" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
+
+              {/* About */}
+              <div>
+                <label htmlFor="about" className="block mb-2 text-sm font-medium text-gray-200">
+                  About
+                </label>
+                <Field
+                  as="textarea"
+                  id="about"
+                  name="about"
+                  placeholder="Tell us about yourself"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                />
+                <ErrorMessage name="about" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
+
+              {/* Skills */}
+              <div>
+                <label htmlFor="skills" className="block mb-2 text-sm font-medium text-gray-200">
+                  Skills
+                </label>
+                <Field
+                  id="skills"
+                  name="skills"
+                  type="text"
+                  placeholder="e.g., plumbing, carpentry, painting"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                />
+                <div className="text-gray-400 text-sm mt-1">
+                  Enter comma-separated skills
+                </div>
+                <ErrorMessage name="skills" component="div" className="text-red-500 text-sm mt-1" />
               </div>
 
               {/* Service Pincodes */}
@@ -197,8 +247,7 @@ const RegisterAsSP = () => {
                   name="servicePincodes"
                   type="text"
                   placeholder="e.g., 395007, 395003, 395006"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
-                             focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <div className="text-gray-400 text-sm mt-1">
                   Enter comma-separated pincodes
@@ -218,7 +267,10 @@ const RegisterAsSP = () => {
               <div className="text-center">
                 <p className="text-gray-400">
                   Already have an account? &nbsp;
-                  <Link className="text-[#800000] hover:underline" href={`/login?redirect=${redirect || "/"}`}>
+                  <Link
+                    className="text-[#800000] hover:underline"
+                    href={`/login?redirect=${redirect || "/"}`}
+                  >
                     Login
                   </Link>
                 </p>
