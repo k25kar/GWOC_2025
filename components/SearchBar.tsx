@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import debounce from "lodash.debounce";
 import Typewriter from "typewriter-effect";
@@ -10,6 +10,8 @@ export default function SearchBar() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<{ name: string; category: string }[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchBarRef = useRef<HTMLDivElement>(null);
+
   const router = useRouter();
 
   // Sample services for the typewriter effect
@@ -51,8 +53,23 @@ export default function SearchBar() {
     router.push(`/services?page=features&category=${encodeURIComponent(category)}`);
   };
 
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node)) {
+      setResults([]); // Close the search results
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
+
+
   return (
-    <div className="relative w-[180px] lg:w-[240px]">
+    <div ref={searchBarRef} className="relative w-[180px] lg:w-[240px]">
       {/* Search Box */}
       <div className="relative">
         {/* Search Icon */}
@@ -93,11 +110,11 @@ export default function SearchBar() {
 
       {/* Search Results Dropdown */}
       {results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-[#161617] rounded-md shadow-lg border border-gray-700 z-50">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-[#141414] rounded-md shadow-lg border border-gray-700 z-50">
           {results.map((service, index) => (
             <div
               key={service.name}
-              className={`p-2 ${index !== 0 ? "border-t border-gray-700" : ""}`}
+              className={`p-2 ${index !== 0 ? "border-t border-gray-500" : ""}`}
               onClick={() => handleCategoryClick(service.category)}
             >
               <h3 className="font-semibold text-gray-200 text-xs">{service.name}</h3>

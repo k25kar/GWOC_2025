@@ -37,7 +37,7 @@ export default function ServicesPage() {
   
 
   return (
-    <main className="min-h-screen bg-service_black text-white">
+    <main className="min-h-screen bg-black text-white">
       {/* Hero Section */}
       <section
         ref={heroRef}
@@ -53,19 +53,25 @@ export default function ServicesPage() {
           <BlurText
             text="Our Services."
             delay={50}
-            animateBy="letters"
-            direction="bottom"
+            animateBy="words"
+            direction="top"
             onAnimationComplete={handleAnimationComplete}
           />
         </motion.h1>
-        <motion.p
+        <motion.h1
           initial={{ opacity: 0 }}
           animate={heroInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
           className="text-xl md:text-2xl text-zinc-400 max-w-2xl mb-12"
         >
-          Reliable, Fast & Affordable – Just a Click Away
-        </motion.p>
+          <BlurText
+            text="Reliable, Fast & Affordable – Just a Click Away"
+            delay={50}
+            animateBy="words"
+            direction="bottom"
+            onAnimationComplete={handleAnimationComplete}
+          />
+        </motion.h1>
         <motion.div
           initial={{ opacity: 0.6 }}
           whileHover={{ opacity: 1, scale: 1.1 }}

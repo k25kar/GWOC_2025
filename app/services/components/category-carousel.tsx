@@ -5,7 +5,6 @@ import { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import Booking from "@/components/Booking";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { useMemo } from "react";
 
 interface FeaturesCarouselProps {
   onCategorySelect: (category: string) => void;
@@ -27,7 +26,7 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
   const inView = useInView(ref);
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -44,13 +43,18 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
 
   useEffect(() => {
     const urlCategory = searchParams.get("category");
-  
-    if (urlCategory && categories.includes(urlCategory)) {
+    if (urlCategory) {
       setSelectedCategory(urlCategory);
       fetchServices(urlCategory);
+  
+      if (!selectedCategory) {
+        document.getElementById("features-carousel")?.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      setCurrentIndex(0);
     }
-  }, [categories, searchParams]); // ✅ Added searchParams to ensure it updates when the URL changes
-    
+  }, [categories, searchParams, pathname, selectedCategory]); 
+   
   
   
 
@@ -79,18 +83,16 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
   const prev = () => scrollToIndex(currentIndex - 1);
   
 
-  const handleCategoryClick = (category: string, fromSearchBar = false) => {
+  const handleCategoryClick = (category: string) => {
     if (selectedCategory !== category) {
       onCategorySelect(category);
       setSelectedCategory(category);
       fetchServices(category);
   
-      // Only update the URL if coming from the search bar
-      if (fromSearchBar) {
-        const newParams = new URLSearchParams(searchParams.toString());
-        newParams.set("category", category);
-        router.push(`${pathname}?${newParams.toString()}`, { scroll: true });
-      }
+      // Update URL without reloading the page
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.set("category", category);
+      router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
     }
   };
   
@@ -115,7 +117,7 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
               >
                 <button
                   onClick={() => handleCategoryClick(category)}
-                  className="w-auto min-w-[150px] min-h-[50px] px-4 py-2 bg-zinc-800 rounded-xl flex items-center justify-center group-hover:bg-gray-600 transition-colors"
+                  className="w-auto min-w-[150px] min-h-[50px] px-4 py-2 bg-zinc-800 rounded-xl flex items-center justify-center hover:bg-gray-600 transition-colors"
                 >
                   <span className="text-white text-sm font-medium whitespace-nowrap">
                     {category}
@@ -195,3 +197,5 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
 };
 
 export default FeaturesCarousel;
+
+

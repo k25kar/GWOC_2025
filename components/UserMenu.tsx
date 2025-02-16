@@ -56,7 +56,7 @@ export function UserMenu() {
         // 1) If user is NOT logged in, show a maroon "Login" button
         <button
           onClick={handleLoginClick}
-          className="bg-[#800000] text-white px-4 py-2 rounded hover:bg-[#8B0000]"
+          className="bg-[#282828] text-white px-4 py-2 rounded hover:bg-[#ffffff] hover:text-black border border-[#cccccc]"
         >
           Login
         </button>
