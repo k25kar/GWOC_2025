@@ -15,7 +15,7 @@ import { useCart } from "@/src/context/CartContext";
 import { Button } from "./ui/button";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { CartProvider } from "@/src/context/CartContext";
+
 
 interface Props {
   visible?: boolean;
@@ -35,7 +35,7 @@ const SideCart: FC<Props> = ({ visible, onRequestClose, children }) => {
   // If logged in, redirect directly to order summary.
   const handleCheckout = () => {
     if (!session?.user) {
-      router.push("/login?redirect=/order-summary&cartOpen=true");
+      router.push("/login?redirect=/order-summary");
     } else {
       router.push("/order-summary");
     }
@@ -129,12 +129,7 @@ const SideCart: FC<Props> = ({ visible, onRequestClose, children }) => {
         </SheetContent>
       </Sheet>
 
-      {/* 5-second success message (if needed) */}
-      {showBookingMessage && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-md shadow-lg transition-opacity duration-300">
-          Booking successful, we'll assign you a Service Provider shortly!
-        </div>
-      )}
+      
     </>
   );
 };

@@ -5,8 +5,6 @@ import { useCart } from "@/src/context/CartContext";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { CartProvider } from "@/src/context/CartContext";
-import { SessionProvider } from "next-auth/react";
 
 interface UserDetails {
   name: string;
@@ -21,12 +19,10 @@ const OrderSummary: React.FC = () => {
   const { data: session } = useSession();
   const router = useRouter();
 
-  // State to hold fetched user details from the database.
+  // Fetch full user details from database using session.user._id (if available)
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
-
   useEffect(() => {
     if (session?.user?._id) {
-      // Fetch the full user details using the user's id.
       fetch(`/api/users/${session.user._id}`)
         .then((res) => res.json())
         .then((data) => setUserDetails(data))
@@ -34,35 +30,32 @@ const OrderSummary: React.FC = () => {
     }
   }, [session?.user?._id]);
 
-  // Track remarks for each service in the cart.
+  // Local state for remarks per cart item.
   const [remarks, setRemarks] = useState<{ [index: number]: string }>({});
-
-  // Track whether a user is editing address/pincode for each cart item.
+  // Local state to track if user is editing address/pincode per cart item.
   const [editing, setEditing] = useState<{ [index: number]: boolean }>({});
-
-  // Track overridden address/pincode for each cart item (if user chooses to edit).
+  // Local state to hold overridden address/pincode for each cart item.
   const [addresses, setAddresses] = useState<{ [index: number]: string }>({});
   const [pincodes, setPincodes] = useState<{ [index: number]: string }>({});
 
-  // Use user details fetched from the database;
-  // if not yet loaded, fall back to session values.
+  // Derive user info: use full details from DB if available; else fallback to session values.
   const userName = userDetails?.name || session?.user?.name || "Your Name";
   const userEmail = userDetails?.email || session?.user?.email || "your.email@example.com";
   const userPhone = userDetails?.phone || session?.user?.phone || "Not set";
   const userAddress = userDetails?.address || session?.user?.address || "Not set";
   const userPincode = userDetails?.pincode || session?.user?.pincode || "Not set";
 
-  // Handle remark changes.
+  // Handle changes to the remark field.
   const handleRemarkChange = (index: number, value: string) => {
     setRemarks((prev) => ({ ...prev, [index]: value }));
   };
 
-  // Toggle editing state for a given cart item.
+  // Toggle address editing for a given cart item.
   const handleEditAddress = (index: number) => {
     setEditing((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  // Handle address and pincode changes per cart item.
+  // Handle override changes for address and pincode.
   const handleAddressChange = (index: number, value: string) => {
     setAddresses((prev) => ({ ...prev, [index]: value }));
   };
@@ -92,8 +85,6 @@ const OrderSummary: React.FC = () => {
   };
 
   return (
-    <SessionProvider>
-    <CartProvider>
     <div className="min-h-screen bg-[#0f0f0f] p-6 text-white">
       <div className="max-w-5xl mx-auto">
         {/* Back Button */}
@@ -113,7 +104,7 @@ const OrderSummary: React.FC = () => {
             ) : (
               cart.map((item, index) => {
                 const isEditing = editing[index] || false;
-                // Use overridden address if present; otherwise default to user's address.
+                // Use the overridden address/pincode if set; otherwise use user's default.
                 const currentAddress = addresses[index] ?? userAddress;
                 const currentPincode = pincodes[index] ?? userPincode;
 
@@ -143,7 +134,8 @@ const OrderSummary: React.FC = () => {
                         value={remarks[index] || ""}
                         onChange={(e) => handleRemarkChange(index, e.target.value)}
                         placeholder="Add a remark"
-                        className="mt-1 block w-full rounded-md border border-gray-600 bg-[#2c2c2c] text-gray-200 focus:outline-none focus:border-[#800000] p-2"
+                        className="mt-1 block w-full rounded-md border border-gray-600 bg-[#2c2c2c] text-gray-200
+                                   focus:outline-none focus:border-[#800000] p-2"
                       />
                     </div>
 
@@ -168,14 +160,16 @@ const OrderSummary: React.FC = () => {
                             value={currentAddress}
                             onChange={(e) => handleAddressChange(index, e.target.value)}
                             placeholder="Enter address"
-                            className="block w-full rounded-md border border-gray-600 bg-[#2c2c2c] text-gray-200 focus:outline-none focus:border-[#800000] p-2"
+                            className="block w-full rounded-md border border-gray-600 bg-[#2c2c2c]
+                                       text-gray-200 focus:outline-none focus:border-[#800000] p-2"
                           />
                           <input
                             type="text"
                             value={currentPincode}
                             onChange={(e) => handlePincodeChange(index, e.target.value)}
                             placeholder="Enter pincode"
-                            className="block w-full rounded-md border border-gray-600 bg-[#2c2c2c] text-gray-200 focus:outline-none focus:border-[#800000] p-2"
+                            className="block w-full rounded-md border border-gray-600 bg-[#2c2c2c]
+                                       text-gray-200 focus:outline-none focus:border-[#800000] p-2"
                           />
                         </div>
                       )}
@@ -226,8 +220,6 @@ const OrderSummary: React.FC = () => {
         </div>
       </div>
     </div>
-    </CartProvider>
-    </SessionProvider>
   );
 };
 
