@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = req.query;
+  
   if (!id || typeof id !== "string") {
     return res.status(422).json({ message: "User ID is required" });
   }
@@ -13,12 +14,24 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     await db.connect();
 
     if (req.method === "GET") {
-      const user = await User.findById(id).select("-password");
+      const user = await User.findById(id).select("-password"); // Exclude password from the response
       await db.disconnect();
+      
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      return res.status(200).json(user);
+
+      // If you want the wallet balance specifically, you can include it like this:
+      const userResponse = {
+        name: user.name,
+        email: user.email,
+        wallet: user.wallet, // Adding the wallet field to the response
+        phone: user.phone,
+        address: user.address,
+        pincode: user.pincode
+      };
+
+      return res.status(200).json(userResponse); // Return the user object along with wallet balance
     }
 
     if (req.method === "PUT") {
@@ -56,6 +69,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
       }
+
       return res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
     }
 

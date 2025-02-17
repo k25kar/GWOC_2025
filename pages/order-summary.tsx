@@ -13,6 +13,7 @@ interface UserDetails {
   phone: string;
   address: string;
   pincode: string;
+  wallet: number;
 }
 
 const OrderSummary: React.FC = () => {
@@ -20,50 +21,48 @@ const OrderSummary: React.FC = () => {
   const { data: session } = useSession();
   const router = useRouter();
 
-  // State to display success message instead of alert
   const [successMessage, setSuccessMessage] = useState("");
+  const [userWalletBalance, setUserWalletBalance] = useState<number>(0);
+  const [useWallet, setUseWallet] = useState(false); 
 
-  // Fetch full user details from database using session.user._id (if available)
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   useEffect(() => {
     if (session?.user?._id) {
       fetch(`/api/users/${session.user._id}`)
         .then((res) => res.json())
-        .then((data) => setUserDetails(data))
+        .then((data) => {
+          setUserDetails(data);
+          if (data.wallet) {
+            setUserWalletBalance(data.wallet); // Set wallet balance from user data
+          }
+        })
         .catch((error) => console.error("Error fetching user details:", error));
     }
   }, [session?.user?._id]);
+  
 
-  // Local state for remarks per cart item.
   const [remarks, setRemarks] = useState<{ [index: number]: string }>({});
-  // Local state to track if user is editing address/pincode per cart item.
   const [editing, setEditing] = useState<{ [index: number]: boolean }>({});
-  // Local state to hold overridden address/pincode for each cart item.
   const [addresses, setAddresses] = useState<{ [index: number]: string }>({});
   const [pincodes, setPincodes] = useState<{ [index: number]: string }>({});
 
-  // Derive user info: use full details from DB if available; else fallback to session values.
   const userName = userDetails?.name || session?.user?.name || "Your Name";
   const userEmail =
     userDetails?.email || session?.user?.email || "your.email@example.com";
-  const userPhone =
-    userDetails?.phone || session?.user?.phone || "Not set";
+  const userPhone = userDetails?.phone || session?.user?.phone || "Not set";
   const userAddress =
     userDetails?.address || session?.user?.address || "Not set";
   const userPincode =
     userDetails?.pincode || session?.user?.pincode || "Not set";
 
-  // Handle changes to the remark field.
   const handleRemarkChange = (index: number, value: string) => {
     setRemarks((prev) => ({ ...prev, [index]: value }));
   };
 
-  // Toggle address editing for a given cart item.
   const handleEditAddress = (index: number) => {
     setEditing((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  // Handle override changes for address and pincode.
   const handleAddressChange = (index: number, value: string) => {
     setAddresses((prev) => ({ ...prev, [index]: value }));
   };
@@ -72,68 +71,87 @@ const OrderSummary: React.FC = () => {
     setPincodes((prev) => ({ ...prev, [index]: value }));
   };
 
-  // Calculate subtotal.
   const subtotal = cart.reduce(
     (sum, item) => sum + Number(item.service.price),
     0
   );
 
-  // Payment method handler: For "Pay On Delivery"
-  const handlePayOnDelivery = async () => {
-    if (!session?.user) {
-      // Ensure the user is logged in
-      alert("Please log in to complete your booking.");
-      return;
+  // Calculate the effective subtotal, considering wallet usage
+  const effectiveSubtotal = useWallet
+  ? subtotal > userWalletBalance // Check if the subtotal is greater than the wallet balance
+    ? subtotal - userWalletBalance
+    : subtotal // Do not apply wallet if subtotal is lesser or equal to the wallet balance
+  : subtotal;
+
+
+  const handleWalletCheckboxChange = () => {
+    if(useWallet){
+      setUseWallet(false);
     }
-    // Build an array of booking objects—one for each service in the cart.
-    const bookingsArray = cart.map((item, index) => ({
-      userId: session.user._id,
-      userName,
-      userEmail,
-      userPhone,
-      address: addresses[index] ?? userAddress,
-      pincode: pincodes[index] ?? userPincode,
-      serviceName: item.service.name,
-      price: item.service.price,
-      remark: remarks[index] || "",
-      date: item.date, // Assumes item.date is a Date object
-      time: item.time,
-      paymentStatus: "pending", // Default for Pay On Delivery
-      serviceProviderId: null,
-      serviceProviderName: "",
-      serviceProviderContact: "",
-    }));
-    try {
-      const res = await axios.post("/api/bookings/create", {
-        bookings: bookingsArray,
-      });
-      if (res.status === 201) {
-        // Display a success message for 3 seconds
-        setSuccessMessage("Booking successful! Your booking has been placed.");
-        setTimeout(() => {
-          // Clear the localStorage cart and context cart, then redirect to home
-          localStorage.setItem("cart", JSON.stringify([]));
-          clearCart();
-          router.push("/");
-        }, 3000);
+    if (subtotal > userWalletBalance && !useWallet) {
+      setUseWallet(true);
+    } else if (subtotal <= userWalletBalance) {
+      setUseWallet(false); // prevent setting wallet when subtotal <= wallet balance
+      alert("Your wallet balance is enough for the total, please uncheck.");
+    }
+  };
+     
+    
+
+    const handlePayOnDelivery = async () => {
+      if (!session?.user) {
+        alert("Please log in to complete your booking.");
+        return;
       }
-    } catch (error) {
-      console.error("Error creating bookings", error);
-      alert("Error creating bookings. Please try again later.");
-    }
-  };
+    
+      const bookingsArray = cart.map((item, index) => ({
+        userId: session.user._id,
+        userName,
+        userEmail,
+        userPhone,
+        address: addresses[index] ?? userAddress,
+        pincode: pincodes[index] ?? userPincode,
+        serviceName: item.service.name,
+        price: item.service.price,
+        remark: remarks[index] || "",
+        date: item.date,
+        time: item.time,
+        paymentStatus: "pending", // Set payment status to pending
+        serviceProviderId: null,
+        serviceProviderName: "",
+        serviceProviderContact: "",
+      }));
+    
+      try {
+        const res = await axios.post("/api/bookings/create", {
+          bookings: bookingsArray,
+          finalTotal: effectiveSubtotal, // Use effectiveSubtotal with wallet deduction
+        });
+        if (res.status === 201) {
+          setSuccessMessage("Booking successful! Your booking has been placed.");
+          setTimeout(() => {
+            localStorage.setItem("cart", JSON.stringify([]));
+            clearCart();
+            router.push("/");
+          }, 3000);
+        }
+      } catch (error) {
+        console.error("Error creating bookings", error);
+        alert("Error creating bookings. Please try again later.");
+      }
+    };
+    
+    const handlePayNow = async () => {
+      const finalTotal = effectiveSubtotal;
+      console.log("Proceeding to Pay Now with total:", finalTotal);
+      router.push("/");
+    };
+    
 
-  // Payment method handler: For "Pay Now"
-  const handlePayNow = () => {
-    router.push("/");
-  };
-
-  // Back to Home handler.
   const handleBackHome = () => {
     router.push("/");
   };
 
-  // If a success message is present, display it full-screen.
   if (successMessage) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0f0f0f] text-white">
@@ -272,20 +290,30 @@ const OrderSummary: React.FC = () => {
               {/* Default Address & Pincode */}
               <div className="mt-4 border-t border-gray-700 pt-4">
                 <h2 className="text-xl font-bold mb-2">Default Address</h2>
-                <p className="text-sm text-gray-300">
-                  Address: {userAddress}
-                </p>
-                <p className="text-sm text-gray-300">
-                  Pincode: {userPincode}
-                </p>
+                <p className="text-sm text-gray-300">Address: {userAddress}</p>
+                <p className="text-sm text-gray-300">Pincode: {userPincode}</p>
               </div>
+            </div>
+
+             {/* Wallet checkbox */}
+             <div className="mt-4 flex items-center">
+              <input
+                type="checkbox"
+                checked={useWallet}
+                onChange={handleWalletCheckboxChange} 
+                id="use-wallet"
+                className="mr-2"
+              />
+              <label htmlFor="use-wallet" className="text-sm text-gray-300">
+                Use wallet balance (₹{userWalletBalance})
+              </label>
             </div>
 
             {/* Subtotal & Payment Buttons */}
             <div className="mt-4 border-t border-gray-700 pt-4">
               <h2 className="font-semibold text-lg uppercase">Subtotal</h2>
               <p className="font-semibold text-gray-200 text-xl">
-                ₹{subtotal}
+                ₹{effectiveSubtotal}
               </p>
               <div className="mt-4 flex gap-4">
                 <Button

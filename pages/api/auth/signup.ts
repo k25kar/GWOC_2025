@@ -41,9 +41,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     address,
     pincode,
     isAdmin: false,
+    wallet: 100,
   });
 
   const user = await newUser.save();
+  console.log(user.wallet);
   await db.disconnect();
 
   res.status(201).json({
@@ -52,6 +54,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     name: user.name,
     email: user.email,
     isAdmin: user.isAdmin,
+    wallet: user.wallet,
   });
 };
 

@@ -27,6 +27,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <title>
+          Helper Buddy
+        </title>
+        <meta name="description" content="Your one stop solution." />
+
+        <link rel="icon" href="/helperbuddy-logo.ico" />
+
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

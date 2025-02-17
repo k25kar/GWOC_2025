@@ -19,6 +19,7 @@ interface SignupFormValues {
   phone: string;
   address: string;
   pincode: string;
+  wallet:number;
 }
 
 const validationSchema = Yup.object({
@@ -49,6 +50,7 @@ const initialValues: SignupFormValues = {
   phone: "",
   address: "",
   pincode: "",
+  wallet:100,
 };
 
 const RegisterScreen = () => {
@@ -64,7 +66,8 @@ const RegisterScreen = () => {
 
   const handleSubmit = async (values: SignupFormValues) => {
     try {
-      await axios.post("/api/auth/signup", values);
+      const payload = {...values, wallet:100};
+      await axios.post("/api/auth/signup", payload);
       const result: any = await signIn("credentials", {
         redirect: false,
         email: values.email,
