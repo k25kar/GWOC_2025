@@ -1,20 +1,33 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
-// Define the interface for the Service model
+// Define the interface for TypeScript
 interface IService extends Document {
+  id: string; // The MongoDB _id field, treated as a string
   name: string;
-  category: string;
-  price: string; // Assuming the price is a string (based on your data example)
+  description: string;
+  price: number; // Number type for price
+  imageUrl: string; // URL to the service image
+  category: string; // Category of the service
+  bookingCount: number; // Number of bookings
+  dateAdded: Date; // The date when the service was added (Date object)
 }
 
-// Define the schema for the Service model
-const serviceSchema = new Schema<IService>({
-  name: { type: String, required: true },
-  category: { type: String, required: true },
-  price: { type: String, required: true }, // Add the price field and make it required
-});
 
-// Create the Service model
-const Service = mongoose.models.Service || mongoose.model<IService>('Service', serviceSchema);
+// Define the Mongoose schema
+const serviceSchema = new Schema<IService>(
+  {
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    price: { type: Number, required: true }, // Change from string to number
+    imageUrl: { type: String, required: true },
+    category: { type: String, required: true },
+    bookingCount: { type: Number, default: 0 },
+    dateAdded: { type: Date, default: Date.now },
+  },
+  { timestamps: true }
+);
+
+// Create the model
+const Service = mongoose.models.Service || mongoose.model<IService>("Service", serviceSchema);
 
 export default Service;
