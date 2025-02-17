@@ -13,6 +13,14 @@ const bookingSchema = new Schema(
     remark: { type: String },
     date: { type: Date, required: true },
     time: { type: String, required: true },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid"],
+      default: "pending",
+    },
+    serviceProviderId: { type: Schema.Types.ObjectId, ref: 'Partner', default: null },
+    serviceProviderName: { type: String, default: "" },
+    serviceProviderContact: { type: String, default: "" },
   },
   {
     timestamps: true,

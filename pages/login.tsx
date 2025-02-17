@@ -31,49 +31,47 @@ const LoginScreen = () => {
   const router = useRouter();
   const { redirect }: any = router.query;
 
-  // Function to check provider status for a given email.
-  // If the email belongs to a service provider, the endpoint should return { status: "approved" } or other status.
-  // If not found (or not a service provider), we assume it's a normal user.
-  const checkProviderStatus = async (email: string): Promise<string | null> => {
+  // This function checks if the email exists in Users first.
+  // If not, it checks in Partners and returns an error message based on status.
+  const checkLoginStatus = async (email: string): Promise<string | null> => {
     try {
-      const res = await axios.get(`/api/auth/check-provider-status?email=${encodeURIComponent(email)}`);
-      return res.data.status; // expected: "approved", "pending", or "rejected"
+      // Check in Users collection
+      const userRes = await axios.get(`/api/auth/check-user?email=${encodeURIComponent(email)}`);
+      if (userRes.status === 200 && userRes.data.exists) {
+        // Normal user exists; no extra checks.
+        return null;
+      }
     } catch (error) {
-      // If error (e.g. 404), assume it's not a service provider.
+      // Assume error means user not found in Users; continue to check Partners.
+      console.log("User not found in Users; checking Partners...");
+    }
+
+    try {
+      // Check in Partners collection.
+      const partnerRes = await axios.get(`/api/auth/check-provider-status?email=${encodeURIComponent(email)}`);
+      if (partnerRes.status === 200) {
+        const status: string = partnerRes.data.status;
+        if (status === "pending") {
+          return "Registration under approval";
+        } else if (status === "rejected") {
+          return "Registration rejected";
+        } else if (status === "approved") {
+          return null;
+        }
+      }
+    } catch (error) {
+      // If not found in Partners, allow login (it might be a normal user)
       return null;
     }
+    return null;
   };
-
-  // After a session is detected, check if it's a provider and if its status is approved.
-  useEffect(() => {
-    const userEmail = session?.user?.email;
-    // Make sure userEmail is actually a string
-    if (typeof userEmail === "string") {
-      const checkStatusAndRedirect = async () => {
-        const status = await checkProviderStatus(userEmail);
-        if (status && status !== "approved") {
-          toast.error("You are not allowed to this action right now!", {
-            autoClose: 4000,
-            style: { backgroundColor: "#800000", color: "#fff" },
-          });
-        } else {
-          router.push(redirect || "/");
-        }
-      };
-      checkStatusAndRedirect();
-    }
-  }, [session, redirect, router]);
-  
-  
 
   // Handle credentials sign in.
   const handleSubmit = async ({ email, password }: LoginFormValues) => {
-    // Before calling signIn, check if the email belongs to a service provider
-    // and ensure its status is approved.
-    const status = await checkProviderStatus(email);
-    if (status && status !== "approved") {
-      toast.error("You are not allowed to this action right now!", {
-        autoClose: 4000,
+    const errorMsg = await checkLoginStatus(email);
+    if (errorMsg) {
+      toast.error(errorMsg, {
+        autoClose: 3000,
         style: { backgroundColor: "#800000", color: "#fff" },
       });
       return;
@@ -88,6 +86,9 @@ const LoginScreen = () => {
         toast.error(result.error, {
           style: { backgroundColor: "#800000", color: "#fff" },
         });
+      } else {
+        // After successful login, redirect to home page.
+        router.push("/");
       }
     } catch (err) {
       toast.error(getError(err), {
@@ -106,25 +107,46 @@ const LoginScreen = () => {
         });
         return;
       }
-      // Wait for the session to update.
+      // Wait for session update.
       const sessionAfter = await getSession();
       if (sessionAfter?.user?.email) {
-        const status = await checkProviderStatus(sessionAfter.user.email);
-        if (status && status !== "approved") {
-          toast.error("You are not allowed to this action right now!", {
-            autoClose: 4000,
+        const status = await checkLoginStatus(sessionAfter.user.email);
+        if (status) {
+          toast.error(status, {
+            autoClose: 3000,
             style: { backgroundColor: "#800000", color: "#fff" },
           });
           return;
         }
       }
-      router.push(redirect || "/");
+      // Successful Google login; redirect to home.
+      router.push("/");
     } catch (err) {
       toast.error(getError(err), {
         style: { backgroundColor: "#800000", color: "#fff" },
       });
     }
   };
+
+  useEffect(() => {
+    // Optionally, if a session exists already, you can perform status check and redirect.
+    const userEmail = session?.user?.email;
+    if (typeof userEmail === "string") {
+      const checkStatus = async () => {
+        const statusMsg = await checkLoginStatus(userEmail);
+        if (statusMsg) {
+          toast.error(statusMsg, {
+            autoClose: 3000,
+            style: { backgroundColor: "#800000", color: "#fff" },
+          });
+        } else {
+          router.push(redirect || "/");
+        }
+      };
+      // Uncomment the following if you wish to auto-redirect upon session creation:
+      // checkStatus();
+    }
+  }, [session, redirect, router]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#0f0f0f] overflow-x-hidden px-4">
@@ -136,8 +158,7 @@ const LoginScreen = () => {
           <button
             onClick={handleGoogleSignIn}
             className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md
-                       bg-[#141414] hover:bg-[#ffffff] hover:text-black
-                       text-white font-medium transition-colors"
+                       bg-[#141414] hover:bg-[#ffffff] hover:text-black text-white font-medium transition-colors"
           >
             <FcGoogle className="h-5 w-5" />
             Continue with Google
