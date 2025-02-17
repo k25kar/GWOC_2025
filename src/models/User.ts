@@ -7,6 +7,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   isAdmin: boolean;
+  wallet:number;
   phone?: string;
   address?: string;
   pincode?: string;
@@ -18,6 +19,7 @@ const userSchema = new mongoose.Schema<IUser>(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     isAdmin: { type: Boolean, required: true, default: false },
+    wallet: { type: Number, required: true, default: 100 },
     phone: { type: String },
     address: { type: String },
     pincode: { type: String },
