@@ -1,7 +1,8 @@
+import { NextApiRequest, NextApiResponse } from 'next'; // Import correct types
 import dbConnect from "@/lib/dbConnect"; // Import your database connection
 import Service from "@/src/models/Service"; // Assuming the Service model is in `src/models/Service.ts`
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
     try {
       // Ensure database connection is established
@@ -17,7 +18,7 @@ export default async function handler(req, res) {
       res.status(200).json({ categories: uniqueCategories });
     } catch (error) {
       console.error("Error fetching categories:", error);
-      res.status(500).json({ message: "Error fetching categories", error: error.message });
+      res.status(500).json({ message: "Error fetching categories", error });
     } finally {
       // Ensure the DB connection is properly closed after request is processed
       await dbConnect.disconnect();

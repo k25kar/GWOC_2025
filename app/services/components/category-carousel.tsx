@@ -42,7 +42,7 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
   }, []);
 
   useEffect(() => {
-    const urlCategory = searchParams.get("category");
+    const urlCategory = searchParams?.get("category");
     if (urlCategory) {
       setSelectedCategory(urlCategory);
       fetchServices(urlCategory);
@@ -90,7 +90,7 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
       fetchServices(category);
   
       // Update URL without reloading the page
-      const newParams = new URLSearchParams(searchParams.toString());
+      const newParams = new URLSearchParams(searchParams?.toString());
       newParams.set("category", category);
       router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
     }
