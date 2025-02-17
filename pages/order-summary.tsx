@@ -5,6 +5,7 @@ import { useCart } from "@/src/context/CartContext";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import axios from "axios";
 
 interface UserDetails {
   name: string;
@@ -70,12 +71,51 @@ const OrderSummary: React.FC = () => {
     0
   );
 
-  // Payment method handlers.
-  const handlePayOnDelivery = () => {
-    router.push("/order-confirmation?method=pod");
+  // Payment method handler: For "Pay On Delivery"
+  const handlePayOnDelivery = async () => {
+    if (!session?.user) {
+      // Ensure the user is logged in
+      alert("Please log in to complete your booking.");
+      return;
+    }
+    // Build an array of booking objects—one for each service in the cart.
+    const bookingsArray = cart.map((item, index) => ({
+      userId: session.user._id,
+      userName,
+      userEmail,
+      userPhone,
+      address: addresses[index] ?? userAddress,
+      pincode: pincodes[index] ?? userPincode,
+      serviceName: item.service.name,
+      price: item.service.price,
+      remark: remarks[index] || "",
+      date: item.date, // Assumes item.date is a Date object
+      time: item.time,
+      paymentStatus: "pending", // Default for Pay On Delivery
+      serviceProviderId: null,
+      serviceProviderName: "",
+      serviceProviderContact: "",
+    }));
+    try {
+      const res = await axios.post("/api/bookings/create", { bookings: bookingsArray });
+      if (res.status === 201) {
+        // Show success message and clear the cart.
+        alert("Booking successful! Check your bookings.");
+        // Clear the cart by removing each item (or implement a clearCart() function in your context)
+        while (cart.length > 0) {
+          removeFromCart(0);
+        }
+        router.push("/order-confirmation?method=pod");
+      }
+    } catch (error) {
+      console.error("Error creating bookings", error);
+      alert("Error creating bookings. Please try again later.");
+    }
   };
 
+  // Payment method handler: For "Pay Now"
   const handlePayNow = () => {
+    // You can implement similar logic as above with online payment integration.
     router.push("/order-confirmation?method=paynow");
   };
 
@@ -104,7 +144,7 @@ const OrderSummary: React.FC = () => {
             ) : (
               cart.map((item, index) => {
                 const isEditing = editing[index] || false;
-                // Use the overridden address/pincode if set; otherwise use user's default.
+                // Use overridden address/pincode if available; otherwise, use user's default.
                 const currentAddress = addresses[index] ?? userAddress;
                 const currentPincode = pincodes[index] ?? userPincode;
 

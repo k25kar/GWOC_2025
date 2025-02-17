@@ -44,7 +44,6 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
   }, []);
 
   useEffect(() => {
-<<<<<<< HEAD
     if (searchParams) {
       const urlCategory = searchParams.get("category");
       if (urlCategory) {
@@ -56,15 +55,6 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
         }
       } else {
         setCurrentIndex(0);
-=======
-    const urlCategory = searchParams?.get("category");
-    if (urlCategory) {
-      setSelectedCategory(urlCategory);
-      fetchServices(urlCategory);
-  
-      if (!selectedCategory) {
-        document.getElementById("features-carousel")?.scrollIntoView({ behavior: "smooth" });
->>>>>>> e3d5a765158856178c623012967567e22f31b634
       }
     }
   }, [categories, searchParams, pathname, selectedCategory]); 
@@ -98,7 +88,6 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
       onCategorySelect(category);
       setSelectedCategory(category);
       fetchServices(category);
-<<<<<<< HEAD
       
       if (searchParams) {
         const currentParams = searchParams.toString();
@@ -106,13 +95,6 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
         newParams.set("category", category);
         router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
       }
-=======
-  
-      // Update URL without reloading the page
-      const newParams = new URLSearchParams(searchParams?.toString());
-      newParams.set("category", category);
-      router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
->>>>>>> e3d5a765158856178c623012967567e22f31b634
     }
   };
 
