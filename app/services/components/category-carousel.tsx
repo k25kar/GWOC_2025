@@ -1,3 +1,5 @@
+"use client";
+
 import { motion, useAnimation, useInView } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -42,6 +44,19 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
   }, []);
 
   useEffect(() => {
+<<<<<<< HEAD
+    if (searchParams) {
+      const urlCategory = searchParams.get("category");
+      if (urlCategory) {
+        setSelectedCategory(urlCategory);
+        fetchServices(urlCategory);
+
+        if (!selectedCategory) {
+          document.getElementById("features-carousel")?.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        setCurrentIndex(0);
+=======
     const urlCategory = searchParams?.get("category");
     if (urlCategory) {
       setSelectedCategory(urlCategory);
@@ -49,14 +64,10 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
   
       if (!selectedCategory) {
         document.getElementById("features-carousel")?.scrollIntoView({ behavior: "smooth" });
+>>>>>>> e3d5a765158856178c623012967567e22f31b634
       }
-    } else {
-      setCurrentIndex(0);
     }
   }, [categories, searchParams, pathname, selectedCategory]); 
-   
-  
-  
 
   const fetchServices = async (category: string) => {
     try {
@@ -82,21 +93,28 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
   const next = () => scrollToIndex(currentIndex + 1);
   const prev = () => scrollToIndex(currentIndex - 1);
   
-
   const handleCategoryClick = (category: string) => {
     if (selectedCategory !== category) {
       onCategorySelect(category);
       setSelectedCategory(category);
       fetchServices(category);
+<<<<<<< HEAD
+      
+      if (searchParams) {
+        const currentParams = searchParams.toString();
+        const newParams = new URLSearchParams(currentParams);
+        newParams.set("category", category);
+        router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
+      }
+=======
   
       // Update URL without reloading the page
       const newParams = new URLSearchParams(searchParams?.toString());
       newParams.set("category", category);
       router.replace(`${pathname}?${newParams.toString()}`, { scroll: false });
+>>>>>>> e3d5a765158856178c623012967567e22f31b634
     }
   };
-  
-  
 
   return (
     <div className="relative w-full py-12" ref={ref}>
@@ -197,5 +215,3 @@ const FeaturesCarousel: React.FC<FeaturesCarouselProps> = ({
 };
 
 export default FeaturesCarousel;
-
-
