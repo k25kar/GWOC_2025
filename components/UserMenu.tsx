@@ -85,9 +85,14 @@ export function UserMenu() {
                     Bookings
                   </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={()=>router.push("/service-history")}>
+                <DropdownMenuItem onClick={()=>router.push("/update-profile")}>
                   <div className="block w-full px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-gray-800/50">
-                    Service History
+                    Profile
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={()=>router.push("/update-profile")}>
+                  <div className="block w-full px-4 py-2 text-sm text-gray-200 hover:text-white hover:bg-gray-800/50">
+                    Wallet
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogoutClick}>

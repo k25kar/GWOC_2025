@@ -9,7 +9,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     // Active bookings: those with a date >= today
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const activeBookings = await Booking.find({ date: { $gte: today } });
+
+    // Build filter
+    let filter: any = { date: { $gte: today } };
+    if (req.query.userId) {
+      filter.userId = req.query.userId;
+    }
+
+    const activeBookings = await Booking.find(filter);
     await db.disconnect();
     res.status(200).json(activeBookings);
   } catch (error) {
