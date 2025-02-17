@@ -20,20 +20,20 @@ interface Service {
 }
 
 
-export default function ImageCarousel() {
+export default function BestsellerCarousel() {
   const [services, setServices] = useState<Service[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    const fetchLatestServices = async () => {
+    const fetchBestsellers = async () => {
       try {
-        const response = await axios.get("/api/services/latest");
+        const response = await axios.get("/api/services/bestseller");
         setServices(response.data.services || []);
       } catch (error) {
         console.error("Error fetching latest services:", error);
       }
     };
-    fetchLatestServices();
+    fetchBestsellers();
   }, []);
 
   const handlePrevious = () => {

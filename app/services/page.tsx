@@ -9,6 +9,7 @@ import { useEffect, useRef } from "react";
 import TrueFocus from "@/components/reactbits/TrueFocus";
 import BlurText from "@/components/reactbits/BlurText";
 import { useSearchParams } from "next/navigation";
+import BestsellerCarousel from "./components/Bestseller-Carousel";
 
 const handleAnimationComplete = () => {
   console.log("Animation completed!");
@@ -34,7 +35,6 @@ export default function ServicesPage() {
       featuresRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [selectedCategory]);
-  
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -112,10 +112,7 @@ export default function ServicesPage() {
               >
                 New and Trustworthy
               </h2>
-              <p className="text-zinc-400 mb-8">
-                Find out the New.
-              </p>
-              
+              <p className="text-zinc-400 mb-8">Find out the New.</p>
             </motion.div>
           </div>
 
@@ -137,13 +134,10 @@ export default function ServicesPage() {
               >
                 Best Sellers
               </h2>
-              <p className="text-zinc-400 mb-8">
-                Experience the best.
-              </p>
-              
+              <p className="text-zinc-400 mb-8">Experience the best.</p>
             </motion.div>
             <div>
-              <ImageCarousel />
+              <BestsellerCarousel />
             </div>
           </div>
         </div>
@@ -177,10 +171,12 @@ export default function ServicesPage() {
               Discover our comprehensive range of services
             </p>
           </motion.div>
-          <FeaturesCarousel onCategorySelect={(category) => console.log(category)} selectedCategory={selectedCategory} />
+          <FeaturesCarousel
+            onCategorySelect={(category) => console.log(category)}
+            selectedCategory={selectedCategory}
+          />
         </div>
       </section>
-
     </main>
   );
 }

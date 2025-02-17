@@ -8,14 +8,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       await dbConnect.connect(); // Ensure database connection
 
       // Fetch latest 3 services sorted by `dateAdded` in descending order (newest first)
-      const latestServices = await Service.find()
-        .sort({ dateAdded: -1 }) // Sort by dateAdded instead of _id
+      const bestSellingServices  = await Service.find()
+        .sort({ bookingCount: -1 }) // Sort by bookingsCount (most bookings first)
         .limit(3);
 
-      res.status(200).json({ services: latestServices });
+      res.status(200).json({ services: bestSellingServices  });
     } catch (error) {
-      console.error("Error fetching latest services:", error);
-      res.status(500).json({ message: "Error fetching latest services", error });
+      console.error("Error fetching best-selling services:", error);
+      res.status(500).json({ message: "Error fetching best-selling services", error });
     }
   } else {
     res.status(405).json({ message: "Method Not Allowed" });
