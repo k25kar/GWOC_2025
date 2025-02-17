@@ -19,6 +19,7 @@ interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (index: number) => void;
+  clearCart: () => void; // New clearCart function
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -45,13 +46,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Save cart to localStorage only when there are items.
+  // Save cart to localStorage whenever the cart changes.
   useEffect(() => {
     if (cart.length > 0) {
       localStorage.setItem("cart", JSON.stringify(cart));
       console.log("Saving cart to localStorage:", cart);
     } else {
-      // Optionally, if you want to remove the key when the cart is empty, uncomment the next line:
+      // Optionally, you can remove the key when the cart is empty.
       // localStorage.removeItem("cart");
       console.log("Cart is empty; not updating localStorage.");
     }
@@ -65,8 +66,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setCart((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // New clearCart function to empty the cart.
+  const clearCart = () => {
+    setCart([]);
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
       {children}
     </CartContext.Provider>
   );

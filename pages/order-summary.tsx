@@ -16,9 +16,12 @@ interface UserDetails {
 }
 
 const OrderSummary: React.FC = () => {
-  const { cart, removeFromCart } = useCart();
+  const { cart, removeFromCart, clearCart } = useCart();
   const { data: session } = useSession();
   const router = useRouter();
+
+  // State to display success message instead of alert
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Fetch full user details from database using session.user._id (if available)
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
@@ -41,10 +44,14 @@ const OrderSummary: React.FC = () => {
 
   // Derive user info: use full details from DB if available; else fallback to session values.
   const userName = userDetails?.name || session?.user?.name || "Your Name";
-  const userEmail = userDetails?.email || session?.user?.email || "your.email@example.com";
-  const userPhone = userDetails?.phone || session?.user?.phone || "Not set";
-  const userAddress = userDetails?.address || session?.user?.address || "Not set";
-  const userPincode = userDetails?.pincode || session?.user?.pincode || "Not set";
+  const userEmail =
+    userDetails?.email || session?.user?.email || "your.email@example.com";
+  const userPhone =
+    userDetails?.phone || session?.user?.phone || "Not set";
+  const userAddress =
+    userDetails?.address || session?.user?.address || "Not set";
+  const userPincode =
+    userDetails?.pincode || session?.user?.pincode || "Not set";
 
   // Handle changes to the remark field.
   const handleRemarkChange = (index: number, value: string) => {
@@ -97,15 +104,18 @@ const OrderSummary: React.FC = () => {
       serviceProviderContact: "",
     }));
     try {
-      const res = await axios.post("/api/bookings/create", { bookings: bookingsArray });
+      const res = await axios.post("/api/bookings/create", {
+        bookings: bookingsArray,
+      });
       if (res.status === 201) {
-        // Show success message and clear the cart.
-        alert("Booking successful! Check your bookings.");
-        // Clear the cart by removing each item (or implement a clearCart() function in your context)
-        while (cart.length > 0) {
-          removeFromCart(0);
-        }
-        router.push("/order-confirmation?method=pod");
+        // Display a success message for 3 seconds
+        setSuccessMessage("Booking successful! Your booking has been placed.");
+        setTimeout(() => {
+          // Clear the localStorage cart and context cart, then redirect to home
+          localStorage.setItem("cart", JSON.stringify([]));
+          clearCart();
+          router.push("/");
+        }, 3000);
       }
     } catch (error) {
       console.error("Error creating bookings", error);
@@ -115,14 +125,22 @@ const OrderSummary: React.FC = () => {
 
   // Payment method handler: For "Pay Now"
   const handlePayNow = () => {
-    // You can implement similar logic as above with online payment integration.
-    router.push("/order-confirmation?method=paynow");
+    router.push("/");
   };
 
   // Back to Home handler.
   const handleBackHome = () => {
     router.push("/");
   };
+
+  // If a success message is present, display it full-screen.
+  if (successMessage) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0f0f0f] text-white">
+        <h2 className="text-2xl font-bold">{successMessage}</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] p-6 text-white">
@@ -149,9 +167,14 @@ const OrderSummary: React.FC = () => {
                 const currentPincode = pincodes[index] ?? userPincode;
 
                 return (
-                  <div key={index} className="border border-gray-700 p-4 rounded mb-4">
+                  <div
+                    key={index}
+                    className="border border-gray-700 p-4 rounded mb-4"
+                  >
                     <div className="flex justify-between items-center">
-                      <h3 className="font-semibold text-lg">{item.service.name}</h3>
+                      <h3 className="font-semibold text-lg">
+                        {item.service.name}
+                      </h3>
                       <button
                         className="text-red-400 text-sm hover:underline"
                         onClick={() => removeFromCart(index)}
@@ -159,20 +182,29 @@ const OrderSummary: React.FC = () => {
                         Remove
                       </button>
                     </div>
-                    <p className="text-sm text-gray-300">Date: {item.date.toLocaleDateString()}</p>
+                    <p className="text-sm text-gray-300">
+                      Date: {item.date.toLocaleDateString()}
+                    </p>
                     <p className="text-sm text-gray-300">Time: {item.time}</p>
-                    <p className="text-sm text-gray-300">Price: ₹{item.service.price}</p>
+                    <p className="text-sm text-gray-300">
+                      Price: ₹{item.service.price}
+                    </p>
 
                     {/* Remarks Field */}
                     <div className="mt-2">
-                      <label htmlFor={`remark-${index}`} className="block text-sm font-medium text-gray-200">
+                      <label
+                        htmlFor={`remark-${index}`}
+                        className="block text-sm font-medium text-gray-200"
+                      >
                         Wish to tell us more about the work?
                       </label>
                       <input
                         id={`remark-${index}`}
                         type="text"
                         value={remarks[index] || ""}
-                        onChange={(e) => handleRemarkChange(index, e.target.value)}
+                        onChange={(e) =>
+                          handleRemarkChange(index, e.target.value)
+                        }
                         placeholder="Add a remark"
                         className="mt-1 block w-full rounded-md border border-gray-600 bg-[#2c2c2c] text-gray-200
                                    focus:outline-none focus:border-[#800000] p-2"
@@ -183,8 +215,12 @@ const OrderSummary: React.FC = () => {
                     <div className="mt-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-gray-300">Address: {currentAddress}</p>
-                          <p className="text-sm text-gray-300">Pincode: {currentPincode}</p>
+                          <p className="text-sm text-gray-300">
+                            Address: {currentAddress}
+                          </p>
+                          <p className="text-sm text-gray-300">
+                            Pincode: {currentPincode}
+                          </p>
                         </div>
                         <button
                           className="text-sm text-[#800000] hover:underline"
@@ -198,7 +234,9 @@ const OrderSummary: React.FC = () => {
                           <input
                             type="text"
                             value={currentAddress}
-                            onChange={(e) => handleAddressChange(index, e.target.value)}
+                            onChange={(e) =>
+                              handleAddressChange(index, e.target.value)
+                            }
                             placeholder="Enter address"
                             className="block w-full rounded-md border border-gray-600 bg-[#2c2c2c]
                                        text-gray-200 focus:outline-none focus:border-[#800000] p-2"
@@ -206,7 +244,9 @@ const OrderSummary: React.FC = () => {
                           <input
                             type="text"
                             value={currentPincode}
-                            onChange={(e) => handlePincodeChange(index, e.target.value)}
+                            onChange={(e) =>
+                              handlePincodeChange(index, e.target.value)
+                            }
                             placeholder="Enter pincode"
                             className="block w-full rounded-md border border-gray-600 bg-[#2c2c2c]
                                        text-gray-200 focus:outline-none focus:border-[#800000] p-2"
@@ -232,15 +272,21 @@ const OrderSummary: React.FC = () => {
               {/* Default Address & Pincode */}
               <div className="mt-4 border-t border-gray-700 pt-4">
                 <h2 className="text-xl font-bold mb-2">Default Address</h2>
-                <p className="text-sm text-gray-300">Address: {userAddress}</p>
-                <p className="text-sm text-gray-300">Pincode: {userPincode}</p>
+                <p className="text-sm text-gray-300">
+                  Address: {userAddress}
+                </p>
+                <p className="text-sm text-gray-300">
+                  Pincode: {userPincode}
+                </p>
               </div>
             </div>
 
             {/* Subtotal & Payment Buttons */}
             <div className="mt-4 border-t border-gray-700 pt-4">
               <h2 className="font-semibold text-lg uppercase">Subtotal</h2>
-              <p className="font-semibold text-gray-200 text-xl">₹{subtotal}</p>
+              <p className="font-semibold text-gray-200 text-xl">
+                ₹{subtotal}
+              </p>
               <div className="mt-4 flex gap-4">
                 <Button
                   onClick={handlePayOnDelivery}
