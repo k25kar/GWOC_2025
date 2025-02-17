@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import Booking from "@/components/Booking";
 
-// Define the type for service objects
+// Define the type for service objects (updated to include description and price)
 interface Service {
   imageUrl: string;
   name: string;
+  description: string;
+  price: number;
 }
 
 export default function ImageCarousel() {
@@ -59,7 +61,7 @@ export default function ImageCarousel() {
 
             {/* Book Now Button */}
             <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 pointer-events-auto">
-              <Booking>
+              <Booking service={services[currentIndex]}>
                 <Button
                   variant="primary"
                   className="w-full bg-zinc-800 hover:bg-gray-600 text-white rounded-lg py-2"
