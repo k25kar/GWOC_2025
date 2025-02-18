@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { signIn, useSession, getSession } from "next-auth/react";
 import * as Yup from "yup";
@@ -31,44 +31,57 @@ const LoginScreen = () => {
   const router = useRouter();
   const { redirect }: any = router.query;
 
-  // This function checks if the email exists in Users first.
-  // If not, it checks in Partners and returns an error message based on status.
-  const checkLoginStatus = async (email: string): Promise<string | null> => {
-    try {
-      // Check in Users collection
-      const userRes = await axios.get(`/api/auth/check-user?email=${encodeURIComponent(email)}`);
-      if (userRes.status === 200 && userRes.data.exists) {
-        // Normal user exists; no extra checks.
-        return null;
-      }
-    } catch (error) {
-      // Assume error means user not found in Users; continue to check Partners.
-      console.log("User not found in Users; checking Partners...");
-    }
+  // State to toggle login type: "user" for normal users, "sp" for service providers.
+  const [loginType, setLoginType] = useState<"user" | "sp">("user");
 
-    try {
-      // Check in Partners collection.
-      const partnerRes = await axios.get(`/api/auth/check-provider-status?email=${encodeURIComponent(email)}`);
-      if (partnerRes.status === 200) {
-        const status: string = partnerRes.data.status;
-        if (status === "pending") {
-          return "Registration under approval";
-        } else if (status === "rejected") {
-          return "Registration rejected";
-        } else if (status === "approved") {
+  /**
+   * Check the login status for a given email based on the login type.
+   * For users, it checks if the user exists.
+   * For service providers, it also checks for approval status.
+   */
+  const checkLoginStatus = async (email: string, loginType: "user" | "sp"): Promise<string | null> => {
+    if (loginType === "user") {
+      try {
+        const userRes = await axios.get(`/api/auth/check-user?email=${encodeURIComponent(email)}`);
+        if (userRes.status === 200 && userRes.data.exists) {
           return null;
+        } else {
+          return "User not found";
         }
+      } catch (error) {
+        console.log("User check error", error);
+        return "User not found";
       }
-    } catch (error) {
-      // If not found in Partners, allow login (it might be a normal user)
-      return null;
+    } else if (loginType === "sp") {
+      try {
+        const partnerRes = await axios.get(`/api/auth/check-provider-status?email=${encodeURIComponent(email)}`);
+        if (partnerRes.status === 200) {
+          const status: string = partnerRes.data.status;
+          if (status === "pending") {
+            return "Registration under approval";
+          } else if (status === "rejected") {
+            return "Registration rejected";
+          } else if (status === "approved") {
+            return null;
+          } else {
+            return "Unknown status";
+          }
+        }
+      } catch (error) {
+        console.log("Service Provider check error", error);
+        return "Service provider not found";
+      }
     }
     return null;
   };
 
-  // Handle credentials sign in.
+  /**
+   * Handle form submission:
+   * - For users, use NextAuth’s credentials provider.
+   * - For service providers, call the dedicated login endpoint and redirect to the SP dashboard.
+   */
   const handleSubmit = async ({ email, password }: LoginFormValues) => {
-    const errorMsg = await checkLoginStatus(email);
+    const errorMsg = await checkLoginStatus(email, loginType);
     if (errorMsg) {
       toast.error(errorMsg, {
         autoClose: 3000,
@@ -76,24 +89,42 @@ const LoginScreen = () => {
       });
       return;
     }
-    try {
-      const result: any = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-      });
-      if (result.error) {
-        toast.error(result.error, {
+
+    if (loginType === "user") {
+      try {
+        const result: any = await signIn("credentials", {
+          redirect: false,
+          email,
+          password,
+        });
+        if (result.error) {
+          toast.error(result.error, {
+            style: { backgroundColor: "#800000", color: "#fff" },
+          });
+        } else {
+          // After a successful user login, redirect to the desired page.
+          router.push(redirect || "/");
+        }
+      } catch (err) {
+        toast.error(getError(err), {
           style: { backgroundColor: "#800000", color: "#fff" },
         });
-      } else {
-        // After successful login, redirect to home page.
-        router.push("/");
       }
-    } catch (err) {
-      toast.error(getError(err), {
-        style: { backgroundColor: "#800000", color: "#fff" },
-      });
+    } else if (loginType === "sp") {
+      try {
+        const { data } = await axios.post("/api/auth/login-sp", { email, password });
+        if (data.message === "Login successful") {
+          toast.success("Service Provider login successful", {
+            style: { backgroundColor: "#141414", color: "#fff" },
+          });
+          // Redirect directly to the SP dashboard.
+          router.push("/dashboard/spdashboard/overview");
+        }
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || "Service Provider login failed", {
+          style: { backgroundColor: "#800000", color: "#fff" },
+        });
+      }
     }
   };
 
@@ -110,7 +141,7 @@ const LoginScreen = () => {
       // Wait for session update.
       const sessionAfter = await getSession();
       if (sessionAfter?.user?.email) {
-        const status = await checkLoginStatus(sessionAfter.user.email);
+        const status = await checkLoginStatus(sessionAfter.user.email, loginType);
         if (status) {
           toast.error(status, {
             autoClose: 3000,
@@ -119,8 +150,12 @@ const LoginScreen = () => {
           return;
         }
       }
-      // Successful Google login; redirect to home.
-      router.push("/");
+      // Successful Google login; redirect based on login type.
+      if (loginType === "sp") {
+        router.push("/sp/dashboard");
+      } else {
+        router.push(redirect || "/");
+      }
     } catch (err) {
       toast.error(getError(err), {
         style: { backgroundColor: "#800000", color: "#fff" },
@@ -128,25 +163,29 @@ const LoginScreen = () => {
     }
   };
 
+  // Optionally, if a session already exists, you could perform a status check and auto-redirect.
   useEffect(() => {
-    // Optionally, if a session exists already, you can perform status check and redirect.
     const userEmail = session?.user?.email;
     if (typeof userEmail === "string") {
       const checkStatus = async () => {
-        const statusMsg = await checkLoginStatus(userEmail);
+        const statusMsg = await checkLoginStatus(userEmail, loginType);
         if (statusMsg) {
           toast.error(statusMsg, {
             autoClose: 3000,
             style: { backgroundColor: "#800000", color: "#fff" },
           });
         } else {
-          router.push(redirect || "/");
+          if (loginType === "sp") {
+            router.push("/sp/dashboard");
+          } else {
+            router.push(redirect || "/");
+          }
         }
       };
-      // Uncomment the following if you wish to auto-redirect upon session creation:
+      // Uncomment the next line if you want to auto-redirect if a session exists:
       // checkStatus();
     }
-  }, [session, redirect, router]);
+  }, [session, redirect, router, loginType]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#0f0f0f] overflow-x-hidden px-4">
@@ -154,11 +193,32 @@ const LoginScreen = () => {
         <div className="p-6 sm:p-8 space-y-6 bg-[#1a1a1a] rounded-md shadow-md">
           <h1 className="text-3xl font-semibold text-white text-center">Sign In</h1>
 
-          {/* Google Sign-In Button (Maroon Gradient) */}
+          {/* Toggle Buttons to Choose Login Type */}
+          <div className="flex justify-center mb-4">
+            <button
+              type="button"
+              onClick={() => setLoginType("user")}
+              className={`px-4 py-2 mr-2 rounded-md ${
+                loginType === "user" ? "bg-[#800000] text-white" : "bg-gray-700 text-gray-300"
+              }`}
+            >
+              User
+            </button>
+            <button
+              type="button"
+              onClick={() => setLoginType("sp")}
+              className={`px-4 py-2 rounded-md ${
+                loginType === "sp" ? "bg-[#800000] text-white" : "bg-gray-700 text-gray-300"
+              }`}
+            >
+              Service Provider
+            </button>
+          </div>
+
+          {/* Google Sign-In Button */}
           <button
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md
-                       bg-[#141414] hover:bg-[#ffffff] hover:text-black text-white font-medium transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md bg-[#141414] hover:bg-[#ffffff] hover:text-black text-white font-medium transition-colors"
           >
             <FcGoogle className="h-5 w-5" />
             Continue with Google
@@ -171,7 +231,7 @@ const LoginScreen = () => {
             <hr className="flex-1 border-gray-600" />
           </div>
 
-          {/* Formik Form */}
+          {/* Formik Form for Email & Password */}
           <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
             <Form className="space-y-4">
               {/* Email Field */}
@@ -209,7 +269,7 @@ const LoginScreen = () => {
                 </div>
               </div>
 
-              {/* Sign In Button (Maroon Gradient) */}
+              {/* Sign In Button */}
               <button
                 type="submit"
                 className="w-full py-2 bg-[#141414] hover:bg-[#ffffff] hover:text-black text-white font-semibold

@@ -22,7 +22,6 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      // When signing in, attach custom fields from our user object
       if (user && typeof user !== "string") {
         const customUser = user as NextAuthUser;
         if (customUser._id) token._id = customUser._id;
@@ -39,12 +38,10 @@ export const authOptions: NextAuthOptions = {
     },
   },
   providers: [
-    // Google OAuth Provider
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
-    // Credentials Provider
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -52,29 +49,45 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
+        console.log("Received credentials:", credentials);
+      
         if (!credentials?.email || !credentials?.password) {
+          console.error("Missing email or password");
           throw new Error("Email and Password are required.");
         }
+      
         await db.connect();
-        const user = await User.findOne({ email: credentials.email });
-        await db.disconnect();
-        if (user && bcrypt.compareSync(credentials.password, user.password)) {
-          const authUser: NextAuthUser = {
-            _id: user._id.toString(),
-            name: user.name,
-            email: user.email,
-            image: "f", // Adjust as needed
-            isAdmin: user.isAdmin,
-          };
-          // Cast our object to NextAuth's User type
-          return authUser as unknown as NextAuthUserType;
+        try {
+          const user = await User.findOne({ email: credentials.email });
+          console.log("Found user:", user);
+      
+          if (user && bcrypt.compareSync(credentials.password, user.password)) {
+            console.log("Authentication successful for user:", user.email);
+      
+            const authUser: NextAuthUser = {
+              _id: user._id.toString(),
+              name: user.name,
+              email: user.email,
+              image: "f",
+              isAdmin: user.isAdmin,
+            };
+            return authUser as unknown as NextAuthUserType;
+          }
+      
+          console.error("Invalid email or password");
+          throw new Error("Invalid email or password");
+        } catch (error) {
+          console.error("Authorization error:", error);
+          if (error instanceof Error) {
+            throw new Error(error.message);
+          }
+          throw new Error("An unknown error occurred.");
         }
-        throw new Error("Invalid email or password");
       },
+      
     }),
   ],
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };
