@@ -13,6 +13,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Star } from "lucide-react";
 import Preloader from "@/components/PreLoader";
+import TestimonialsSection from "@/components/TestimonialsSection";
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -210,105 +211,6 @@ function ServicesSection() {
   );
 }
 
-function TestimonialsSection() {
-  const testimonials = [
-    {
-      name: "Damien Jo",
-      role: "CEO",
-      rating: 5,
-      text: "Brings a passion for time management and a vision for seamless scheduling to the forefront of our innovative calendar app.",
-      image: userIcon,
-    },
-    {
-      name: "Noel Slap",
-      role: "Lead Engineer",
-      rating: 5,
-      text: "Noel combines deep technical expertise with a passion for intuitive design. His dedication ensures our app remains cutting-edge and user-friendly",
-      image: userIcon,
-    },
-    {
-      name: "Ethan Parker",
-      role: "Designer",
-      rating: 5,
-      text: "Ehtan, our Designer, blends aesthetics with functionality, crafting an interface that's both visually stunning and effortlessly navigable.",
-      image: userIcon,
-    },
-    {
-      name: "Clara Rodriguez",
-      role: "Engineer",
-      rating: 5,
-      text: "Clara is our frontend wizard, focuses on delivering a smooth and intuitive user experience.",
-      image: userIcon,
-    },
-  ];
-
-  useEffect(() => {
-    gsap.fromTo(
-      ".testimonial-card",
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        stagger: 0.2,
-        scrollTrigger: {
-          trigger: ".testimonials-section",
-          start: "top 85%",
-          end: "bottom 20%",
-          scrub: true,
-        },
-      }
-    );
-  }, []);
-
-  return (
-    <div className="bg-black px-4 py-8 md:py-12 testimonials-section">
-      <div className="mx-auto max-w-7xl">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-8 md:mb-12 text-center">
-          What Our Customers Say
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              className="testimonial-card bg-zinc-900 p-4 md:p-6 rounded-lg"
-            >
-              <div className="flex items-center mb-3 md:mb-4">
-                <Image
-                  src={testimonial.image}
-                  alt={testimonial.name}
-                  width={40}
-                  height={40}
-                  className="rounded-full w-10 h-10 md:w-12 md:h-12"
-                />
-                <div className="ml-3">
-                  <h3 className="text-white font-semibold text-sm md:text-base">
-                    {testimonial.name}
-                  </h3>
-                  <p className="text-zinc-400 text-xs md:text-sm">
-                    {testimonial.role}
-                  </p>
-                </div>
-              </div>
-              <div className="flex mb-2">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-3 h-3 md:w-4 md:h-4 text-yellow-400 fill-yellow-400"
-                  />
-                ))}
-              </div>
-              <p className="text-zinc-300 text-xs md:text-sm">
-                {testimonial.text}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -342,6 +244,11 @@ function FAQSection() {
       question: "How can I find good cleaning services near me?",
       answer:
         "If you're looking for reliable cleaning services nearby, Helper Buddy is the answer. We connect you with experienced cleaners who can handle everything from regular home cleaning to deep cleaning. Simply book through our platform, and we'll send a trusted professional to your home.",
+    },
+    {
+      question: "How can I apply as a Service Provider to Helper Buddy?",
+      answer:
+        "We've made that process simple for you! Just go on 'Create an account' on login page. Then Sign Up as a Service Provider and fill all your details. We'll receive your application and will reach out to you!",
     },
   ];
 
