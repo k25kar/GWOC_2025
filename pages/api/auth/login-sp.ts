@@ -10,7 +10,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { email, password } = req.body;
   if (!email || !password) {
-    return res.status(422).json({ message: "Email and password are required" });
+    return res
+      .status(422)
+      .json({ message: "Email and password are required" });
   }
 
   await db.connect();
@@ -18,6 +20,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!partner) {
     await db.disconnect();
     return res.status(404).json({ message: "Service provider not found" });
+  }
+
+  // Check that the service provider is approved
+  if (partner.status !== "approved") {
+    await db.disconnect();
+    return res
+      .status(403)
+      .json({ message: "Application not approved yet" });
   }
 
   const isPasswordValid = await bcrypt.compare(password, partner.password);
