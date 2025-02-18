@@ -7,6 +7,7 @@ export interface Service {
   description: string;
   price: number;
   imageUrl?: string;
+  category: string; // Added category field
 }
 
 export interface CartItem {
@@ -19,7 +20,7 @@ interface CartContextType {
   cart: CartItem[];
   addToCart: (item: CartItem) => void;
   removeFromCart: (index: number) => void;
-  clearCart: () => void; // New clearCart function
+  clearCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -53,7 +54,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       console.log("Saving cart to localStorage:", cart);
     } else {
       // Optionally, you can remove the key when the cart is empty.
-      // localStorage.removeItem("cart");
       console.log("Cart is empty; not updating localStorage.");
     }
   }, [cart]);
@@ -66,7 +66,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setCart((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // New clearCart function to empty the cart.
+  // Clear the entire cart
   const clearCart = () => {
     setCart([]);
   };

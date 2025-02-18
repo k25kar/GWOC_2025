@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import db from "@/lib/dbConnect";
 import Booking from "@/src/models/Booking";
-import Partner from "@/src/models/Partner"; // Your approved-partners model
+import Partner from "@/src/models/Partner"; // Approved partners model
 import nodemailer from "nodemailer";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -11,7 +11,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { bookings } = req.body;
   if (!bookings || !Array.isArray(bookings)) {
-    return res.status(422).json({ message: "Bookings data must be an array" });
+    return res
+      .status(422)
+      .json({ message: "Bookings data must be provided as an array" });
   }
 
   try {
@@ -29,16 +31,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
 
-    // Loop over each booking to search for matching approved partners
+    // Loop over each booking to find matching approved partners
     for (const booking of bookings) {
-      const { serviceName, pincode } = booking;
+      // Destructure category and pincode from the booking payload
+      const { category, pincode } = booking;
 
-      // Find approved partners whose skills include the serviceName
-      // and whose servicePincodes include the booking's pincode
+      // Find approved and active partners whose skills include the category and who serve the given pincode (with activeStatus true)
       const matchingPartners = await Partner.find({
         status: "approved",
-        skills: serviceName,
-        servicePincodes: pincode,
+        active: true,
+        skills: category,
+        servicePincodes: { $elemMatch: { code: pincode, activeStatus: true } },
       });
 
       // Send an email notification to each matching partner
@@ -49,7 +52,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           subject: "New Service Opportunity Available",
           text: `Hello ${partner.name},
 
-A new booking for "${serviceName}" is available in your area (Pincode: ${pincode}). 
+A new booking for a "${category}" service is available in your area (Pincode: ${pincode}). 
 Log in to your account to view more details and respond if you're interested.
 
 Best regards,

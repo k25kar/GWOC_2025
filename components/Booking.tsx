@@ -43,10 +43,12 @@ const Booking: FC<BookingProps> = ({ children, service }) => {
   const getTime = (): void => {
     const timeList: TimeSlot[] = [];
     // Morning times (10:00 AM to 12:30 PM)
-    for (let i = 10; i <= 12; i++) {
+    for (let i = 9; i <= 11; i++) {
       timeList.push({ time: `${i}:00 AM` });
       timeList.push({ time: `${i}:30 AM` });
     }
+    timeList.push({ time: `12:00 PM` });
+    timeList.push({ time: `12:30 PM` });
     // Afternoon times (1:00 PM to 6:30 PM)
     for (let i = 1; i <= 6; i++) {
       timeList.push({ time: `${i}:00 PM` });
