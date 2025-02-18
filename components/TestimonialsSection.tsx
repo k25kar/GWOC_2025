@@ -77,7 +77,7 @@ const TestimonialsSection: React.FC = () => {
         scrollTrigger: {
           trigger: ".testimonials-section",
           start: "top 85%",
-          end: "bottom 70%",
+          end: "bottom 60%",
           scrub: true,
         },
       }
