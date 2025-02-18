@@ -20,6 +20,7 @@ export function Navbar() {
     { name: "Home", href: "/" },
     { name: "Service", href: "/services" },
     { name: "About", href: "/about" },
+    { name: "Blog", href: "/blogs" },
     { name: "Dashboard", href: "/dashboard/admindashboard" },
     { name: "SPDashboard", href: "pages/dashboard/spdashboard/overview.tsx" } // Ensure this line is correct
   ];
