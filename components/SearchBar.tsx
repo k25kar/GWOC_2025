@@ -1,3 +1,5 @@
+//Admin dash connect point - line 45
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -8,7 +10,9 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 
 export default function SearchBar() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<{ name: string; category: string }[]>([]);
+  const [results, setResults] = useState<{ name: string; category: string }[]>(
+    []
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const searchBarRef = useRef<HTMLDivElement>(null);
 
@@ -25,18 +29,30 @@ export default function SearchBar() {
   ];
 
   // Fetch search results from API
+  // Fetch search results from API
+  // Fetch search results from API
   const fetchResults = async (searchQuery: string) => {
     if (!searchQuery.trim()) {
-      setResults([]);
+      setResults([]); // Clear results if the query is empty
       return;
     }
 
     try {
-      const response = await fetch(`/api/searchbar/search?query=${searchQuery}`);
+      const response = await fetch(
+        `/api/searchbar/search?query=${searchQuery}`
+      );
       const data = await response.json();
-      setResults(data.services || []);
+      console.log("data", data); // POINT TO INTEGRATE THE SEARCH RESULT TO THE ADMIN DASH 
+
+      // If no results are found, set an empty array
+      if (!data.services || data.services.length === 0) {
+        setResults([]); // No results found, clear previous results
+      } else {
+        setResults(data.services || []); // Set fetched results
+      }
     } catch (error) {
       console.error("Error fetching search results:", error);
+      setResults([]); // Clear results if there was an error
     }
   };
 
@@ -50,23 +66,26 @@ export default function SearchBar() {
 
   // Handle category selection and navigate to Services Page
   const handleCategoryClick = (category: string) => {
-    router.push(`/services?page=features&category=${encodeURIComponent(category)}`);
+    router.push(
+      `/services?page=features&category=${encodeURIComponent(category)}`
+    );
   };
 
-useEffect(() => {
-  const handleClickOutside = (event: MouseEvent) => {
-    if (searchBarRef.current && !searchBarRef.current.contains(event.target as Node)) {
-      setResults([]); // Close the search results
-    }
-  };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchBarRef.current &&
+        !searchBarRef.current.contains(event.target as Node)
+      ) {
+        setResults([]); // Close the search results
+      }
+    };
 
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, []);
-
-
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div ref={searchBarRef} className="relative w-[180px] lg:w-[240px]">
@@ -109,7 +128,7 @@ useEffect(() => {
       </div>
 
       {/* Search Results Dropdown */}
-      {results.length > 0 && (
+      {results.length > 0 ? (
         <div className="absolute top-full left-0 right-0 mt-1 bg-[#141414] rounded-md shadow-lg border border-gray-700 z-50">
           {results.map((service, index) => (
             <div
@@ -117,12 +136,18 @@ useEffect(() => {
               className={`p-2 ${index !== 0 ? "border-t border-gray-500" : ""}`}
               onClick={() => handleCategoryClick(service.category)}
             >
-              <h3 className="font-semibold text-gray-200 text-xs">{service.name}</h3>
+              <h3 className="font-semibold text-gray-200 text-xs">
+                {service.name}
+              </h3>
               <span className="text-xs text-gray-400">{service.category}</span>
             </div>
           ))}
         </div>
-      )}
+      ) : query !== "" ? (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-[#141414] rounded-md shadow-lg border border-gray-700 z-50">
+          <div className="p-2 text-gray-500 text-xs">No results</div>
+        </div>
+      ) : null}
     </div>
   );
 }
