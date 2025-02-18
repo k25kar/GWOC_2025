@@ -16,6 +16,40 @@ interface UserDetails {
   wallet: number;
 }
 
+// Interface for the request body of /api/payment/createOrder
+interface CreateOrderRequest {
+  amount: number; // Amount in INR (should be converted to paise before sending to Razorpay)
+  userDetails: {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    pincode: string;
+  };
+}
+
+// Interface for the response from /api/payment/createOrder
+interface CreateOrderResponse {
+  success: boolean;
+  orderId: string; // Razorpay order ID
+  message?: string;
+}
+
+// Interface for the request body of /api/payment/verifyPayment
+interface VerifyPaymentRequest {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+}
+
+// Interface for the response from /api/payment/verifyPayment
+interface VerifyPaymentResponse {
+  success: boolean;
+  message: string; // "Payment verified" or "Payment verification failed"
+}
+
+
+
 const OrderSummary: React.FC = () => {
   const { cart, removeFromCart, clearCart } = useCart();
   const { data: session } = useSession();
@@ -23,7 +57,7 @@ const OrderSummary: React.FC = () => {
 
   const [successMessage, setSuccessMessage] = useState("");
   const [userWalletBalance, setUserWalletBalance] = useState<number>(0);
-  const [useWallet, setUseWallet] = useState(false); 
+  const [useWallet, setUseWallet] = useState(false);
 
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   useEffect(() => {
@@ -39,7 +73,6 @@ const OrderSummary: React.FC = () => {
         .catch((error) => console.error("Error fetching user details:", error));
     }
   }, [session?.user?._id]);
-  
 
   const [remarks, setRemarks] = useState<{ [index: number]: string }>({});
   const [editing, setEditing] = useState<{ [index: number]: boolean }>({});
@@ -78,14 +111,13 @@ const OrderSummary: React.FC = () => {
 
   // Calculate the effective subtotal, considering wallet usage
   const effectiveSubtotal = useWallet
-  ? subtotal > userWalletBalance // Check if the subtotal is greater than the wallet balance
-    ? subtotal - userWalletBalance
-    : subtotal // Do not apply wallet if subtotal is lesser or equal to the wallet balance
-  : subtotal;
-
+    ? subtotal > userWalletBalance // Check if the subtotal is greater than the wallet balance
+      ? subtotal - userWalletBalance
+      : subtotal // Do not apply wallet if subtotal is lesser or equal to the wallet balance
+    : subtotal;
 
   const handleWalletCheckboxChange = () => {
-    if(useWallet){
+    if (useWallet) {
       setUseWallet(false);
     }
     if (subtotal > userWalletBalance && !useWallet) {
@@ -95,58 +127,160 @@ const OrderSummary: React.FC = () => {
       alert("Your wallet balance is enough for the total, please uncheck.");
     }
   };
-     
-    
 
-    const handlePayOnDelivery = async () => {
-      if (!session?.user) {
-        alert("Please log in to complete your booking.");
-        return;
+  const handlePayOnDelivery = async () => {
+    if (!session?.user) {
+      alert("Please log in to complete your booking.");
+      return;
+    }
+
+    const bookingsArray = cart.map((item, index) => ({
+      userId: session.user._id,
+      userName,
+      userEmail,
+      userPhone,
+      address: addresses[index] ?? userAddress,
+      pincode: pincodes[index] ?? userPincode,
+      serviceName: item.service.name,
+      price: item.service.price,
+      remark: remarks[index] || "",
+      date: item.date,
+      time: item.time,
+      paymentStatus: "pending", // Set payment status to pending
+      serviceProviderId: null,
+      serviceProviderName: "",
+      serviceProviderContact: "",
+    }));
+
+    try {
+      const res = await axios.post("/api/bookings/create", {
+        bookings: bookingsArray,
+        finalTotal: effectiveSubtotal, // Use effectiveSubtotal with wallet deduction
+      });
+      if (res.status === 201) {
+        setSuccessMessage("Booking successful! Your booking has been placed.");
+        setTimeout(() => {
+          localStorage.setItem("cart", JSON.stringify([]));
+          clearCart();
+          router.push("/");
+        }, 3000);
       }
-    
-      const bookingsArray = cart.map((item, index) => ({
-        userId: session.user._id,
-        userName,
-        userEmail,
-        userPhone,
-        address: addresses[index] ?? userAddress,
-        pincode: pincodes[index] ?? userPincode,
-        serviceName: item.service.name,
-        price: item.service.price,
-        remark: remarks[index] || "",
-        date: item.date,
-        time: item.time,
-        paymentStatus: "pending", // Set payment status to pending
-        serviceProviderId: null,
-        serviceProviderName: "",
-        serviceProviderContact: "",
-      }));
-    
-      try {
-        const res = await axios.post("/api/bookings/create", {
-          bookings: bookingsArray,
-          finalTotal: effectiveSubtotal, // Use effectiveSubtotal with wallet deduction
-        });
-        if (res.status === 201) {
-          setSuccessMessage("Booking successful! Your booking has been placed.");
-          setTimeout(() => {
-            localStorage.setItem("cart", JSON.stringify([]));
-            clearCart();
-            router.push("/");
-          }, 3000);
-        }
-      } catch (error) {
-        console.error("Error creating bookings", error);
-        alert("Error creating bookings. Please try again later.");
-      }
-    };
-    
-    const handlePayNow = async () => {
-      const finalTotal = effectiveSubtotal;
-      console.log("Proceeding to Pay Now with total:", finalTotal);
-      router.push("/");
-    };
-    
+    } catch (error) {
+      console.error("Error creating bookings", error);
+      alert("Error creating bookings. Please try again later.");
+    }
+  };
+
+  const handlePayNow = async () => {
+    const finalTotal = effectiveSubtotal; // Calculate the final total, considering the wallet deduction
+    console.log("Final Total for payment (paying now):", finalTotal);
+  
+    // Create bookingsArray like in the handlePayOnDelivery
+    const bookingsArray = cart.map((item, index) => ({
+      userId: session?.user._id, 
+      userName,
+      userEmail,
+      userPhone,
+      address: addresses[index] ?? userAddress,
+      pincode: pincodes[index] ?? userPincode,
+      serviceName: item.service.name,
+      price: item.service.price,
+      remark: remarks[index] || "",
+      date: item.date,
+      time: item.time,
+      paymentStatus: "paid", // Set the payment status to "paid" immediately
+      serviceProviderId: null, // Assuming serviceProviderId is null for now
+      serviceProviderName: "",
+      serviceProviderContact: "",
+    }));
+  
+    try {
+      // Call backend to create Razorpay order
+      const createOrderPayload: CreateOrderRequest = {
+        amount: finalTotal * 100, // Convert to paise (Razorpay works with paise)
+        userDetails: {
+          name: userName,
+          email: userEmail,
+          phone: userPhone,
+          address: userAddress,
+          pincode: userPincode,
+        },
+      };
+  
+      const res = await axios.post<CreateOrderResponse>("/api/payment/createOrder", createOrderPayload);
+  
+      const { orderId } = res.data;
+  
+      // Initialize Razorpay
+      const options = {
+        key: process.env.RAZORPAY_KEY, // Your Razorpay Key
+        amount: finalTotal * 100, // Amount in paise
+        currency: "INR",
+        order_id: orderId,
+        name: userName,
+        description: "Order Payment",
+        handler: async function (response: { razorpay_payment_id: string, razorpay_order_id: string, razorpay_signature: string }) {
+  
+          const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = response;
+  
+          try {
+            // Send payment details to server to verify
+            const verifyPaymentPayload: VerifyPaymentRequest = {
+              razorpay_payment_id,
+              razorpay_order_id,
+              razorpay_signature,
+            };
+  
+            const verifyRes = await axios.post<VerifyPaymentResponse>("/api/payment/verifyPayment", verifyPaymentPayload);
+  
+            if (verifyRes.status === 200 && verifyRes.data.success) {
+              // If payment is verified successfully, create bookings in the database
+              const bookingCreationRes = await axios.post("/api/bookings/create", {
+                bookings: bookingsArray,
+                finalTotal: finalTotal, // Use final total with wallet deduction
+              });
+  
+              if (bookingCreationRes.status === 201) {
+                setSuccessMessage("Payment successful! Your booking has been placed.");
+                setTimeout(() => {
+                  localStorage.setItem("cart", JSON.stringify([])); // Clear the cart
+                  clearCart();
+                  router.push("/"); // Redirect to home
+                }, 3000);
+              } else {
+                throw new Error("Error creating bookings.");
+              }
+            } else {
+              throw new Error("Payment verification failed.");
+            }
+          } catch (error) {
+            console.error("Error verifying payment or creating bookings:", error);
+            alert("There was an issue processing your payment. Please try again.");
+          }
+        },
+        prefill: {
+          name: userName,
+          email: userEmail,
+          contact: userPhone,
+        },
+        notes: {
+          address: userAddress,
+          pincode: userPincode,
+        },
+        theme: {
+          color: "#800000",
+        },
+      };
+  
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Error creating Razorpay order", error);
+      alert("Error initiating payment. Please try again later.");
+    }
+  };
+  
+  
 
   const handleBackHome = () => {
     router.push("/");
@@ -295,12 +429,12 @@ const OrderSummary: React.FC = () => {
               </div>
             </div>
 
-             {/* Wallet checkbox */}
-             <div className="mt-4 flex items-center">
+            {/* Wallet checkbox */}
+            <div className="mt-4 flex items-center">
               <input
                 type="checkbox"
                 checked={useWallet}
-                onChange={handleWalletCheckboxChange} 
+                onChange={handleWalletCheckboxChange}
                 id="use-wallet"
                 className="mr-2"
               />
