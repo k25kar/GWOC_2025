@@ -1,30 +1,56 @@
 import mongoose from 'mongoose';
 
-const connection: { isConnected?: number } = {};
+if (!process.env.MONGODB_URI) {
+  throw new Error(
+    'Please define the MONGODB_URI environment variable inside .env.local'
+  );
+}
+
+const MONGODB_URI = process.env.MONGODB_URI;
+
+// Define a type for our cached connection
+interface MongooseCache {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+}
+
+// Extend the NodeJS global object to include our cache
+declare global {
+  // eslint-disable-next-line no-var
+  var mongooseCache: MongooseCache | undefined;
+}
+
+// Use the cached connection if available, otherwise initialize it
+let cached: MongooseCache = global.mongooseCache ?? { conn: null, promise: null };
+global.mongooseCache = cached;
 
 async function connect() {
-  if (connection.isConnected) {
+  if (cached.conn) {
     console.log('Using existing database connection');
-    return;
+    return cached.conn;
   }
 
-  try {
-    const db = await mongoose.connect(process.env.MONGODB_URI || '', {
-      serverSelectionTimeoutMS: 30000, // Timeout after 5 seconds
+  if (!cached.promise) {
+    const opts = {
+      serverSelectionTimeoutMS: 30000, // Timeout after 30 seconds
+    };
+
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      return mongoose;
     });
-    connection.isConnected = db.connections[0].readyState;
-    console.log('DB Connected Successfully');
-  } catch (error) {
-    console.error('DB Connection Error:', error);
-    throw error; // Rethrow the error to ensure it's caught by the API route
   }
+
+  cached.conn = await cached.promise;
+  console.log('DB Connected Successfully');
+  return cached.conn;
 }
 
 async function disconnect() {
-  if (connection.isConnected) {
+  if (cached.conn) {
     try {
       await mongoose.disconnect();
-      connection.isConnected = 0;
+      cached.conn = null;
+      cached.promise = null;
       console.log('DB Disconnected Successfully');
     } catch (error) {
       console.error('DB Disconnection Error:', error);

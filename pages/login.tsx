@@ -17,8 +17,12 @@ interface LoginFormValues {
 }
 
 const validationSchema = Yup.object({
-  email: Yup.string().email("Invalid email format").required("Email is required"),
-  password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
 });
 
 const initialValues: LoginFormValues = {
@@ -36,13 +40,18 @@ const LoginScreen = () => {
 
   /**
    * Check the login status for a given email based on the login type.
-   * For users, it checks if the user exists.
-   * For service providers, it also checks for approval status.
+   * For service providers, only allow login if the status is "approved".
+   * Otherwise, return an error message.
    */
-  const checkLoginStatus = async (email: string, loginType: "user" | "sp"): Promise<string | null> => {
+  const checkLoginStatus = async (
+    email: string,
+    loginType: "user" | "sp"
+  ): Promise<string | null> => {
     if (loginType === "user") {
       try {
-        const userRes = await axios.get(`/api/auth/check-user?email=${encodeURIComponent(email)}`);
+        const userRes = await axios.get(
+          `/api/auth/check-user?email=${encodeURIComponent(email)}`
+        );
         if (userRes.status === 200 && userRes.data.exists) {
           return null;
         } else {
@@ -54,17 +63,15 @@ const LoginScreen = () => {
       }
     } else if (loginType === "sp") {
       try {
-        const partnerRes = await axios.get(`/api/auth/check-provider-status?email=${encodeURIComponent(email)}`);
+        const partnerRes = await axios.get(
+          `/api/auth/check-provider-status?email=${encodeURIComponent(email)}`
+        );
         if (partnerRes.status === 200) {
           const status: string = partnerRes.data.status;
-          if (status === "pending") {
-            return "Registration under approval";
-          } else if (status === "rejected") {
-            return "Registration rejected";
-          } else if (status === "approved") {
+          if (status === "approved") {
             return null;
           } else {
-            return "Unknown status";
+            return "Application not approved yet";
           }
         }
       } catch (error) {
@@ -77,8 +84,10 @@ const LoginScreen = () => {
 
   /**
    * Handle form submission:
-   * - For users, use NextAuth’s credentials provider.
-   * - For service providers, call the dedicated login endpoint and redirect to the SP dashboard.
+   * - For normal users, use NextAuth’s credentials provider.
+   * - For service providers, first check if the account is approved.
+   *   Then call our custom login endpoint and, if successful,
+   *   create a NextAuth session via the credentials provider.
    */
   const handleSubmit = async ({ email, password }: LoginFormValues) => {
     const errorMsg = await checkLoginStatus(email, loginType);
@@ -112,18 +121,39 @@ const LoginScreen = () => {
       }
     } else if (loginType === "sp") {
       try {
-        const { data } = await axios.post("/api/auth/login-sp", { email, password });
+        // First, call our custom API route to verify SP credentials and status.
+        const { data } = await axios.post("/api/auth/login-sp", {
+          email,
+          password,
+        });
         if (data.message === "Login successful") {
-          toast.success("Service Provider login successful", {
-            style: { backgroundColor: "#141414", color: "#fff" },
+          // Now create a NextAuth session (assuming your credentials provider
+          // supports a "loginType" field to differentiate SP logins).
+          const result: any = await signIn("credentials", {
+            redirect: false,
+            email,
+            password,
+            loginType: "sp",
           });
-          // Redirect directly to the SP dashboard.
-          router.push("/dashboard/spdashboard/overview");
+          if (result.error) {
+            toast.error(result.error, {
+              style: { backgroundColor: "#800000", color: "#fff" },
+            });
+          } else {
+            toast.success("Service Provider login successful", {
+              style: { backgroundColor: "#141414", color: "#fff" },
+            });
+            // Redirect directly to the SP dashboard overview.
+            router.push("/dashboard/spdashboard/overview");
+          }
         }
       } catch (err: any) {
-        toast.error(err.response?.data?.message || "Service Provider login failed", {
-          style: { backgroundColor: "#800000", color: "#fff" },
-        });
+        toast.error(
+          err.response?.data?.message || "Service Provider login failed",
+          {
+            style: { backgroundColor: "#800000", color: "#fff" },
+          }
+        );
       }
     }
   };
@@ -152,7 +182,7 @@ const LoginScreen = () => {
       }
       // Successful Google login; redirect based on login type.
       if (loginType === "sp") {
-        router.push("/sp/dashboard");
+        router.push("/dashboard/spdashboard/overview");
       } else {
         router.push(redirect || "/");
       }
@@ -176,7 +206,7 @@ const LoginScreen = () => {
           });
         } else {
           if (loginType === "sp") {
-            router.push("/sp/dashboard");
+            router.push("/dashboard/spdashboard/overview");
           } else {
             router.push(redirect || "/");
           }
@@ -199,7 +229,9 @@ const LoginScreen = () => {
               type="button"
               onClick={() => setLoginType("user")}
               className={`px-4 py-2 mr-2 rounded-md ${
-                loginType === "user" ? "bg-[#800000] text-white" : "bg-gray-700 text-gray-300"
+                loginType === "user"
+                  ? "bg-[#800000] text-white"
+                  : "bg-gray-700 text-gray-300"
               }`}
             >
               User
@@ -208,7 +240,9 @@ const LoginScreen = () => {
               type="button"
               onClick={() => setLoginType("sp")}
               className={`px-4 py-2 rounded-md ${
-                loginType === "sp" ? "bg-[#800000] text-white" : "bg-gray-700 text-gray-300"
+                loginType === "sp"
+                  ? "bg-[#800000] text-white"
+                  : "bg-gray-700 text-gray-300"
               }`}
             >
               Service Provider
@@ -232,11 +266,18 @@ const LoginScreen = () => {
           </div>
 
           {/* Formik Form for Email & Password */}
-          <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={handleSubmit}
+          >
             <Form className="space-y-4">
               {/* Email Field */}
               <div>
-                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-200">
+                <label
+                  htmlFor="email"
+                  className="block mb-2 text-sm font-medium text-gray-200"
+                >
                   E-mail
                 </label>
                 <Field
@@ -254,7 +295,10 @@ const LoginScreen = () => {
 
               {/* Password Field */}
               <div>
-                <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-200">
+                <label
+                  htmlFor="password"
+                  className="block mb-2 text-sm font-medium text-gray-200"
+                >
                   Password
                 </label>
                 <Field
@@ -282,12 +326,18 @@ const LoginScreen = () => {
               <div className="text-center text-sm text-gray-400 space-y-2 mt-4">
                 <p>
                   Don&apos;t have an account? &nbsp;
-                  <Link className="text-[#800000] hover:underline" href={`./signup?redirect=${redirect || "/"}`}>
+                  <Link
+                    className="text-[#800000] hover:underline"
+                    href={`./signup?redirect=${redirect || "/"}`}
+                  >
                     Create an account
                   </Link>
                 </p>
                 <p>
-                  <Link className="text-[#800000] hover:underline" href="/forgot-password">
+                  <Link
+                    className="text-[#800000] hover:underline"
+                    href="/forgot-password"
+                  >
                     Forgot password?
                   </Link>
                 </p>
