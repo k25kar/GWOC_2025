@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import axios from "axios";
+import jsPDF from 'jspdf'
 
 interface UserDetails {
   name: string;
@@ -128,6 +129,72 @@ const OrderSummary: React.FC = () => {
     }
   };
 
+  type Booking = {
+    userName: string;
+    userEmail: string;
+    userPhone: string;
+    address: string;
+    pincode: string;
+    serviceName: string;
+    price: number;
+  };
+  
+  type PaymentStatus = "pending" | "paid" | "failed"; // Example, adjust based on your needs
+  
+  const generateInvoice = (
+    bookingsArray: Booking[], 
+    totalAmount: number, 
+    paymentStatus: PaymentStatus
+  ) => {
+    const doc = new jsPDF();
+  
+    // Get current date
+    const currentDate = new Date().toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  
+    // Title
+    doc.setFontSize(18);
+    doc.text("Invoice / Receipt", 20, 20);
+  
+    // Order Date
+    doc.setFontSize(12);
+    doc.text(`Date of Order: ${currentDate}`, 20, 30);
+  
+    // User Information
+    const user = bookingsArray[0]; // Assuming all bookings are from the same user
+    doc.text(`Name: ${user.userName}`, 20, 40);
+    doc.text(`Email: ${user.userEmail}`, 20, 50);
+    doc.text(`Phone: ${user.userPhone}`, 20, 60);
+    doc.text(`Address: ${user.address}`, 20, 70);
+    doc.text(`Pincode: ${user.pincode}`, 20, 80);
+  
+    // Service Details
+    let yPosition = 90;
+    doc.text("Services Purchased:", 20, yPosition);
+    yPosition += 10;
+  
+    bookingsArray.forEach((item, index) => {
+      doc.text(`${item.serviceName} - ₹${item.price}`, 20, yPosition);
+      yPosition += 10;
+    });
+  
+    // Total Amount
+    yPosition += 10;
+    doc.text(`Total Amount: ₹${totalAmount}`, 20, yPosition);
+  
+    // Payment Status
+    yPosition += 10;
+    doc.text(`Payment Status: ${paymentStatus}`, 20, yPosition);
+  
+    // Save or display the PDF
+    doc.save(`Invoice_${currentDate}.pdf`);
+  };
+  
+  
+
   const handlePayOnDelivery = async () => {
     if (!session?.user) {
       alert("Please log in to complete your booking.");
@@ -159,6 +226,7 @@ const OrderSummary: React.FC = () => {
       });
       if (res.status === 201) {
         setSuccessMessage("Booking successful! Your booking has been placed.");
+        generateInvoice(bookingsArray, effectiveSubtotal, "pending");
         setTimeout(() => {
           localStorage.setItem("cart", JSON.stringify([]));
           clearCart();
@@ -242,6 +310,7 @@ const OrderSummary: React.FC = () => {
   
               if (bookingCreationRes.status === 201) {
                 setSuccessMessage("Payment successful! Your booking has been placed.");
+                generateInvoice(bookingsArray, finalTotal, "paid");
                 setTimeout(() => {
                   localStorage.setItem("cart", JSON.stringify([])); // Clear the cart
                   clearCart();
