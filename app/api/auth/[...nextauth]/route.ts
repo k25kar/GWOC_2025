@@ -15,6 +15,7 @@ interface NextAuthUser {
   email: string;
   image: string;
   isAdmin: boolean;
+  phone?: string; // Added phone field
 }
 
 export const authOptions: NextAuthOptions = {
@@ -23,10 +24,12 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
+      // If a user object is available (on login) add custom properties to the token.
       if (user && typeof user !== "string") {
         const customUser = user as NextAuthUser;
         if (customUser._id) token._id = customUser._id;
         if (customUser.isAdmin) token.isAdmin = customUser.isAdmin;
+        if (customUser.phone) token.phone = customUser.phone;
       }
       return token;
     },
@@ -34,6 +37,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user._id = token._id as string;
         session.user.isAdmin = token.isAdmin as boolean;
+        session.user.phone = token.phone as string;
       }
       return session;
     },
@@ -48,7 +52,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        // Adding an extra field to differentiate login type.
+        // Extra field to differentiate login type.
         loginType: { label: "LoginType", type: "text" },
       },
       async authorize(credentials, req) {
@@ -61,9 +65,9 @@ export const authOptions: NextAuthOptions = {
 
         await db.connect();
 
-        // Check if this is a Service Provider login attempt.
+        // If this is a service provider login attempt.
         if (credentials?.loginType === "sp") {
-          // Look for a partner by email.
+          // Find a partner by email.
           const partner = await Partner.findOne({ email: credentials.email });
           console.log("Found partner:", partner);
 
@@ -80,8 +84,9 @@ export const authOptions: NextAuthOptions = {
                 _id: partner._id.toString(),
                 name: partner.name,
                 email: partner.email,
-                image: "f",
-                isAdmin: false, // Service Providers may not be admins.
+                image: "f", // Replace with actual image if available.
+                isAdmin: false, // Service providers are not admins.
+                phone: partner.phone, // Include partner's phone number.
               };
               return authUser as unknown as NextAuthUserType;
             } else {

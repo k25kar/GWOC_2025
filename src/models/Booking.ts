@@ -1,3 +1,4 @@
+// /src/models/Booking.ts
 import mongoose, { Schema, model, models } from 'mongoose';
 
 const bookingSchema = new Schema(
@@ -21,6 +22,8 @@ const bookingSchema = new Schema(
     serviceProviderId: { type: Schema.Types.ObjectId, ref: 'Partner', default: null },
     serviceProviderName: { type: String, default: "" },
     serviceProviderContact: { type: String, default: "" },
+    // NEW: Track providers who have removed this order from their view
+    ignoredProviders: [{ type: Schema.Types.ObjectId, ref: 'Partner', default: [] }],
   },
   {
     timestamps: true,
