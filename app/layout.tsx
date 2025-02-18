@@ -9,6 +9,7 @@ import { CartProvider } from "@/src/context/CartContext";
 
 import { Navbar } from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,12 @@ export default function RootLayout({
         <meta name="description" content="Your one stop solution." />
 
         <link rel="icon" href="/helperbuddy-logo.ico" />
+
+        {/* Include Razorpay Checkout script */}
+        <Script
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          strategy="beforeInteractive"  // Ensures it loads before interactive
+        />
 
       </head>
       <body
