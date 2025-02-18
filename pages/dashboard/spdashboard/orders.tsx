@@ -84,8 +84,7 @@ export default function Orders() {
   return (
     <Layout>
       <div className={styles.servicesHeader}>
-        <h2>Orders</h2>
-        <button className={styles.addServiceButton}>Filter Orders</button>
+        <h1>Orders</h1>
       </div>
 
       <div style={{ background: "#ffffcc", padding: "10px", marginBottom: "20px", textAlign: "center" }}>
