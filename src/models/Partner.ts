@@ -21,6 +21,7 @@ const partnerSchema = new mongoose.Schema({
   },
   joinedAt: { type: Date, default: Date.now },
   stats: {
+    pendingJobs: { type: Number, default: 0 },
     completedJobs: { type: Number, default: 0 },
     rating: { type: Number, default: 0 },
     responseTime: { type: Number, default: 0 },
