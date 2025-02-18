@@ -7,7 +7,7 @@
 .dashboardContainer {
   display: flex;
   flex: 1;
-  margin-top: 64px; /* Adjust this value based on your navbar height */
+  margin-top: 0; /* Adjust this value based on your navbar height */
 }
 
 .sidebar {

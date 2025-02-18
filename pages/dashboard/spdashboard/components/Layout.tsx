@@ -3,7 +3,6 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import styles from "./Layout.module.css";
-import { Navbar } from "@/components/Navbar";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -28,12 +27,11 @@ export default function Layout({ children }: LayoutProps) {
 
   const handleLogout = async () => {
     await signOut();
-    router.push("/login");
+    router.push("/");
   };
 
   return (
     <div className={styles.rootContainer}>
-      <Navbar />
       <div className={styles.dashboardContainer}>
         <aside className={styles.sidebar}>
           <h1>Dashboard</h1>
