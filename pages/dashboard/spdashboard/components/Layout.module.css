@@ -292,3 +292,132 @@
 .servicesTable tbody tr:hover {
   background-color: #f9fafb;
 }
+
+/*Service Pincodes page*/
+
+/* Container for each pincode item */
+.pinCodeItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+/* Container for the toggle and remove button */
+.actionButtons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* The switch label (container) */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 28px;
+}
+
+/* Hide the default checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider background */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: red; /* Red side */
+  transition: 0.4s;
+  border-radius: 34px;
+
+  /* Optional text styling */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.7rem;
+}
+
+/* The circle (the actual switch handle) */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* When the checkbox is checked, move the slider handle to the right and change color to green */
+.switch input:checked + .slider {
+  background-color: green;
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(30px);
+}
+
+/* Remove button styling */
+.removeButton {
+  padding: 0.25rem 0.5rem;
+  background-color: #ccc;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Add pincode input container */
+.addPincodeContainer {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Example for the new pincode input and buttons */
+.pincodeInput {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.addPincodeActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cancelPincodeButton {
+  padding: 0.5rem 1rem;
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submitPincodeButton {
+  padding: 0.5rem 1rem;
+  background-color: #800000;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submitPincodeButton:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
