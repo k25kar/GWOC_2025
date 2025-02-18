@@ -31,37 +31,36 @@ export default function SearchBar() {
   // Fetch search results from API
   // Fetch search results from API
   // Fetch search results from API
-  const fetchResults = async (searchQuery: string) => {
+  const fetchResults = async (searchQuery: string, logMissing: boolean) => {
     if (!searchQuery.trim()) {
-      setResults([]); // Clear results if the query is empty
+      setResults([]);
       return;
     }
-
+  
     try {
       const response = await fetch(
-        `/api/searchbar/search?query=${searchQuery}`
+        `/api/searchbar/search?query=${searchQuery}&log=${logMissing}`
       );
       const data = await response.json();
-      console.log("data", data); // POINT TO INTEGRATE THE SEARCH RESULT TO THE ADMIN DASH 
-
-      // If no results are found, set an empty array
-      if (!data.services || data.services.length === 0) {
-        setResults([]); // No results found, clear previous results
-      } else {
-        setResults(data.services || []); // Set fetched results
-      }
+  
+      setResults(data.services || []);
     } catch (error) {
       console.error("Error fetching search results:", error);
-      setResults([]); // Clear results if there was an error
+      setResults([]);
     }
   };
-
   // Debounced search handler
   const debouncedSearch = debounce(fetchResults, 300);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
-    debouncedSearch(e.target.value);
+    debouncedSearch(e.target.value, false); // Normal search, no logging
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      fetchResults(query, true); // Fetch and log missing searches on Enter
+    }
   };
 
   // Handle category selection and navigate to Services Page
@@ -102,6 +101,7 @@ export default function SearchBar() {
           type="text"
           value={query}
           onChange={handleInputChange}
+          onKeyDown={handleKeyDown} 
           title="Search"
           placeholder="Search for services"
           className="w-full pl-6 pr-2 py-1.5 text-xs rounded-md border border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500 bg-transparent placeholder-transparent text-gray-200"
