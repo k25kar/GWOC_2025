@@ -19,24 +19,8 @@ interface Testimonial {
 
 const TestimonialsSection: React.FC = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [currentSlide, setCurrentSlide] = useState<number>(0);
-  const [itemsPerSlide, setItemsPerSlide] = useState<number>(4);
 
-  // Decide itemsPerSlide based on screen size (4 on desktop, 2 on mobile)
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setItemsPerSlide(2);
-      } else {
-        setItemsPerSlide(4);
-      }
-    };
-    handleResize(); // run once on mount
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Fetch testimonials
+  // Fetch testimonials dynamically
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
@@ -49,40 +33,24 @@ const TestimonialsSection: React.FC = () => {
     fetchTestimonials();
   }, []);
 
-  // Group testimonials into slides, each slide has up to `itemsPerSlide` items
-  const slides: Testimonial[][] = [];
-  for (let i = 0; i < testimonials.length; i += itemsPerSlide) {
-    slides.push(testimonials.slice(i, i + itemsPerSlide));
-  }
-  const maxSlide = slides.length - 1;
-
-  // Navigation
-  const handlePrev = () => {
-    setCurrentSlide((prev) => (prev > 0 ? prev - 1 : 0));
-  };
-  const handleNext = () => {
-    setCurrentSlide((prev) => (prev < maxSlide ? prev + 1 : maxSlide));
-  };
-
-  // GSAP animation on scroll
+  // GSAP marquee animation based on Magic UI marquee component style
   useEffect(() => {
-    gsap.fromTo(
-      ".testimonial-card",
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        stagger: 0.2,
-        scrollTrigger: {
-          trigger: ".testimonials-section",
-          start: "top 85%",
-          end: "bottom 60%",
-          scrub: true,
-        },
-      }
-    );
+    if (testimonials.length > 0) {
+      const marqueeInner = document.querySelector(".marquee__inner");
+      gsap.to(marqueeInner, {
+        x: "-50%",
+        ease: "linear",
+        duration: 30,
+        repeat: -1,
+      });
+    }
   }, [testimonials]);
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: rating }, (_, i) => (
+      <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+    ));
+  };
 
   return (
     <div className="bg-black px-4 py-8 md:py-12 testimonials-section relative">
@@ -94,103 +62,43 @@ const TestimonialsSection: React.FC = () => {
         {testimonials.length === 0 ? (
           <p className="text-white">Loading testimonials...</p>
         ) : (
-          <div className="relative">
-            {/* Slider container with overflow hidden */}
-            <div className="overflow-hidden">
-              {/* Slides container: each slide is 100% width of the container */}
-              <div
-                className="flex transition-transform duration-700 ease-out"
-                style={{
-                  transform: `translateX(-${currentSlide * 100}%)`,
-                }}
-              >
-                {slides.map((slide, slideIndex) => {
-                  // Number of placeholders we need to keep the grid consistent
-                  const placeholdersCount = itemsPerSlide - slide.length;
-
-                  return (
-                    <div key={slideIndex} className="min-w-full">
-                      {/* Always 2 columns on mobile, 4 on desktop, with gap */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                        {slide.map((testimonial) => (
-                          <div
-                            key={testimonial._id}
-                            className="testimonial-card bg-zinc-900 p-4 md:p-6 rounded-lg"
-                          >
-                            <div className="flex items-center mb-3 md:mb-4">
-                              <Image
-                                src={testimonial.profilePic}
-                                alt={testimonial.name}
-                                width={40}
-                                height={40}
-                                className="rounded-full w-10 h-10 md:w-12 md:h-12"
-                              />
-                              <div className="ml-3">
-                                <h3 className="text-white font-semibold text-sm md:text-base">
-                                  {testimonial.name}
-                                </h3>
-                              </div>
-                            </div>
-                            <div className="flex mb-2">
-                              {Array.from({ length: testimonial.rating }, (_, i) => (
-                                <Star
-                                  key={i}
-                                  className="w-3 h-3 md:w-4 md:h-4 text-yellow-400 fill-yellow-400"
-                                />
-                              ))}
-                            </div>
-                            <p className="text-zinc-300 text-xs md:text-sm">
-                              {testimonial.review}
-                            </p>
-                          </div>
-                        ))}
-
-                        {/* Render empty placeholders if we have fewer than itemsPerSlide */}
-                        {Array.from({ length: placeholdersCount }).map((_, idx) => (
-                          <div key={`placeholder-${idx}`} />
-                        ))}
-                      </div>
+          <div className="overflow-hidden relative">
+            <div className="marquee__inner flex items-center whitespace-nowrap">
+              {testimonials.map((testimonial) => (
+                <div
+                  key={testimonial._id}
+                  className="testimonial-card inline-block w-72 md:w-80 p-6 mx-4 bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-xl transition-all duration-300"
+                >
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-rose-500 flex items-center justify-center text-white font-bold">
+                      {testimonial.name.charAt(0)}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Arrow Navigation */}
-            <div className="absolute inset-0 flex items-center justify-between pointer-events-none">
-              <button
-                onClick={handlePrev}
-                className="pointer-events-auto text-white bg-transparent rounded-full p-2 m-2 hover:bg-gray-700 transition-colors"
-              >
-                <svg
-                  viewBox="0 0 8 14"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-6 h-6"
+                    <div className="ml-3">
+                      <h4 className="text-white font-medium">{testimonial.name}</h4>
+                    </div>
+                  </div>
+                  <div className="flex mb-3">{renderStars(testimonial.rating)}</div>
+                  <p className="text-zinc-300 text-sm">"{testimonial.review}"</p>
+                </div>
+              ))}
+              {/* Duplicate the testimonials for continuous marquee effect */}
+              {testimonials.map((testimonial) => (
+                <div
+                  key={`${testimonial._id}-dup`}
+                  className="testimonial-card inline-block w-72 md:w-80 p-6 mx-4 bg-zinc-900/80 backdrop-blur-sm border border-zinc-800 rounded-xl transition-all duration-300"
                 >
-                  <path d="M7 13L1 7l6-6" />
-                </svg>
-              </button>
-
-              <button
-                onClick={handleNext}
-                className="pointer-events-auto text-white bg-transparent rounded-full p-2 m-2 hover:bg-gray-700 transition-colors"
-              >
-                <svg
-                  viewBox="0 0 8 14"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-6 h-6"
-                >
-                  <path d="M1 13l6-6-6-6" />
-                </svg>
-              </button>
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-rose-500 flex items-center justify-center text-white font-bold">
+                      {testimonial.name.charAt(0)}
+                    </div>
+                    <div className="ml-3">
+                      <h4 className="text-white font-medium">{testimonial.name}</h4>
+                    </div>
+                  </div>
+                  <div className="flex mb-3">{renderStars(testimonial.rating)}</div>
+                  <p className="text-zinc-300 text-sm">"{testimonial.review}"</p>
+                </div>
+              ))}
             </div>
           </div>
         )}
