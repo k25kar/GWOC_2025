@@ -28,7 +28,7 @@ export default function ImageCarousel() {
       try {
         const response = await axios.get("/api/services/latest");
         setServices(response.data.services || []);  // Set the data only if the request is successful
-      } catch (error) {
+      } catch (error:any) {
         if (error.response && error.response.status === 500) {
           // Log the 500 error to the console
           console.error("Error fetching latest services:", error);

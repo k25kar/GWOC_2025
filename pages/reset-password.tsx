@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -19,7 +20,7 @@ const ForgotPassword = () => {
     try {
       const response = await axios.post("/api/auth/forgot-password", values);
       toast.success(response.data.message);
-    } catch (error) {
+    } catch (error:any) {
       toast.error(error.response?.data?.message || "An error occurred");
     }
     setIsSubmitting(false);

@@ -23,6 +23,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     } else {
       return res.status(404).json({ exists: false });
     }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     await db.disconnect();
     return res.status(500).json({ message: "Internal server error" });

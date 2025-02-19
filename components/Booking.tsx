@@ -24,7 +24,7 @@ interface TimeSlot {
   time: string;
 }
 
-const Booking: FC<BookingProps> = ({ children, service }) => {
+const Booking:any = ({ children, service }:any) => {
   // Initialize with current date; note: Calendar's disabled callback will prevent past date selection.
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [timeSlot, setTimeSlot] = useState<TimeSlot[]>([]);

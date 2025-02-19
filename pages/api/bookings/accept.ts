@@ -4,8 +4,7 @@ import mongoose from "mongoose";
 import db from "@/lib/dbConnect";
 import Booking from "@/src/models/Booking";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
-
+import { authOptions } from "@/utils/authOptions";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -16,7 +15,7 @@ export default async function handler(
   }
 
   // Retrieve session from NextAuth
-  const session = await getServerSession(req, res, authOptions);
+  const session:any = await getServerSession(req, res, authOptions);
   if (!session) {
     return res.status(401).json({ message: "Not authenticated" });
   }
@@ -39,9 +38,9 @@ export default async function handler(
     }
     // Use logged in service provider's details from the session.
     // Make sure session.user contains _id, name, and phone.
-    booking.serviceProviderId = new mongoose.Types.ObjectId(session.user._id);
-    booking.serviceProviderName = session.user.name;
-    booking.serviceProviderContact = session.user.phone;
+    booking.serviceProviderId = new mongoose.Types.ObjectId(session?.user?._id);
+    booking.serviceProviderName = session?.user?.name;
+    booking.serviceProviderContact = session?.user?.phone;
 
     await booking.save();
     res.status(200).json(booking);
