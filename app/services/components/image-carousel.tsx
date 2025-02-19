@@ -57,7 +57,7 @@ export default function ImageCarousel() {
   };
 
   return (
-    <div className="relative rounded-xl overflow-hidden aspect-[4/3] bg-zinc-900 w-full max-w-2xl mx-auto">
+    <div className="relative rounded-xl overflow-hidden aspect-[4/3] bg-zinc-900 w-50 max-w-xl mx-auto">
       <AnimatePresence mode="wait">
         {services.length > 0 && (
           <>
