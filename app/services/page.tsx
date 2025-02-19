@@ -48,7 +48,7 @@ export default function ServicesPage() {
           animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.8 }}
           className="text-6xl md:text-7xl lg:text-8xl font-bold"
-          style={{ color: "#E8E4D3" }}
+          style={{ color: "#ffffff" }}
         >
           <BlurText
             text="Our Services."
@@ -108,7 +108,7 @@ export default function ServicesPage() {
             >
               <h2
                 className="text-4xl md:text-5xl font-bold mb-4"
-                style={{ color: "#E8E4D3" }}
+                style={{ color: "#ffffff" }}
               >
                 New and Trustworthy
               </h2>
@@ -130,7 +130,7 @@ export default function ServicesPage() {
             >
               <h2
                 className="text-4xl md:text-5xl font-bold mb-4"
-                style={{ color: "#E8E4D3" }}
+                style={{ color: "#ffffff" }}
               >
                 Best Sellers
               </h2>
@@ -156,7 +156,7 @@ export default function ServicesPage() {
           >
             <h2
               className="text-4xl md:text-5xl font-bold mb-4"
-              style={{ color: "#E8E4D3" }}
+              style={{ color: "#ffffff" }}
             >
               <TrueFocus
                 sentence="What we Offer"

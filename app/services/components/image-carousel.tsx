@@ -21,19 +21,28 @@ interface Service {
 
 export default function ImageCarousel() {
   const [services, setServices] = useState<Service[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0); 
 
   useEffect(() => {
     const fetchLatestServices = async () => {
       try {
         const response = await axios.get("/api/services/latest");
-        setServices(response.data.services || []);
+        setServices(response.data.services || []);  // Set the data only if the request is successful
       } catch (error) {
-        console.error("Error fetching latest services:", error);
+        if (error.response && error.response.status === 500) {
+          // Log the 500 error to the console
+          console.error("Error fetching latest services:", error);
+        } else {
+          // Optionally, log other types of errors
+          console.error("Error fetching latest services:", error);
+        }
+        // No UI updates on error, preventing the error from being shown to the user
       }
     };
+    
     fetchLatestServices();
   }, []);
+  
 
   const handlePrevious = () => {
     setCurrentIndex((current) =>
@@ -64,7 +73,7 @@ export default function ImageCarousel() {
             />
 
             {/* Service Name */}
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 text-white text-lg font-semibold">
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 text-black text-xl font-semibold">
               {services[currentIndex]?.name}
             </div>
 

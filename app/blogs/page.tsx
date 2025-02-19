@@ -62,7 +62,7 @@ const BlogPage: React.FC = () => {
         {/* Modal for Blog Details */}
         {selectedBlog && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-[#1a1a1a] p-6 rounded-lg w-full sm:w-3/4 md:w-1/2">
+            <div className="bg-[#1a1a1a] p-6 rounded-lg w-full sm:w-3/4 md:w-1/2 lg:w-2/5 xl:w-1/3 max-w-[75vw] max-h-[75vh] overflow-y-auto">
               <h2 className="text-2xl font-bold text-white">{selectedBlog.title}</h2>
               <p className="text-sm text-gray-400 mt-2">By {selectedBlog.author}</p>
               <p className="mt-4 text-gray-300">{selectedBlog.content}</p>

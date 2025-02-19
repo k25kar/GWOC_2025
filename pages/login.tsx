@@ -336,7 +336,7 @@ const LoginScreen = () => {
                 <p>
                   <Link
                     className="text-[#800000] hover:underline"
-                    href="/forgot-password"
+                    href="/reset-password"
                   >
                     Forgot password?
                   </Link>
