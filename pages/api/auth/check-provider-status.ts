@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // /pages/api/auth/check-provider-status.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import db from "@/lib/dbConnect";

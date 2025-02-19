@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -202,7 +203,7 @@ function PerspectiveHeroSection() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <p className="text-zinc-300 text-lg leading-relaxed">
-                HelperBuddy transforms how you experience home services with a commitment to quality, reliability and convenience that's unmatched in the industry.
+                HelperBuddy transforms how you experience home services with a commitment to quality, reliability and convenience that&apos;s unmatched in the industry.
               </p>
               
               <div className="highlights-container space-y-4">

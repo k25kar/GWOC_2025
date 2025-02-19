@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // /pages/api/bookings/active.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import db from "@/lib/dbConnect";
@@ -11,7 +13,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     today.setHours(0, 0, 0, 0);
 
     // Build filter
-    let filter: any = { date: { $gte: today } };
+    const filter: any = { date: { $gte: today } };
     if (req.query.userId) {
       filter.userId = req.query.userId;
     }

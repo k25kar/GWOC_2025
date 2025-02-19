@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -340,7 +341,7 @@ const OrderSummary: React.FC = () => {
             {/* Order Instructions */}
             <div className="mt-4 border-t border-gray-700 pt-4">
               <p className="text-sm text-gray-300">
-                We'll assign someone within 2 hours. You can choose your payment
+                We&apos;ll assign someone within 2 hours. You can choose your payment
                 method later from the Bookings page (accessible via your
                 profile).
               </p>

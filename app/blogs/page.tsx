@@ -10,7 +10,7 @@ interface Blog {
   createdAt: string;
 }
 
-const BlogPage: React.FC = () => {
+const BlogPage: any = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
 

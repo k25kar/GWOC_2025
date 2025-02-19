@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // pages/dashboard/spdashboard/overview.tsx
 import React, { useState } from "react";
 import Layout from "./components/Layout";

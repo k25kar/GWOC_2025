@@ -29,8 +29,8 @@ export default function BestsellerCarousel() {
       try {
         const response = await axios.get("/api/services/bestseller");
         setServices(response.data.services || []);  // Set services if the request is successful
-      } catch (error) {
-        if (error.response && error.response.status === 500) {
+      } catch (error:any) {
+        if (error?.response && error?.response?.status === 500) {
           // Log the 500 error to the console
           console.error("Error fetching bestsellers:", error);
         } else {

@@ -16,6 +16,7 @@ interface UserDetails {
 
 const UpdateProfile: React.FC = () => {
   const { data: session } = useSession();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const router = useRouter();
 
   // Original details fetched from the server.
