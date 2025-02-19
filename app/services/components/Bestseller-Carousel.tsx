@@ -64,6 +64,11 @@ export default function BestsellerCarousel() {
               className="absolute inset-0 w-full h-full object-cover"
             />
 
+            {/* Service Name */}
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 text-white text-lg font-semibold">
+              {services[currentIndex]?.name}
+            </div>
+
             {/* Book Now Button */}
             <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 pointer-events-auto">
               <Booking service={services[currentIndex]}>
