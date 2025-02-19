@@ -28,13 +28,22 @@ export default function BestsellerCarousel() {
     const fetchBestsellers = async () => {
       try {
         const response = await axios.get("/api/services/bestseller");
-        setServices(response.data.services || []);
+        setServices(response.data.services || []);  // Set services if the request is successful
       } catch (error) {
-        console.error("Error fetching latest services:", error);
+        if (error.response && error.response.status === 500) {
+          // Log the 500 error to the console
+          console.error("Error fetching bestsellers:", error);
+        } else {
+          // Optionally, handle other errors (e.g. network error) or just log them
+          console.error("Error fetching bestsellers:", error);
+        }
+        // No UI changes to reflect the error
       }
     };
+  
     fetchBestsellers();
   }, []);
+  
 
   const handlePrevious = () => {
     setCurrentIndex((current) =>
