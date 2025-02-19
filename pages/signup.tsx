@@ -1,4 +1,3 @@
-// signup.tsx
 "use client";
 
 import Link from "next/link";
@@ -19,7 +18,7 @@ interface SignupFormValues {
   phone: string;
   address: string;
   pincode: string;
-  wallet:number;
+  wallet: number;
 }
 
 const validationSchema = Yup.object({
@@ -50,7 +49,7 @@ const initialValues: SignupFormValues = {
   phone: "",
   address: "",
   pincode: "",
-  wallet:100,
+  wallet: 100,
 };
 
 const RegisterScreen = () => {
@@ -66,7 +65,7 @@ const RegisterScreen = () => {
 
   const handleSubmit = async (values: SignupFormValues) => {
     try {
-      const payload = {...values, wallet:100};
+      const payload = { ...values, wallet: 100 };
       await axios.post("/api/auth/signup", payload);
       const result: any = await signIn("credentials", {
         redirect: false,
@@ -94,9 +93,9 @@ const RegisterScreen = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#0f0f0f] overflow-x-hidden px-4">
+    <div className="flex items-center justify-center min-h-screen bg-white overflow-x-hidden px-4">
       <div className="w-full max-w-md mx-auto">
-        <div className="p-6 sm:p-8 space-y-6 bg-[#1a1a1a] rounded-md shadow-md">
+        <div className="p-6 sm:p-8 space-y-6 bg-black rounded-lg shadow-lg">
           {/* Header and Options */}
           <div className="text-center">
             <h1 className="text-3xl font-semibold text-white">Sign Up</h1>
@@ -124,7 +123,7 @@ const RegisterScreen = () => {
                   name="name"
                   type="text"
                   placeholder="Enter your username"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-gray-800 text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="name" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -139,7 +138,7 @@ const RegisterScreen = () => {
                   name="email"
                   type="email"
                   placeholder="Enter your email"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-gray-800 text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="email" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -154,7 +153,7 @@ const RegisterScreen = () => {
                   name="password"
                   type="password"
                   placeholder="Enter your password"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-gray-800 text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="password" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -169,7 +168,7 @@ const RegisterScreen = () => {
                   name="confirmpassword"
                   type="password"
                   placeholder="Re-enter your password"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-gray-800 text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="confirmpassword" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -184,7 +183,7 @@ const RegisterScreen = () => {
                   name="phone"
                   type="tel"
                   placeholder="Enter your phone number"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-gray-800 text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="phone" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -199,7 +198,7 @@ const RegisterScreen = () => {
                   id="address"
                   name="address"
                   placeholder="Enter your address"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-gray-800 text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="address" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -214,7 +213,7 @@ const RegisterScreen = () => {
                   name="pincode"
                   type="text"
                   placeholder="Enter your pincode"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-gray-800 text-gray-200 border border-gray-600 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <ErrorMessage name="pincode" component="div" className="text-red-500 text-sm mt-1" />
               </div>
@@ -238,6 +237,12 @@ const RegisterScreen = () => {
               </div>
             </Form>
           </Formik>
+          {/* Go Back Option */}
+          <div className="text-center mt-4">
+            <Link href="/" className="text-gray-400 hover:text-white">
+              Go Back
+            </Link>
+          </div>
         </div>
       </div>
     </div>

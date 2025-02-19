@@ -2,102 +2,105 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import InfiniteCarousel from "@/components/InfiniteCarousel";
-import StackedCardParallax from "@/components/StackedCardsParallax";
 import Image from "next/image";
-import userIcon from "@/public/user-icon.png";
-import landingPhoto1 from "@/public/landing-photo1.jpg";
-import Footer from "../components/Footer";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Star } from "lucide-react";
+import {
+  AirVent,
+  Paintbrush,
+  Sparkles,
+  Wrench,
+  Check,
+  Star,
+  MessageCircle,
+  ArrowRight
+} from "lucide-react";
 import Preloader from "@/components/PreLoader";
+import Footer from "@/components/Footer";
 import TestimonialsSection from "@/components/TestimonialsSection";
+import TextAnimate from "@/components/TextAnimate";
 
-// Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// Service Icon component with gradient background
+interface ServiceIconProps {
+  icon: React.ElementType;
+  gradientFrom: string;
+  gradientTo: string;
+}
+
+const ServiceIcon: React.FC<ServiceIconProps> = ({ icon: Icon, gradientFrom, gradientTo }) => (
+  <div className="relative flex items-center justify-center w-full h-full">
+    <div className={`absolute inset-0 rounded-lg bg-gradient-to-br ${gradientFrom} ${gradientTo} opacity-20`}></div>
+    <div className="absolute inset-0 rounded-lg border-2 border-white/20"></div>
+    <Icon className="relative z-10 text-white w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20" strokeWidth={1.5} />
+  </div>
+);
+
+// Features Grid Component
 function FeaturesGrid() {
   const features = [
     {
-      icon: userIcon,
-      title: "Professional Cleaning Services",
-      description:
-        "Expert home, office, and AC cleaning services to keep your spaces fresh and hygienic.",
+      icon: <Sparkles className="text-emerald-400" />,
+      title: "Professional Cleaning",
+      description: "Expert home and office cleaning services to keep your spaces fresh and hygienic."
     },
     {
-      icon: userIcon,
-      title: "Fully Responsive Booking",
-      description:
-        "Easily book and manage your cleaning appointments on any device, from mobile to desktop.",
+      icon: <AirVent className="text-blue-400" />,
+      title: "AC Maintenance",
+      description: "Complete air conditioning cleaning and maintenance for optimal performance."
     },
     {
-      icon: userIcon,
-      title: "Trained & Verified Cleaners",
-      description:
-        "Our cleaning professionals are background-checked and trained to provide top-quality service.",
+      icon: <Wrench className="text-amber-400" />,
+      title: "Repair Services",
+      description: "Quick and reliable repair services for home appliances and fixtures."
     },
     {
-      icon: userIcon,
-      title: "Safe & Secure Payments",
-      description:
-        "We ensure secure transactions with encrypted payment gateways for a hassle-free experience.",
-    },
-    {
-      icon: userIcon,
-      title: "24/7 Customer Support",
-      description:
-        "Our support team is available round the clock to assist with your bookings and queries.",
-    },
-    {
-      icon: userIcon,
-      title: "Eco-Friendly Cleaning Solutions",
-      description:
-        "We use environmentally friendly cleaning products that are safe for your family and pets.",
-    },
+      icon: <Paintbrush className="text-purple-400" />,
+      title: "Home Improvement",
+      description: "Transform your living spaces with our professional improvement services."
+    }
   ];
 
   useEffect(() => {
     gsap.fromTo(
-      ".feature-text",
+      ".feature-item",
       { opacity: 0, y: 20 },
       {
         opacity: 1,
         y: 0,
-        duration: 1,
-        stagger: 0.2,
+        duration: 0.8,
+        stagger: 0.1,
         scrollTrigger: {
-          trigger: ".feature-text",
-          start: "top 80%",
-          end: "bottom 20%",
-          scrub: true,
-        },
+          trigger: ".features-grid",
+          start: "top 80%"
+        }
       }
     );
   }, []);
 
   return (
-    <div className="bg-black px-4 py-8 md:py-12">
-      <div className="mx-auto max-w-7xl">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 md:gap-x-8 md:gap-y-12">
+    <div className="bg-zinc-950 px-4 py-16 md:py-24">
+      <div className="mx-auto max-w-5xl">
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-12 text-center">
+          Why Choose <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-rose-400">HelperBuddy</span>
+        </h2>
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 features-grid">
           {features.map((feature, index) => (
-            <div key={index} className="space-y-3 md:space-y-4 feature-text">
-              <div className="inline-block rounded-lg">
-                <Image
-                  src={feature.icon}
-                  alt="Feature Icon"
-                  width={20}
-                  height={20}
-                  className="text-gray-400 w-5 h-5 md:w-6 md:h-6"
-                />
+            <div 
+              key={index} 
+              className="feature-item p-6 rounded-xl bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700 transition-all duration-300 group space-y-4"
+            >
+              <div className="p-3 rounded-lg inline-flex bg-zinc-800/50 group-hover:bg-zinc-800 transition-colors">
+                {feature.icon}
               </div>
-              <h3 className="text-xl md:text-2xl font-semibold text-white">
+              <h3 className="text-lg font-medium text-white">
                 {feature.title}
               </h3>
-              <p className="text-base md:text-lg text-gray-400">
+              <p className="text-zinc-400 text-sm">
                 {feature.description}
               </p>
             </div>
@@ -108,179 +111,392 @@ function FeaturesGrid() {
   );
 }
 
-function ServicesSection() {
-  const services = [
+// New "Why Choose HelperBuddy" Hero Section with Perspective Scroll
+function PerspectiveHeroSection() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (sectionRef.current && contentRef.current) {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 80%",
+          end: "top 20%",
+          scrub: true,
+        }
+      });
+      
+      tl.fromTo(
+        contentRef.current,
+        {
+          scale: 0.9,
+          y: 100,
+          opacity: 0.5,
+          transformPerspective: 1000,
+          rotationX: 5
+        },
+        {
+          scale: 1,
+          y: 0,
+          opacity: 1,
+          rotationX: 0,
+          ease: "power2.out"
+        }
+      );
+      
+      gsap.fromTo(
+        ".highlight-item",
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          stagger: 0.15,
+          duration: 0.8,
+          scrollTrigger: {
+            trigger: ".highlights-container",
+            start: "top 70%"
+          }
+        }
+      );
+    }
+    
+    return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, []);
+  
+  const highlights = [
     {
-      image: landingPhoto1,
-      title: "Service 1",
-      description: "Description for Service 1",
+      icon: <Check className="text-emerald-400" />,
+      text: "Verified professionals with background checks"
     },
     {
-      image: landingPhoto1,
-      title: "Service 2",
-      description: "Description for Service 2",
+      icon: <Check className="text-emerald-400" />,
+      text: "Consistent, high-quality service delivery"
     },
     {
-      image: landingPhoto1,
-      title: "Service 3",
-      description: "Description for Service 3",
+      icon: <Check className="text-emerald-400" />,
+      text: "Transparent pricing - no hidden charges"
     },
     {
-      image: landingPhoto1,
-      title: "Service 4",
-      description: "Description for Service 4",
-    },
+      icon: <Check className="text-emerald-400" />,
+      text: "24/7 customer support at your service"
+    }
   ];
 
-  useEffect(() => {
-    gsap.fromTo(
-      ".service-text",
-      { opacity: 0, y: 20 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        stagger: 0.2,
-        scrollTrigger: {
-          trigger: ".service-text",
-          start: "top 70%",
-          end: "bottom 20%",
-          scrub: true,
-        },
-      }
-    );
-  }, []);
-
-  const router = useRouter();
-
   return (
-    <div className="bg-black px-4 py-8 md:py-12" id="services-section">
-      <div className="mx-auto max-w-7xl text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 md:mb-8 service-text">
-          Some Services
+    <div ref={sectionRef} className="w-full bg-gradient-to-b from-black to-zinc-950 py-24 md:py-32 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl -z-10"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl -z-10"></div>
+      
+      <div className="max-w-5xl mx-auto px-4">
+        <div ref={contentRef} className="relative z-10">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-12 text-white">
+            Why Choose{" "}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-rose-400">
+              HelperBuddy
+            </span>
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <p className="text-zinc-300 text-lg leading-relaxed">
+                HelperBuddy transforms how you experience home services with a commitment to quality, reliability and convenience that's unmatched in the industry.
+              </p>
+              
+              <div className="highlights-container space-y-4">
+                {highlights.map((item, index) => (
+                  <div key={index} className="highlight-item flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-emerald-500/20 mt-0.5">
+                      {item.icon}
+                    </div>
+                    <p className="text-zinc-300">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+            
+            <div className="relative aspect-square md:aspect-auto md:h-96 rounded-2xl overflow-hidden border border-zinc-800 shadow-xl shadow-indigo-500/10">
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-rose-500/20"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-6xl md:text-8xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-rose-400">97%</div>
+              </div>
+              <div className="absolute bottom-8 w-full text-center">
+                <p className="text-white font-medium text-xl">Customer Satisfaction</p>
+                <p className="text-zinc-400 text-sm mt-1">Based on 1000+ reviews</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProcessSteps() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (containerRef.current) {
+      gsap.fromTo(
+        ".process-step",
+        { 
+          opacity: 0,
+          y: 40,
+          scale: 0.95
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          stagger: 0.2,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 70%"
+          }
+        }
+      );
+    }
+  }, []);
+  
+  const steps = [
+    {
+      number: "01",
+      title: "Choose Your Service",
+      description: "Browse our range of professional services and select what you need.",
+      detail:
+        "Review our diverse service offerings, which include everything from home cleaning to specialized repair services, and choose the one that best fits your requirements. Our platform provides detailed descriptions and customer reviews to guide your decision.",
+    },
+    {
+      number: "02",
+      title: "Book a Time Slot",
+      description: "Select a convenient date and time that works for your schedule.",
+      detail:
+        "Our easy-to-use booking system allows you to view available time slots and pick the one that aligns perfectly with your calendar. Enjoy the convenience of flexible scheduling tailored specifically for you.",
+    },
+    {
+      number: "03",
+      title: "Expert Arrives",
+      description: "Our verified professional arrives on time, ready to provide stellar service.",
+      detail:
+        "Once your appointment is confirmed, a highly trained and verified professional will arrive promptly at your location. Experience punctual, efficient service as our expert handles your needs with utmost care.",
+    },
+    {
+      number: "04",
+      title: "Enjoy the Results",
+      description: "Sit back and enjoy your perfectly maintained home or office.",
+      detail:
+        "After the service is completed, take a moment to relax and admire the impeccable results. Our commitment to excellence ensures that your space is maintained to the highest standards, leaving you stress-free and completely satisfied.",
+    },
+  ];
+  
+  return (
+    <div className="w-full bg-black py-24 px-4">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-16 text-center">
+          How HelperBuddy <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-rose-400">Works</span>
         </h2>
-        <div
-          className="relative flex flex-col md:flex-row justify-center gap-4 mb-6 md:mb-8"
-          id="services-container"
-        >
-          {/* Clickable overlay boxes */}
-          <div className="absolute inset-0 grid grid-cols-1 md:grid-cols-4 gap-4 z-20">
-            {[...Array(4)].map((_, index) => (
-              <button
-                key={`overlay-${index}`}
-                onClick={() => router.push("/services")}
-                className="w-full h-full bg-transparent hover:bg-white/5 transition-colors rounded-lg cursor-pointer"
-                aria-label={`Service ${index + 1}`}
-              />
+        
+        <div ref={containerRef} className="relative">
+          {/* Connecting line */}
+          <div className="absolute left-8 top-8 bottom-8 w-0.5 bg-gradient-to-b from-indigo-500 to-rose-500 hidden md:block"></div>
+          
+          <div className="space-y-12 md:space-y-24">
+            {steps.map((step, index) => (
+              <div 
+                key={index} 
+                className="process-step flex flex-col md:flex-row items-start gap-6 md:gap-12"
+              >
+                <div className="flex-shrink-0 w-16 h-16 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center relative z-10">
+                  <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-rose-400">
+                    {step.number}
+                  </span>
+                </div>
+                
+                <div className="flex-1 pt-2 md:pt-0">
+                  <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
+                  <p className="text-zinc-400">{step.description}</p>
+                  
+                  {/* Process step detail as a paragraph */}
+                  <div className="mt-6 p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl w-full md:w-4/5">
+                    <p className="text-zinc-500 text-sm leading-relaxed">
+                      {step.detail}
+                    </p>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// Services Section Component with updated quirky text and improved alignment
+function ServicesSection() {
+  const router = useRouter();
+  
+  const services = [
+    {
+      id: "ac-service",
+      title: "AC Cleaning",
+      description: "Cool vibes only! We'll make your AC breathe like a yoga instructor."
+    },
+    {
+      id: "home-cleaning",
+      title: "Home Cleaning",
+      description: "We don't just clean, we make your floors jealous of your countertops!"
+    },
+    {
+      id: "repair-service",
+      title: "Repair Services",
+      description: "We fix stuff so well, it'll wonder why it ever broke up with you."
+    },
+    {
+      id: "painting-service",
+      title: "Painting Services",
+      description: "Colors that pop and walls that won't stop showing off. Insta-worthy spaces guaranteed!"
+    }
+  ];
+
+  return (
+    <div className="bg-gradient-to-b from-black to-zinc-950 px-4 py-16 md:py-24" id="services-section">
+      <div className="mx-auto max-w-5xl text-center">
+        <h2 className="text-2xl md:text-5xl font-bold text-white mb-16 service-text">
+          Our Services
+        </h2>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-12">
           {services.map((service, index) => (
             <div
               key={index}
-              className="w-full md:w-1/4 p-2 service-item service-text relative"
-              id={`service-${index + 1}`}
+              id={service.id}
+              className="service-container bg-zinc-900/30 rounded-xl overflow-hidden group transition-all duration-300 hover:bg-zinc-900/50 border border-zinc-800 hover:border-zinc-700"
             >
-              <div className="relative">
-                <Image
-                  src={service.image}
-                  alt={service.title}
-                  className="w-full h-48 md:h-40 lg:h-48 object-cover rounded-lg opacity-0"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity rounded-lg">
-                  <p className="text-white text-sm md:text-base">
-                    {service.description}
-                  </p>
-                </div>
+              <div className="p-6 h-full flex flex-col">
+                <div className="service-image-placeholder h-40 w-full bg-zinc-800/30 rounded-lg mb-4" data-service-target={service.id}></div>
+                <h3 className="text-lg font-medium text-white mb-2">
+                  {service.title}
+                </h3>
+                <p className="text-zinc-400 text-sm flex-grow mb-4">
+                  {service.description} 
+                </p>
+                <Button
+                  variant="ghost"
+                  className="mt-auto text-zinc-400 hover:text-white hover:bg-zinc-800 px-4 py-2 text-sm flex items-center gap-2"
+                  onClick={() => router.push("/services")}
+                >
+                  <span>Check it out</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
               </div>
-              <h3 className="text-base md:text-lg font-semibold text-white mt-6">
-                {service.title}
-              </h3>{" "}
-              {/* Increased margin-top */}
             </div>
           ))}
         </div>
+        
         <Button
           variant="outline"
-          className="min-w-[140px] md:min-w-[160px] bg-transparent text-white border-white/20 hover:bg-white/10 hover:border-white/30 transition-all text-sm md:text-base"
+          className="min-w-[160px] bg-transparent text-white border-white/20 hover:bg-white/10 hover:border-white/30 transition-all"
           onClick={() => router.push("/services")}
         >
-          View All
+          View All Services
         </Button>
       </div>
     </div>
   );
 }
 
+// FAQ Section Component with restored original FAQs
 function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const faqs = [
     {
       question: "What is HelperBuddy?",
-      answer:
-        "HelperBuddy is a cleaning service that helps keep your home and office clean. We also clean air conditioning units. Our goal is to make your spaces fresh and healthy.",
+      answer: "HelperBuddy is a premium service platform that connects you with professional cleaners, technicians, and home service experts. We provide home cleaning, office cleaning, AC maintenance, repairs, and more."
     },
     {
-      question: "What cleaning services do you offer?",
-      answer:
-        "We offer a variety of cleaning services, including home cleaning, office cleaning, and AC cleaning. Whether you need a deep clean or regular maintenance, we've got you covered.",
+      question: "How do I book a service?",
+      answer: "Booking is simple! Browse our services, select the one you need, choose your preferred date and time, and complete the booking. You can book through our website or mobile app."
     },
     {
-      question: "How do I book a cleaning service?",
-      answer:
-        "Booking is easy! Just give us a call or fill out our online form. We'll set up a time that works best for you.",
+      question: "What areas do you service?",
+      answer: "We currently serve major metropolitan areas across India including Delhi NCR, Mumbai, Bangalore, Hyderabad, Chennai, and Kolkata. We're expanding to new cities regularly!"
     },
     {
-      question: "How much does your service cost?",
-      answer:
-        "The cost depends on the size of your home or office and the type of cleaning you need. We have options for every budget. For exact prices, check our pricing page/contact us.",
+      question: "Are your service providers verified?",
+      answer: "Absolutely. All our service providers undergo thorough background checks, skill verification, and training before joining our platform. We prioritize your safety and service quality."
     },
     {
-      question: "Is HelperBuddy the best cleaning service in India?",
-      answer:
-        "Many of our customers think so! We pride ourselves on quality service and customer satisfaction. Check our reviews to see what others are saying.",
+      question: "What if I'm not satisfied with the service?",
+      answer: "Customer satisfaction is our priority. If you're not happy with any service, please report within 24 hours and we'll arrange a free service recovery visit to address your concerns."
     },
     {
-      question: "How can I find good cleaning services near me?",
-      answer:
-        "If you're looking for reliable cleaning services nearby, Helper Buddy is the answer. We connect you with experienced cleaners who can handle everything from regular home cleaning to deep cleaning. Simply book through our platform, and we'll send a trusted professional to your home.",
+      question: "Do you offer service warranties?",
+      answer: "Yes, we provide service warranties ranging from 7 days to 90 days depending on the type of service. Details are provided before booking completion."
     },
     {
-      question: "How can I apply as a Service Provider to Helper Buddy?",
-      answer:
-        "We've made that process simple for you! Just go on 'Create an account' on login page. Then Sign Up as a Service Provider and fill all your details. We'll receive your application and will reach out to you!",
+      question: "Can I reschedule or cancel my booking?",
+      answer: "Yes. Reschedule requests made 24 hours before the appointment are free. Cancellations made 24 hours in advance receive a full refund. Late cancellations may incur a small fee."
     },
+    {
+      question: "Do you provide the cleaning supplies and equipment?",
+      answer: "Yes! Our professionals bring all necessary equipment and high-quality cleaning supplies. If you have specific products you prefer, just let us know in advance."
+    }
   ];
 
+  useEffect(() => {
+    gsap.fromTo(
+      ".faq-item",
+      { opacity: 0, y: 20 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        scrollTrigger: {
+          trigger: ".faq-section",
+          start: "top 80%"
+        }
+      }
+    );
+  }, []);
+
   return (
-    <div className="bg-black px-4 py-8 md:py-12">
+    <div className="bg-black px-4 py-16 md:py-24 faq-section">
       <div className="mx-auto max-w-3xl">
-        <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 md:mb-8 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-12 text-center">
           Frequently Asked Questions
         </h2>
-        <div className="space-y-3 md:space-y-4">
+        <div className="space-y-4">
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="border border-zinc-800 rounded-lg overflow-hidden"
+              className="faq-item border border-zinc-800 rounded-lg overflow-hidden hover:border-zinc-700 transition-all duration-300"
             >
               <button
-                className="w-full px-4 md:px-6 py-3 md:py-4 text-left text-white hover:bg-zinc-900 transition-colors flex justify-between items-center text-sm md:text-base"
+                className="w-full px-6 py-4 text-left text-white hover:bg-zinc-900/50 transition-colors flex justify-between items-center"
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
               >
-                <span>{faq.question}</span>
-                <span className="transform transition-transform ml-2">
+                <span className="font-medium">{faq.question}</span>
+                <span className="transform transition-transform ml-2 text-zinc-400">
                   {openIndex === index ? "−" : "+"}
                 </span>
               </button>
               <div
-                className={`px-4 md:px-6 transition-all duration-200 ease-in-out ${
+                className={`transition-all duration-300 ease-in-out ${
                   openIndex === index
-                    ? "py-3 md:py-4 opacity-100"
-                    : "h-0 opacity-0 overflow-hidden"
+                    ? "py-4 px-6 opacity-100 max-h-96"
+                    : "max-h-0 opacity-0 overflow-hidden"
                 }`}
               >
-                <p className="text-zinc-400 text-sm md:text-base">
+                <p className="text-zinc-400">
                   {faq.answer}
                 </p>
               </div>
@@ -292,41 +508,183 @@ function FAQSection() {
   );
 }
 
-export default function Page() {
+export default function HomePage() {
   const router = useRouter();
-  const topLeftRef = useRef<HTMLImageElement>(null);
-  const bottomLeftRef = useRef<HTMLImageElement>(null);
-  const topRightRef = useRef<HTMLImageElement>(null);
-  const bottomRightRef = useRef<HTMLImageElement>(null);
+  const acIconRef = useRef<HTMLDivElement>(null);
+  const broomIconRef = useRef<HTMLDivElement>(null);
+  const wrenchIconRef = useRef<HTMLDivElement>(null);
+  const paintIconRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulating a delay (e.g., fetching data)
-    setTimeout(() => {
+    // Simulate preloader delay
+    const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3800); // Adjust delay as needed
+    }, 2000);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    // Add fade-in animation for hero section
-    gsap.fromTo(
-      [".hero-title", ".hero-description", ".hero-buttons"],
-      { opacity: 0, y: 20 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        stagger: 0.2,
-        ease: "power2.out",
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      ScrollTrigger.refresh();
+    };
+  
+    handleResize();
+    window.addEventListener("resize", handleResize);
+  
+    const setupIcons = () => {
+      // Array of icons with references and target IDs
+      const icons = [
+        { ref: acIconRef.current, targetId: "ac-service" },
+        { ref: broomIconRef.current, targetId: "home-cleaning" },
+        { ref: wrenchIconRef.current, targetId: "repair-service" },
+        { ref: paintIconRef.current, targetId: "painting-service" },
+      ];
+  
+      // Set initial styles
+      icons.forEach((icon) => {
+        if (icon.ref) {
+          gsap.set(icon.ref, {
+            borderRadius: "9999px",
+            scale: 1,
+            opacity: 1,
+          });
+        }
+      });
+  
+      // Create timeline with a tight scrub
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: servicesRef.current!,
+          start: "top 60%",
+          end: "top 20%",
+          scrub: 0.1,
+          markers: false,
+        },
+      });
+  
+      // Calculate center-to-center offset
+      const calculateOffset = (iconEl: HTMLDivElement, targetEl: Element) => {
+        const iconRect = iconEl.getBoundingClientRect();
+        const targetRect = targetEl.getBoundingClientRect();
+  
+        const iconCenter = {
+          x: iconRect.left + window.pageXOffset + iconRect.width / 2,
+          y: iconRect.top + window.pageYOffset + iconRect.height / 2,
+        };
+        const targetCenter = {
+          x: targetRect.left + window.pageXOffset + targetRect.width / 2,
+          y: targetRect.top + window.pageYOffset + targetRect.height / 2,
+        };
+  
+        return {
+          x: targetCenter.x - iconCenter.x,
+          y: targetCenter.y - iconCenter.y,
+        };
+      };
+  
+      // Animate each icon
+      icons.forEach(({ ref, targetId }) => {
+        if (!ref) return;
+  
+        const target = document.querySelector(
+          `#${targetId} .service-image-placeholder`
+        );
+        if (!target) return;
+  
+        // Just move the icon to center, no resizing:
+        tl.to(
+          ref,
+          {
+            x: () => calculateOffset(ref, target).x,
+            y: () => calculateOffset(ref, target).y,
+            borderRadius: "0.75rem",
+            ease: "none",
+            duration: 0.5,
+          },
+          0
+        );
+  
+        // Optionally scale the SVG icon
+        const svg = ref.querySelector("svg");
+        if (svg) {
+          tl.to(
+            svg,
+            {
+              scale: 1.5, // adjust or remove if you don't want scaling
+              ease: "none",
+              duration: 0.5,
+            },
+            0
+          );
+        }
+      });
+  
+      // Ensure timeline completes if scrolling quickly
+      if (servicesRef.current) {
+        ScrollTrigger.create({
+          trigger: servicesRef.current!,
+          start: "top bottom",
+          once: true,
+          onEnter: () => {
+            if (!ScrollTrigger.isInViewport(servicesRef.current!)) {
+              tl.progress(1);
+            }
+          },
+        });
       }
-    );
-  }, []);
+    };
+  
+    if (
+      acIconRef.current &&
+      broomIconRef.current &&
+      wrenchIconRef.current &&
+      paintIconRef.current &&
+      servicesRef.current
+    ) {
+      setupIcons();
+    }
+  
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
+  }, [isMobile]);
+  
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    if (!isLoading) {
+      // Add an extra 500ms buffer after preloader is done
+      const bufferTimeout = setTimeout(() => {
+        // Always scroll to top on mount
+        window.scrollTo(0, 0);
+        
+        // Determine navigation type
+        const navigationEntry = window.performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
+        const navType = navigationEntry?.type;
+        
+        if (navType === "reload") {
+          gsap.fromTo(
+            [".hero-title", ".hero-subtitle", ".hero-buttons"],
+            { opacity: 0, y: 20 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 1,
+              stagger: 0.2,
+              ease: "power2.out",
+            }
+          );
+        }
+      }, 500); // 500ms buffer delay
+  
+      return () => clearTimeout(bufferTimeout);
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -338,226 +696,128 @@ export default function Page() {
     window.addEventListener("resize", handleResize);
 
     if (
-      topLeftRef.current &&
-      bottomLeftRef.current &&
-      topRightRef.current &&
-      bottomRightRef.current &&
+      acIconRef.current &&
+      broomIconRef.current &&
+      wrenchIconRef.current &&
+      paintIconRef.current &&
       servicesRef.current
     ) {
-      const service1 = document.querySelector("#service-1 img");
-      const service2 = document.querySelector("#service-2 img");
-      const service3 = document.querySelector("#service-3 img");
-      const service4 = document.querySelector("#service-4 img");
+      // Service containers
+      const acService = document.querySelector("#ac-service");
+      const homeCleaningService = document.querySelector("#home-cleaning");
+      const repairService = document.querySelector("#repair-service");
+      const paintingService = document.querySelector("#painting-service");
 
-      if (!service1 || !service2 || !service3 || !service4) return;
+      if (!acService || !homeCleaningService || !repairService || !paintingService) return;
 
-      // Set initial styles for corner images
-      [topLeftRef, bottomLeftRef, topRightRef, bottomRightRef].forEach(
-        (ref) => {
-          if (ref.current) {
-            gsap.set(ref.current, {
-              width: isMobile ? "8rem" : "12rem",
-              height: isMobile ? "8rem" : "12rem",
-              objectFit: "cover",
-              borderRadius: "0.5rem",
-              border: "2px solid rgba(255, 255, 255, 0.2)",
-              zIndex: 15,
-            });
-          }
-        }
-      );
+      // Set initial styles for icons (start as circular)
+      gsap.set(acIconRef.current, { borderRadius: "50%" });
+      gsap.set(broomIconRef.current, { borderRadius: "50%" });
+      gsap.set(wrenchIconRef.current, { borderRadius: "50%" });
+      gsap.set(paintIconRef.current, { borderRadius: "50%" });
 
-      // Create the main timeline
-      const tl = gsap.timeline({
+      // Create a timeline to animate the icons when scrolling to the services section
+      const iconTimeline = gsap.timeline({
         scrollTrigger: {
           trigger: servicesRef.current,
-          start: "top 80%", // Start when the top of services section hits 80% of viewport
-          end: "top 20%", // End when the top of services section hits 20% of viewport
+          start: "top 80%",
+          end: "top 50%",
           scrub: true,
-          markers: false,
-          toggleActions: "play none none reverse", // Play on enter, reverse on leave
-          invalidateOnRefresh: true,
-          snap: {
-            snapTo: "labels",
-            duration: { min: 0.2, max: 0.5 },
-            delay: 0,
-            ease: "power1.inOut",
-          },
         },
       });
 
-      // Define animation mapping
-      const animations = [
-        { ref: topLeftRef.current, target: service1, align: "start" },
-        { ref: bottomLeftRef.current, target: service2, align: "start" },
-        { ref: bottomRightRef.current, target: service3, align: "end" },
-        { ref: topRightRef.current, target: service4, align: "end" },
-      ];
-
-      // Add animations to timeline
-      animations.forEach(({ ref, target, align }) => {
-        if (!ref || !target) return;
-
-        const targetRect = target.getBoundingClientRect();
-        const startRect = ref.getBoundingClientRect();
-
-        // Calculate position based on alignment
-        const xOffset =
-          align === "end"
-            ? targetRect.left +
-              targetRect.width -
-              (startRect.left + startRect.width)
-            : targetRect.left - startRect.left;
-
-        const yOffset = targetRect.top - startRect.top + window.scrollY;
-
-        // Add to timeline
-        tl.to(
-          ref,
-          {
-            x: xOffset,
-            y: yOffset,
-            width: targetRect.width,
-            height: targetRect.height,
-            ease: "power1.inOut",
-            duration: 1,
-          },
-          0
-        );
-      });
-
-      // Handle service images opacity
-      tl.to(
-        [service1, service2, service3, service4],
+      // Animate icons: transition from circular to a more square shape with rounded corners
+      iconTimeline.to(
+        [acIconRef.current, broomIconRef.current, wrenchIconRef.current, paintIconRef.current],
         {
-          opacity: 0,
+          borderRadius: "0.5rem",
           duration: 1,
-          ease: "none",
-        },
-        0
+          ease: "power2.out",
+        }
       );
-
-      // Check initial scroll position and set images accordingly
-      const initialScrollY = window.scrollY;
-      if (initialScrollY > servicesRef.current.offsetTop) {
-        tl.progress(1);
-      }
-
-      return () => {
-        window.removeEventListener("resize", handleResize);
-        tl.kill();
-        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-      };
     }
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    };
   }, [isMobile]);
 
   return (
     <>
-      {isLoading && <Preloader onComplete={function (): void {
-        throw new Error("Function not implemented.");
-      } } />} {/* Show loader while loading */}
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
-        <div className="h-20 md:h-40 w-full bg-black"></div>
+      {isLoading && <Preloader onComplete={() => setIsLoading(false)} />}
+      <div className="relative flex min-h-screen flex-col">
+        <main className="flex-1">
+          <section className="flex min-h-screen flex-col items-center justify-center space-y-10 py-24">
+            <div className="flex justify-center gap-8 mt-12">
+              <div 
+                ref={acIconRef} 
+                className="service-icon w-16 h-16 md:w-24 md:h-24 flex items-center justify-center rounded-full bg-gradient-to-br from-indigo-500/20 to-indigo-500/10 border border-indigo-500/40 transition-all duration-300"
+              >
+                <AirVent className="text-indigo-400 w-8 h-8 md:w-12 md:h-12" strokeWidth={1.5} />
+              </div>
+              <div 
+                ref={broomIconRef} 
+                className="service-icon w-16 h-16 md:w-24 md:h-24 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500/20 to-blue-500/10 border border-blue-500/40 transition-all duration-300"
+              >
+                <Sparkles className="text-blue-400 w-8 h-8 md:w-12 md:h-12" strokeWidth={1.5} />
+              </div>
+              <div 
+                ref={wrenchIconRef} 
+                className="service-icon w-16 h-16 md:w-24 md:h-24 flex items-center justify-center rounded-full bg-gradient-to-br from-amber-500/20 to-amber-500/10 border border-amber-500/40 transition-all duration-300"
+              >
+                <Wrench className="text-amber-400 w-8 h-8 md:w-12 md:h-12" strokeWidth={1.5} />
+              </div>
+              <div 
+                ref={paintIconRef} 
+                className="service-icon w-16 h-16 md:w-24 md:h-24 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-500/20 to-purple-500/10 border border-purple-500/40 transition-all duration-300"
+              >
+                <Paintbrush className="text-purple-400 w-8 h-8 md:w-12 md:h-12" strokeWidth={1.5} />
+              </div>
+            </div>      
+            <div className="container flex flex-col items-center justify-center gap-6 text-center">
+              <TextAnimate
+                text="Professional Cleaning Made Simple"
+                className="hero-title text-4xl font-bold leading-tight tracking-tighter md:text-6xl lg:text-7xl lg:leading-[1.1] text-black"
+                shouldAnimate={!isLoading}
+              />
+              <TextAnimate
+                text="Book expert cleaning services for your home and office in just a few clicks. Quality service, guaranteed satisfaction."
+                className="hero-subtitle max-w-[750px] text-center text-lg text-muted-foreground sm:text-xl"
+                shouldAnimate={!isLoading}
+              />
+              <div className="hero-buttons flex gap-4">
+                <button
+                  onClick={() => router.push("/services")}
+                  className="px-8 py-3 border border-black text-black bg-white rounded-lg font-semibold transition-colors duration-300 hover:bg-black hover:text-white"
+                >
+                  Book Now
+                </button>
+                <button
+                  onClick={() => router.push("/api/auth/login")}
+                  className="px-8 py-3 border border-black bg-black text-white rounded-lg font-semibold transition-colors duration-300 hover:bg-white hover:text-black"
+                >
+                  Get Started
+                </button>
+              </div>
 
-        <div className="relative z-20 text-center px-4 max-w-4xl mx-auto">
-          <div className="relative">
-            <div className="absolute inset-[-75px] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-500 via-rose-400 to-orange-800 opacity-40 blur-3xl -z-10" />
+            </div>
+          </section>
 
-            {/* Images remain the same */}
-            <Image
-              ref={topLeftRef}
-              src={landingPhoto1}
-              alt="Top Left Image"
-              className="absolute top-[-50px] md:top-[-100px] left-[-75px] md:left-[-250px] w-24 md:w-48 h-24 md:h-48 object-cover rounded-lg border-2 border-white/20"
-            />
-            <Image
-              ref={bottomLeftRef}
-              src={landingPhoto1}
-              alt="Bottom Left Image"
-              className={`absolute ${
-                isMobile
-                  ? "bottom-[-100px] left-[-125px] w-32 h-32"
-                  : "bottom-[-200px] left-[-250px] w-48 h-48"
-              } object-cover rounded-lg border-2 border-white/20`}
-            />
-            <Image
-              ref={topRightRef}
-              src={landingPhoto1}
-              alt="Top Right Image"
-              className={`absolute ${
-                isMobile
-                  ? "top-[-50px] right-[-125px] w-32 h-32"
-                  : "top-[-100px] right-[-250px] w-48 h-48"
-              } object-cover rounded-lg border-2 border-white/20`}
-            />
-            <Image
-              ref={bottomRightRef}
-              src={landingPhoto1}
-              alt="Bottom Right Image"
-              className={`absolute ${
-                isMobile
-                  ? "bottom-[-100px] right-[-125px] w-32 h-32"
-                  : "bottom-[-200px] right-[-250px] w-48 h-48"
-              } object-cover rounded-lg border-2 border-white/20`}
-            />
-            <h1 className="hero-title text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 md:mb-6 tracking-tight">
-              <span className="inline-block relative">
-                Seamless Home & Office{" "}
-                <span className="relative">
-                  <span className="absolute -inset-1 blur-xl bg-gradient-to-r from-white/30 to-white/10 opacity-50" />
-                  <span className="relative">Services</span>
-                </span>{" "}
-                at Your Fingertips
-              </span>
-            </h1>
+          <div ref={servicesRef}>
+            <ServicesSection />
           </div>
 
-          <p className="hero-description text-base md:text-lg lg:text-xl text-zinc-400 max-w-2xl mx-auto mb-8 md:mb-12 leading-relaxed">
-            Book expert cleaning, installation, and repair services in just a
-            few clicks. Quality service, hassle-free experience, and secure
-            payments—anytime, anywhere.
-          </p>
+          {/* <FeaturesGrid /> */}
 
-          <div className="hero-buttons flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
-            <Button
-              variant="outline"
-              className="min-w-[160px] bg-transparent text-white border-white/20 hover:bg-white/10 hover:border-white/30 transition-all"
-            >
-              Get Started
-            </Button>
-            <Button
-              variant="ghost"
-              className="text-zinc-400 hover:text-white hover:bg-transparent"
-              onClick={() => router.push("/services")}
-            >
-              Explore Services
-            </Button>
-          </div>
-        </div>
+          <PerspectiveHeroSection />
 
-        <div ref={servicesRef} className="relative z-10 w-full mt-20 md:mt-50">
-          <ServicesSection />
-        </div>
+          <ProcessSteps />
 
-        <div className="relative z-10 w-full mt-8">
-          <FeaturesGrid />
-        </div>
-
-        <div className="relative z-10 w-full">
-          <StackedCardParallax />
-        </div>
-
-        <div className="relative z-10 w-full mt-8">
-          <InfiniteCarousel />
-        </div>
-
-        <div className="relative z-10 w-full">
           <TestimonialsSection />
-        </div>
 
-        <div className="relative z-10 w-full">
           <FAQSection />
-        </div>
+        </main>
       </div>
     </>
   );

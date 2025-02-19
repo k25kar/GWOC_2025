@@ -35,13 +35,12 @@ const LoginScreen = () => {
   const router = useRouter();
   const { redirect }: any = router.query;
 
-  // State to toggle login type: "user" for normal users, "sp" for service providers.
+  // Toggle between user or service provider
   const [loginType, setLoginType] = useState<"user" | "sp">("user");
 
   /**
    * Check the login status for a given email based on the login type.
    * For service providers, only allow login if the status is "approved".
-   * Otherwise, return an error message.
    */
   const checkLoginStatus = async (
     email: string,
@@ -86,8 +85,6 @@ const LoginScreen = () => {
    * Handle form submission:
    * - For normal users, use NextAuth’s credentials provider.
    * - For service providers, first check if the account is approved.
-   *   Then call our custom login endpoint and, if successful,
-   *   create a NextAuth session via the credentials provider.
    */
   const handleSubmit = async ({ email, password }: LoginFormValues) => {
     const errorMsg = await checkLoginStatus(email, loginType);
@@ -111,7 +108,6 @@ const LoginScreen = () => {
             style: { backgroundColor: "#800000", color: "#fff" },
           });
         } else {
-          // After a successful user login, redirect to the desired page.
           router.push(redirect || "/");
         }
       } catch (err) {
@@ -121,14 +117,13 @@ const LoginScreen = () => {
       }
     } else if (loginType === "sp") {
       try {
-        // First, call our custom API route to verify SP credentials and status.
+        // Check SP credentials
         const { data } = await axios.post("/api/auth/login-sp", {
           email,
           password,
         });
         if (data.message === "Login successful") {
-          // Now create a NextAuth session (assuming your credentials provider
-          // supports a "loginType" field to differentiate SP logins).
+          // Create NextAuth session
           const result: any = await signIn("credentials", {
             redirect: false,
             email,
@@ -143,7 +138,6 @@ const LoginScreen = () => {
             toast.success("Service Provider login successful", {
               style: { backgroundColor: "#141414", color: "#fff" },
             });
-            // Redirect directly to the SP dashboard overview.
             router.push("/dashboard/spdashboard/overview");
           }
         }
@@ -158,7 +152,7 @@ const LoginScreen = () => {
     }
   };
 
-  // Handle Google sign in.
+  // Handle Google sign in
   const handleGoogleSignIn = async () => {
     try {
       const result: any = await signIn("google", { redirect: false });
@@ -168,7 +162,6 @@ const LoginScreen = () => {
         });
         return;
       }
-      // Wait for session update.
       const sessionAfter = await getSession();
       if (sessionAfter?.user?.email) {
         const status = await checkLoginStatus(sessionAfter.user.email, loginType);
@@ -180,7 +173,6 @@ const LoginScreen = () => {
           return;
         }
       }
-      // Successful Google login; redirect based on login type.
       if (loginType === "sp") {
         router.push("/dashboard/spdashboard/overview");
       } else {
@@ -193,9 +185,10 @@ const LoginScreen = () => {
     }
   };
 
-  // Optionally, if a session already exists, you could perform a status check and auto-redirect.
+  // Optionally auto-redirect if session already exists
+  const { data: userSession } = useSession();
   useEffect(() => {
-    const userEmail = session?.user?.email;
+    const userEmail = userSession?.user?.email;
     if (typeof userEmail === "string") {
       const checkStatus = async () => {
         const statusMsg = await checkLoginStatus(userEmail, loginType);
@@ -212,47 +205,59 @@ const LoginScreen = () => {
           }
         }
       };
-      // Uncomment the next line if you want to auto-redirect if a session exists:
+      // Uncomment if you want to auto-redirect:
       // checkStatus();
     }
-  }, [session, redirect, router, loginType]);
+  }, [userSession, redirect, router, loginType]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#0f0f0f] overflow-x-hidden px-4">
+    <div className="flex items-center justify-center min-h-screen bg-white overflow-x-hidden px-4">
       <div className="max-w-md w-full mx-auto">
-        <div className="p-6 sm:p-8 space-y-6 bg-[#1a1a1a] rounded-md shadow-md">
-          <h1 className="text-3xl font-semibold text-white text-center">Sign In</h1>
+        {/* Outer card */}
+        <div className="p-6 sm:p-8 space-y-6 bg-black rounded-lg shadow-lg relative">
+          {/* Go Back Button */}
+          <button
+            type="button"
+            onClick={() => router.push("/")}
+            className="absolute top-3 left-3 text-sm text-gray-400 hover:text-white"
+          >
+            &larr; Go Back
+          </button>
 
-          {/* Toggle Buttons to Choose Login Type */}
-          <div className="flex justify-center mb-4">
+          <h1 className="text-3xl font-semibold text-white text-center">
+            Sign In
+          </h1>
+
+          {/* "As User" / "As Service Provider" tabs */}
+          <div className="flex justify-center items-center gap-8 border-b border-gray-600 pb-1">
             <button
               type="button"
               onClick={() => setLoginType("user")}
-              className={`px-4 py-2 mr-2 rounded-md ${
+              className={`text-sm font-semibold pb-1 transition-colors ${
                 loginType === "user"
-                  ? "bg-[#800000] text-white"
-                  : "bg-gray-700 text-gray-300"
+                  ? "text-white border-b-2 border-white"
+                  : "text-gray-500 border-b-2 border-transparent"
               }`}
             >
-              User
+              As User
             </button>
             <button
               type="button"
               onClick={() => setLoginType("sp")}
-              className={`px-4 py-2 rounded-md ${
+              className={`text-sm font-semibold pb-1 transition-colors ${
                 loginType === "sp"
-                  ? "bg-[#800000] text-white"
-                  : "bg-gray-700 text-gray-300"
+                  ? "text-white border-b-2 border-white"
+                  : "text-gray-500 border-b-2 border-transparent"
               }`}
             >
-              Service Provider
+              As Service Provider
             </button>
           </div>
 
-          {/* Google Sign-In Button */}
+          {/* Google Sign-In */}
           <button
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md bg-[#141414] hover:bg-[#ffffff] hover:text-black text-white font-medium transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md bg-gray-800 hover:bg-gray-700 text-white font-medium transition-colors"
           >
             <FcGoogle className="h-5 w-5" />
             Continue with Google
@@ -265,18 +270,17 @@ const LoginScreen = () => {
             <hr className="flex-1 border-gray-600" />
           </div>
 
-          {/* Formik Form for Email & Password */}
+          {/* Formik Form */}
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
             <Form className="space-y-4">
-              {/* Email Field */}
               <div>
                 <label
                   htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-gray-200"
+                  className="block mb-2 text-sm font-medium text-white"
                 >
                   E-mail
                 </label>
@@ -285,19 +289,16 @@ const LoginScreen = () => {
                   name="email"
                   type="email"
                   autoFocus
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
-                             focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-gray-800 text-white border border-gray-700 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <div className="text-red-500 text-sm mt-1">
                   <ErrorMessage name="email" />
                 </div>
               </div>
-
-              {/* Password Field */}
               <div>
                 <label
                   htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-gray-200"
+                  className="block mb-2 text-sm font-medium text-white"
                 >
                   Password
                 </label>
@@ -305,24 +306,18 @@ const LoginScreen = () => {
                   id="password"
                   name="password"
                   type="password"
-                  className="w-full p-2 bg-[#2c2c2c] text-gray-200 border border-gray-600 rounded-md 
-                             focus:outline-none focus:border-[#800000]"
+                  className="w-full p-2 bg-gray-800 text-white border border-gray-700 rounded-md focus:outline-none focus:border-[#800000]"
                 />
                 <div className="text-red-500 text-sm mt-1">
                   <ErrorMessage name="password" />
                 </div>
               </div>
-
-              {/* Sign In Button */}
               <button
                 type="submit"
-                className="w-full py-2 bg-[#141414] hover:bg-[#ffffff] hover:text-black text-white font-semibold
-                           rounded-md transition-colors"
+                className="w-full py-2 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-md transition-colors"
               >
                 Sign In
               </button>
-
-              {/* Bottom Links */}
               <div className="text-center text-sm text-gray-400 space-y-2 mt-4">
                 <p>
                   Don&apos;t have an account? &nbsp;
