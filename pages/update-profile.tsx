@@ -22,7 +22,7 @@ const UpdateProfile: React.FC = () => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   // Local state for holding updated values.
   const [updatedUser, setUpdatedUser] = useState<UserDetails | null>(null);
-  
+
   // Field for current password (always required if there are any changes)
   const [currentPassword, setCurrentPassword] = useState("");
   // Fields for new password update (optional)
@@ -60,15 +60,29 @@ const UpdateProfile: React.FC = () => {
   // Compare updated values with original values to detect changes.
   useEffect(() => {
     if (userDetails && updatedUser) {
-      const fields: (keyof UserDetails)[] = ["name", "email", "phone", "address", "pincode"];
+      const fields: (keyof UserDetails)[] = [
+        "name",
+        "email",
+        "phone",
+        "address",
+        "pincode",
+      ];
       const basicChange = fields.some(
         (field) => (userDetails[field] || "") !== (updatedUser[field] || "")
       );
       // Also consider a change if the password drop down is active and new password fields are non-empty.
-      const passwordChange = showPasswordFields && (newPassword.length > 0 || confirmNewPassword.length > 0);
+      const passwordChange =
+        showPasswordFields &&
+        (newPassword.length > 0 || confirmNewPassword.length > 0);
       setHasChanges(basicChange || passwordChange);
     }
-  }, [updatedUser, userDetails, newPassword, confirmNewPassword, showPasswordFields]);
+  }, [
+    updatedUser,
+    userDetails,
+    newPassword,
+    confirmNewPassword,
+    showPasswordFields,
+  ]);
 
   const handleFieldChange = (field: keyof UserDetails, value: string) => {
     if (updatedUser) {
@@ -117,7 +131,10 @@ const UpdateProfile: React.FC = () => {
         address: updatedUser.address,
         pincode: updatedUser.pincode,
         currentPassword,
-        newPassword: showPasswordFields && newPassword.trim().length > 0 ? newPassword : undefined,
+        newPassword:
+          showPasswordFields && newPassword.trim().length > 0
+            ? newPassword
+            : undefined,
       };
 
       // Note: The PUT request URL is /api/users/<id>.
@@ -140,7 +157,9 @@ const UpdateProfile: React.FC = () => {
       }
     } catch (error) {
       console.error("Error updating user details:", error);
-      alert("Error updating profile. Please check your current password and try again.");
+      alert(
+        "Error updating profile. Please check your current password and try again."
+      );
     } finally {
       setSaving(false);
     }
@@ -155,27 +174,44 @@ const UpdateProfile: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-white p-6">
-      <h1 className="text-3xl font-bold mb-6">Update Profile</h1>
-      <div className="max-w-2xl mx-auto space-y-4">
-        {(["name", "email", "phone", "address", "pincode"] as (keyof UserDetails)[]).map((field) => (
-          <div key={field} className="flex items-center">
-            <label className="w-32 capitalize">{field}:</label>
+    <div className="min-h-screen bg-black text-white p-8">
+      <h1 className="text-3xl font-semibold text-center mb-6">
+        Update Profile
+      </h1>
+      <div className="max-w-3xl mx-auto space-y-6 bg-[#141414] p-6 rounded-lg shadow-lg">
+        {(
+          [
+            "name",
+            "email",
+            "phone",
+            "address",
+            "pincode",
+          ] as (keyof UserDetails)[]
+        ).map((field) => (
+          <div key={field} className="flex items-center justify-between">
+            <label className="text-lg capitalize text-gray-400 w-1/3">
+              {field}:
+            </label>
             {editing[field] ? (
               <input
                 type="text"
                 value={updatedUser[field] || ""}
                 onChange={(e) => handleFieldChange(field, e.target.value)}
-                className="bg-[#1a1a1a] border border-gray-600 p-2 flex-1"
+                className="bg-gray-700 text-white p-2 rounded-md w-2/3 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             ) : (
-              <span className="flex-1">{updatedUser[field] || "Not set"}</span>
+              <span className="w-2/3 text-gray-300">
+                {updatedUser[field] || "Not set"}
+              </span>
             )}
-            <button onClick={() => toggleEditing(field)} className="ml-2 focus:outline-none">
+            <button
+              onClick={() => toggleEditing(field)}
+              className="ml-2 text-gray-400 hover:text-white focus:outline-none"
+            >
               {/* Pencil Icon SVG */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-gray-400 hover:text-white"
+                className="h-5 w-5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -193,59 +229,66 @@ const UpdateProfile: React.FC = () => {
 
         {/* Show current password field if there are changes */}
         {hasChanges && (
-          <div className="mt-4 flex items-center">
-            <label className="w-40">Current Password:</label>
+          <div className="flex items-center justify-between">
+            <label className="text-lg text-gray-400 w-1/3">
+              Current Password:
+            </label>
             <input
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="Enter current password"
-              className="bg-[#1a1a1a] border border-gray-600 p-2 flex-1"
+              className="bg-gray-700 text-white p-2 rounded-md w-2/3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         )}
 
         {/* Toggle Change Password Panel */}
-        <div className="mt-6">
+        <div className="text-center mt-4">
           <button
             onClick={handleTogglePasswordFields}
-            className="px-4 py-2 bg-[#800000] text-white rounded-md hover:bg-[#8B0000] transition"
+            className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-200"
           >
             {showPasswordFields ? "Cancel Password Change" : "Change Password"}
           </button>
         </div>
 
-        {/* Change Password Panel: Only new password and confirm new password */}
+        {/* Change Password Panel */}
         {showPasswordFields && (
-          <div className="mt-4 space-y-4 border-t border-gray-600 pt-4">
-            <div className="flex items-center">
-              <label className="w-40">New Password:</label>
+          <div className="space-y-6 mt-6 border-t border-gray-600 pt-6">
+            <div className="flex items-center justify-between">
+              <label className="text-lg text-gray-400 w-1/3">
+                New Password:
+              </label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Enter new password"
-                className="bg-[#1a1a1a] border border-gray-600 p-2 flex-1"
+                className="bg-gray-700 text-white p-2 rounded-md w-2/3 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div className="flex items-center">
-              <label className="w-40">Confirm New:</label>
+            <div className="flex items-center justify-between">
+              <label className="text-lg text-gray-400 w-1/3">
+                Confirm New:
+              </label>
               <input
                 type="password"
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
                 placeholder="Re-enter new password"
-                className="bg-[#1a1a1a] border border-gray-600 p-2 flex-1"
+                className="bg-gray-700 text-white p-2 rounded-md w-2/3 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
         )}
 
-        <div className="mt-6">
+        {/* Save Changes Button */}
+        <div className="text-center mt-6">
           <button
             onClick={handleSaveChanges}
             disabled={!hasChanges || saving}
-            className={`px-4 py-2 rounded ${
+            className={`px-6 py-2 rounded-md text-white ${
               hasChanges && !saving
                 ? "bg-blue-600 hover:bg-blue-700"
                 : "bg-gray-600 cursor-not-allowed"

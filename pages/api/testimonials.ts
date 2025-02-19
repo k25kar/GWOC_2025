@@ -3,12 +3,13 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import dbConnect from "@/lib/dbConnect";
 import Testimonial, { ITestimonial } from "@/src/models/Testimonial";
 
-await dbConnect.connect();
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Ensure the database is connected
+  await dbConnect.connect();
+
   const { method } = req;
 
   switch (method) {
@@ -17,7 +18,8 @@ export default async function handler(
         const testimonials: ITestimonial[] = await Testimonial.find({});
         res.status(200).json(testimonials);
       } catch (error) {
-        res.status(400).json({ success: false });
+        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+        res.status(400).json({ success: false, error: errorMessage });
       }
       break;
     case "POST":
@@ -25,11 +27,13 @@ export default async function handler(
         const testimonial = await Testimonial.create(req.body);
         res.status(201).json(testimonial);
       } catch (error) {
-        res.status(400).json({ success: false, error });
+        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+        res.status(400).json({ success: false, error: errorMessage });
       }
       break;
     default:
-      res.status(400).json({ success: false });
+      res.setHeader("Allow", ["GET", "POST"]);
+      res.status(405).end(`Method ${method} Not Allowed`);
       break;
   }
 }
