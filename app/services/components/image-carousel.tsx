@@ -73,7 +73,7 @@ export default function ImageCarousel() {
             />
 
             {/* Service Name */}
-            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 text-white text-lg font-semibold">
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 text-black text-xl font-semibold">
               {services[currentIndex]?.name}
             </div>
 

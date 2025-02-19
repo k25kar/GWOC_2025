@@ -21,7 +21,6 @@ export function Navbar() {
     { name: "Service", href: "/services" },
     { name: "About", href: "/about" },
     { name: "Blog", href: "/blogs" },
-    { name: "Dashboard", href: "/dashboard/admindashboard" } 
   ];
 
   return (
